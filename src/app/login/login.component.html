@@ -1,0 +1,25 @@
+<div id="app-login-main">
+    <div class="container">
+        <div class="alert" [ngClass]="alertClass" (click)="dismissAlert()" role="alert">{{alertText}}</div>
+        <div class="login">
+            <div class="row">
+                <h2>Sign In</h2>
+                <div class="col-md-12">
+                    <label for="email">Email</label>
+                    <input type="text" class="form-control" [(ngModel)]="user.email_id" id="email" placeholder="Ex. youremail@mail.com">
+                    <br>
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" [(ngModel)]="user.password" id="password" placeholder="Ex. A123@paswod">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="reset" id="reset" value="Reset" (click)="resetForm()" class="btn btn-outline-primary btn-form">
+                </div>
+                <div class="col-md-6">
+                    <input type="submit" id="register" value="Sign In" (click)="submitSignIn(user)" class="btn btn-outline-success btn-form">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

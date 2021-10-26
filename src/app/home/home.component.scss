@@ -1,0 +1,39 @@
+.list-item-vertical {
+    border-radius: 5px;
+    padding: 5px 15px;
+    border: 1px solid #1000ff2e;
+    cursor: pointer;
+    width: 150px;
+    background: rgb(187,250,234);
+    background: linear-gradient( 90deg, #bbfaea 0%, #76c7e3 81%, #00d4ff 100%);
+}
+
+#app-left-pane {
+    display: inline-flex;
+}
+#app-details-pane {
+    width: 78%;
+    margin-left: 1%;
+    display: inline-block;
+}
+#app-main, #app-header {
+    display: flex;
+}
+.header-tab {
+    border-radius: 5px;
+    padding: 5px 15px;
+    width: 120px;
+    cursor: pointer;
+    text-align: center;
+    background: linear-gradient(317deg, #d5b469 0%, #f3ddd0 50%, #f79c87 100%);
+}
+span[id^="category_amount"] {
+    float: right;
+    font-weight: bold;
+}
+.negative-val {
+    color: #911e1e;
+}
+.positive-val {
+    color: #156410;
+}
