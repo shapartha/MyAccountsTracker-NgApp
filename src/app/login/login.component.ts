@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit {
   }
 
   handleTabChange(uri: any) {
-    this.router.navigate([uri]);
+    window.location.href = uri;
   }
 
   ngOnInit(): void {

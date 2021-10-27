@@ -16,6 +16,8 @@ export class HomeComponent implements OnInit {
   accounts: Account[] = [];
   currentTab: string = "Login";
   headerTabs: HeaderTabs = new HeaderTabs();
+  selectedCategory: string = "";
+  selectedAccount: string = "ALL";
   title = 'My Accounts Tracker';
   constructor(private router: Router, private appService: AppService) {
     let _loggedInUser = this.appService.getAppUserId;
@@ -39,6 +41,7 @@ export class HomeComponent implements OnInit {
           this.appService.getAccountsByCategory('{"category_id":' + _category.id + ',"user_id":' + this.appService.getAppUserId + '}').then(
             val => {
               if (val.success) {
+                _category.accounts = [];
                 for (var j = 0; j < val.dataArray.length; j++) {
                   categoryAmt += parseFloat(val.dataArray[j].balance);
                   let _account = new Account();
@@ -46,11 +49,13 @@ export class HomeComponent implements OnInit {
                   _account.name = val.dataArray[j].account_name;
                   _account.category_id = val.dataArray[j].category_id;
                   _account.category_name = val.dataArray[j].category_name;
-                  _account.balance = val.dataArray[j].balance;
+                  _account.balance = this.formatAmountWithComma((Math.round(val.dataArray[j].balance! * 100) / 100).toFixed(2));
                   _account.created_date = val.dataArray[j].created_date;
                   _account.updated_date = val.dataArray[j].updated_date;
                   _account.user_id = Number(val.dataArray[j].user_id);
                   _account.is_equity = Boolean(Number(val.dataArray[j].is_equity));
+                  _account.is_mf = Boolean(Number(val.dataArray[j].is_mf));
+                  _category.accounts.push(_account);
                 }
               }
               _category.amount = this.formatAmountWithComma((Math.round(categoryAmt * 100) / 100).toFixed(2));
@@ -71,6 +76,16 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  showAccounts(data: Category) {
+    this.accounts = data.accounts!;
+    this.selectedCategory = data.name;
+    this.selectedAccount = "";
+  }
+
+  showTransactions(data: Account) {
+    
+  }
+
   formatAmountWithComma(amount: string): string {
     var amountVal = amount.split(".");
     var formattedAmount = Math.abs(parseInt(amountVal[0]));
@@ -81,6 +96,10 @@ export class HomeComponent implements OnInit {
     } else {
       return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText;
     }
+  }
+
+  getClassVal(value: any) {
+    return value.indexOf("-") != -1 ? 'negative-val' : 'positive-val'
   }
 
   handleTabChange(uri: any) {

@@ -9,6 +9,8 @@ export class AppService {
     API_GET_TOKEN: string = "getToken";
     API_GET_CATEGORY: string = "getCategoryUserId";
     API_GET_ACCOUNTS_BY_CATEGORY: string = "getAccountsByCategory";
+    API_GET_ALL_TRANS: string = "getTransByUser";
+    API_GET_TRANS_BY_ACCOUNT: string = "getTransByAccount";
     API_USER_LOGIN: string = "getUserDataEmailPassword";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
@@ -67,6 +69,16 @@ export class AppService {
 
     loginUser(apiFuncParams: any) {
         this.apiFuncName = this.API_USER_LOGIN;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
+    }
+    
+    getAllTrans(apiFuncParams: any) {
+        this.apiFuncName = this.API_GET_ALL_TRANS;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
+    }
+    
+    getTransByAccount(apiFuncParams: any) {
+        this.apiFuncName = this.API_GET_TRANS_BY_ACCOUNT;
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
     }
 

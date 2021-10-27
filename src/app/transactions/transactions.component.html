@@ -1,0 +1,5 @@
+<div class="transaction-item"*ngFor="let item of displayTrans; let i = index;">
+    <span id="trans_desc_{{i}}">{{item.description}}</span><br/>
+    <span id="trans_amount_{{i}}" class="money-val" [ngClass]="getClassVal(item.amount)">{{item.amount}}</span>
+</div>
+<div (click)="filterDisplayTrans(true)">Show More</div>

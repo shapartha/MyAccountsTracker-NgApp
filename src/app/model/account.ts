@@ -3,7 +3,7 @@ export class Account {
     public name?: string;
     public category_id?: string;
     public category_name?: string;
-    public balance?: number;
+    public balance?: string;
     public is_equity?: boolean;
     public is_mf?: boolean;
     public created_date?: string;
