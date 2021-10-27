@@ -57,3 +57,10 @@ span[id^="account_category_name"] {
     padding: 10px 15px;
     border-radius: 5px;
 }
+
+#clear-category, #clear-account {
+    cursor: pointer;
+    float: right;
+    color: purple;
+    text-decoration: underline;
+}

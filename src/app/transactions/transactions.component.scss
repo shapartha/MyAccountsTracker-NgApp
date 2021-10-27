@@ -1,0 +1,47 @@
+.transaction-item {
+    background: #fafad2;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+#transaction-footer {
+    background: black;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#transaction-footer:hover {
+    background: #aab3e1;
+    color: black;
+}
+
+div[id^="trans_acc_"] {
+    width: 33%;
+    text-align: left;
+    color: purple;
+}
+
+div[id^="trans_date_"] {
+    width: 33%;
+    text-align: center;
+}
+
+div[id^="trans_amount_"] {
+    width: 33%;
+    text-align: right;
+}
+
+span[id^="trans_desc_"] {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.negative-val {
+    color: #911e1e;
+}
+.positive-val {
+    color: #156410;
+}

@@ -13,7 +13,7 @@
             <span id="category_amount_{{i}}" class="money-val" [ngClass]="getClassVal(item.amount)">{{item.amount}}</span>
         </div>
       </div>
-      <div id="accounts-header" *ngIf="selectedCategory != ''">Showing Accounts for "{{selectedCategory}}" :</div>
+      <div id="accounts-header" *ngIf="selectedCategory != ''">Showing Accounts for "{{selectedCategory}}" : <span id="clear-category" (click)="clearCategory()">Clear Category</span></div>
       <div id="app-accounts-pane">
         <div class="account-item-vertical" (click)="showTransactions(item)" *ngFor="let item of accounts; let i = index;">
             <span id="account_name_{{i}}">{{item.name}}</span><br/>
@@ -21,7 +21,7 @@
             <span id="account_balance_{{i}}" class="money-val" [ngClass]="getClassVal(item.balance)">{{item.balance}}</span>
         </div>
       </div>
-      <div id="transactions-header" *ngIf="selectedAccount != ''">Showing Transactions for "{{selectedAccount}}" :</div>
-      <app-transactions></app-transactions>
+      <div id="transactions-header" *ngIf="selectedAccount != ''">Showing Transactions for "{{selectedAccount}}" : <span id="clear-account" *ngIf="selectedAccount != '' && selectedAccount != 'ALL'" (click)="clearAccount()">Clear Account</span></div>
+      <app-transactions [selectedAccount]=selectedAccount [selectedAccountObject]=selectedAccountObject></app-transactions>
     </div>
 </div>

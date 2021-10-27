@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { AppConstant } from './constant/app-const';
 import { Observable } from 'rxjs';
 
 @Injectable({providedIn:'root'})
@@ -47,6 +48,18 @@ export class AppService {
         let _apiJsonParams = "&apiKey=" + AppService.API_KEY;
         _apiJsonParams += "&apiToken=" + this.getAppToken;
         return _apiJsonParams;
+    }
+
+    formatAmountWithComma(amount: string): string {
+      var amountVal = amount.split(".");
+      var formattedAmount = Math.abs(parseInt(amountVal[0]));
+      var isNegative = parseInt(amountVal[0]) < 0 ? "-" : "";
+      var formattedAmountText = formattedAmount.toLocaleString();
+      if (amountVal.length > 1) {
+        return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText + "." + amountVal[1];
+      } else {
+        return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText;
+      }
     }
 
     invokeTokenCall() {
@@ -106,4 +119,13 @@ export class AppService {
         document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     }
     //#endregion Cookie
+    
+    formatDate(val: string): string {
+        let _temp = val.split("-");
+        return _temp[2] + "-" + this.getMonthName(_temp[1]) + "-" + _temp[0];
+    }
+
+    getMonthName(val: string): string {
+        return AppConstant.MONTH[parseInt(val)];
+    }
 }

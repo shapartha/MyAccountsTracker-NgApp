@@ -1,5 +1,9 @@
 <div class="transaction-item"*ngFor="let item of displayTrans; let i = index;">
-    <span id="trans_desc_{{i}}">{{item.description}}</span><br/>
-    <span id="trans_amount_{{i}}" class="money-val" [ngClass]="getClassVal(item.amount)">{{item.amount}}</span>
+    <span id="trans_desc_{{i}}">{{item.description}}</span>
+    <div style="display: flex;">
+        <div id="trans_acc_{{i}}">{{item.acc_name}}</div>
+        <div id="trans_date_{{i}}">{{item.date}}</div>
+        <div id="trans_amount_{{i}}" class="money-val" [ngClass]="getClassVal(item)">{{item.amount}}</div>
+    </div>
 </div>
-<div (click)="filterDisplayTrans(true)">Show More</div>
+<div id="transaction-footer" *ngIf="selectedAccount != '' && showMoreLabel==true" (click)="filterDisplayTrans(true)">Show More</div>

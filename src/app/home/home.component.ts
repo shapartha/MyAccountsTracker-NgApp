@@ -18,6 +18,7 @@ export class HomeComponent implements OnInit {
   headerTabs: HeaderTabs = new HeaderTabs();
   selectedCategory: string = "";
   selectedAccount: string = "ALL";
+  selectedAccountObject: Account = {};
   title = 'My Accounts Tracker';
   constructor(private router: Router, private appService: AppService) {
     let _loggedInUser = this.appService.getAppUserId;
@@ -32,6 +33,7 @@ export class HomeComponent implements OnInit {
 
   getAllCategories() {
     this.appService.getCategory('{"user_id":' + this.appService.getAppUserId + '}').subscribe(data => {
+      console.log("Fetch Category API Success");
       if (data.success) {
         for (var i = 0; i < data.dataArray.length; i++) {
           let categoryAmt = 0;
@@ -40,6 +42,7 @@ export class HomeComponent implements OnInit {
           _category.id = data.dataArray[i].category_id;
           this.appService.getAccountsByCategory('{"category_id":' + _category.id + ',"user_id":' + this.appService.getAppUserId + '}').then(
             val => {
+              console.log("Fetch Accounts API Success");
               if (val.success) {
                 _category.accounts = [];
                 for (var j = 0; j < val.dataArray.length; j++) {
@@ -80,22 +83,28 @@ export class HomeComponent implements OnInit {
     this.accounts = data.accounts!;
     this.selectedCategory = data.name;
     this.selectedAccount = "";
+    this.selectedAccountObject = {};
+  }
+
+  clearCategory() {
+    this.selectedAccount = "ALL";
+    this.selectedAccountObject = {};
+    this.selectedCategory = "";
+    this.accounts = [];
   }
 
   showTransactions(data: Account) {
-    
+    this.selectedAccount = data.name!;
+    this.selectedAccountObject = data;
+  }
+
+  clearAccount() {
+    this.selectedAccount = "";
+    this.selectedAccountObject = {};
   }
 
   formatAmountWithComma(amount: string): string {
-    var amountVal = amount.split(".");
-    var formattedAmount = Math.abs(parseInt(amountVal[0]));
-    var isNegative = parseInt(amountVal[0]) < 0 ? "-" : "";
-    var formattedAmountText = formattedAmount.toLocaleString();
-    if (amountVal.length > 1) {
-      return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText + "." + amountVal[1];
-    } else {
-      return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText;
-    }
+    return this.appService.formatAmountWithComma(amount);
   }
 
   getClassVal(value: any) {
