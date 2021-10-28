@@ -20,6 +20,7 @@ export class AppMenuItems {
 
     constructor() {
         this.menuItem = [
+            { name : "Add Transaction", path: "/add-trans" },
             { name : "Logout", path: "/logout" }
         ];
     }

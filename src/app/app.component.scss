@@ -1,6 +1,6 @@
 #float-menu {
     background-color: #d4d9d7;
-    position: fixed;
+    position: absolute;
     right: 5px;
     border-radius: 15px;
     padding: 10px;
@@ -38,7 +38,7 @@
 #loader-container {
     position: absolute;
     width: 100%;
-    height: 100%;
+    height: 250%;
     z-index: 100;
     background: white;
     opacity: 0.8;
@@ -55,6 +55,9 @@
     height: 120px;
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 100px;
 }
 
 @-webkit-keyframes spin {

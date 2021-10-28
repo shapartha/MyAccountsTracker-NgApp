@@ -95,6 +95,22 @@ export class AppService {
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
     }
 
+    showLoader() {
+        let _loaderDiv = document.getElementById("loader-container");
+        let _displayStatus = _loaderDiv!.style.display;
+        if (_displayStatus.toUpperCase() == "NONE") {
+            _loaderDiv!.style.display = '';
+        }
+    }
+
+    hideLoader() {
+        let _loaderDiv = document.getElementById("loader-container");
+        let _displayStatus = _loaderDiv!.style.display;
+        if (_displayStatus.toUpperCase() != "NONE") {
+            _loaderDiv!.style.display = 'none';
+        }
+    }
+
     //#region Cookie
     setCookie(name: string, value: any, days: number) {
         var expires = "";

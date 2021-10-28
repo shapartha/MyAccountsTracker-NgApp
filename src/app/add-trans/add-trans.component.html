@@ -1,0 +1,56 @@
+<mat-label id="addTransHeader">Add New Transaction</mat-label>
+<br><br>
+<form>
+    <mat-form-field appearance="fill">
+        <mat-label>Amount</mat-label>
+        <input type="number" min="0" matInput placeholder="Amount">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Description</mat-label>
+        <input type="text" matInput placeholder="Description">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Transaction Date</mat-label>
+        <input matInput [matDatepicker]="picker">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-slide-toggle [(ngModel)]="isTransferTrans" name="isTransferTrans">Is this transfer transaction ? </mat-slide-toggle>
+    <br>
+    <br>
+    <label id="label-trans-type">Select Transaction Type:</label>
+    <br>
+    <mat-radio-group aria-label="label-trans-type">
+        <mat-radio-button value="DEBIT">DEBIT</mat-radio-button><br>
+        <mat-radio-button value="CREDIT">CREDIT</mat-radio-button>
+    </mat-radio-group>
+    <br>
+    <br>
+    <mat-form-field appearance="fill">
+        <mat-label>From Account: </mat-label>
+        <mat-select>
+          <mat-option>None</mat-option>
+          <mat-option value="option1">Option 1</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill" *ngIf="isTransferTrans">
+        <mat-label>To Account: </mat-label>
+        <mat-select>
+          <mat-option>None</mat-option>
+          <mat-option value="option1">Option 1</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-slide-toggle [(ngModel)]="isRecurringTrans" name="isRecurringTrans">Is this monthly recurring transaction ? </mat-slide-toggle>
+    <br>
+    <br>
+    <mat-form-field appearance="fill" *ngIf="isRecurringTrans">
+        <mat-label>Select Day of Month: </mat-label>
+        <mat-select>
+          <mat-option>None</mat-option>
+          <mat-option value="option1">Option 1</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <button mat-raised-button color="primary">Save</button>
+    <button mat-raised-button color="accent">Save & Add More</button>
+    <button mat-raised-button color="warn" (click)="handleRoute('/home')">Cancel</button>
+</form>

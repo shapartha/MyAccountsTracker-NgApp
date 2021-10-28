@@ -32,6 +32,7 @@ export class HomeComponent implements OnInit {
   }
 
   getAllCategories() {
+    this.appService.showLoader();
     this.appService.getCategory('{"user_id":' + this.appService.getAppUserId + '}').subscribe(data => {
       console.log("Fetch Category API Success");
       if (data.success) {
@@ -60,17 +61,20 @@ export class HomeComponent implements OnInit {
                   _account.is_mf = Boolean(Number(val.dataArray[j].is_mf));
                   _category.accounts.push(_account);
                 }
+                _category.amount = this.formatAmountWithComma((Math.round(categoryAmt * 100) / 100).toFixed(2));
+                this.categories.push(_category);
               }
-              _category.amount = this.formatAmountWithComma((Math.round(categoryAmt * 100) / 100).toFixed(2));
-              this.categories.push(_category);
+              this.appService.hideLoader();
             },
             err => {
               console.error(err);
               this.handleTabChange({path: 'error'});
+              this.appService.hideLoader();
             }
           ).catch(fault => {
             console.error("Fault -> " + fault);
             this.handleTabChange({path: 'error'});
+            this.appService.hideLoader();
           });
         }
       } else {

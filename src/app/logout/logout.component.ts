@@ -22,6 +22,7 @@ export class LogoutComponent implements OnInit {
         this.handleTabChange({path: '/login'});
       }, 3000);
     }
+    this.appService.hideLoader();
   }
 
   handleTabChange(uri: any) {

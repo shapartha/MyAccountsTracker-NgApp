@@ -4,11 +4,13 @@ import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
 import { ErrorComponent } from './error/error.component';
+import { AddTransComponent } from './add-trans/add-trans.component';
 import { AppComponent } from './app.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent },
+  { path: 'add-trans', component: AddTransComponent },
   { path: 'logout', component: LogoutComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', component: ErrorComponent }

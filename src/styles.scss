@@ -1,7 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
 body {
     font-family: system-ui;
-    background: rgb(15, 7, 63);
+    background: #d3c48f;
     font-size: 14px;
-    margin: 8px;
+    margin: 8px !important;
+}
+
+.mat-form-field-label {
+    color: purple !important;
+}
+.mat-form-field {
+    display: flex !important;
+}
+.mat-form-field-infix {
+    width: 300px !important;
+}
+.mat-select-value {
+    color: #000;
 }

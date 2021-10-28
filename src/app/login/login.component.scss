@@ -28,3 +28,7 @@ body {
 #register, #reset {
     cursor: pointer;
 }
+
+input#reset:disabled, input#register:disabled {
+    cursor: not-allowed;
+}

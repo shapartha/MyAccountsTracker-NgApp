@@ -13,7 +13,7 @@ export class TransactionsComponent implements OnInit, OnChanges {
   @Input() selectedAccountObject: Account = {};
   transactions: Transaction[] = [];
   displayTrans: Transaction[] = [];
-  currentTransRecordCount: number = 30;
+  currentTransRecordCount: number = 0;
   showMoreLabel: boolean = false;
 
   constructor(private appService: AppService) { 
@@ -24,6 +24,7 @@ export class TransactionsComponent implements OnInit, OnChanges {
     this.transactions = [];
     if (this.selectedAccount == "ALL") {
       var user_id = this.appService.getAppUserId;
+      this.appService.showLoader();
       this.appService.getAllTrans('{"user_id": ' + user_id + '}')
       .then(data => {
         data.dataArray!.forEach((item: any) => {
@@ -36,17 +37,22 @@ export class TransactionsComponent implements OnInit, OnChanges {
           _trans.acc_name = item.account_name;
           this.transactions.push(_trans);
         });
+        this.currentTransRecordCount = 30;
         this.filterDisplayTrans();
+        this.appService.hideLoader();
       }, err => {
         this.handleRedirect("/error?err");
+        this.appService.hideLoader();
       }).catch(fault => {
         this.handleRedirect("/error?fault");
+        this.appService.hideLoader();
       });
     } else if (this.selectedAccount == "") {
       this.displayTrans = [];
     } else {
       var user_id = this.appService.getAppUserId;
       var acc_id = this.selectedAccountObject == null ? 0 : this.selectedAccountObject.id;
+      this.appService.showLoader();
       this.appService.getTransByAccount('{"user_id": ' + user_id + ', "account_id": ' + acc_id + '}')
       .then(data => {
         data.dataArray!.forEach((item: any) => {
@@ -62,10 +68,13 @@ export class TransactionsComponent implements OnInit, OnChanges {
         console.log("Fetch Transactions API Success");
         this.currentTransRecordCount = (this.transactions.length >= 30) ? 30 : this.transactions.length;
         this.filterDisplayTrans();
+        this.appService.hideLoader();
       }, err => {
         this.handleRedirect("/error?err");
+        this.appService.hideLoader();
       }).catch(fault => {
         this.handleRedirect("/error?fault");
+        this.appService.hideLoader();
       });
     }
   }
