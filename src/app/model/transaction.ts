@@ -12,6 +12,7 @@ export class Transaction {
     public cat_id?: string;
     public cat_name?: string;
     public user_id?: string;
+    public mfNav?: string;
     constructor() {
 
     }

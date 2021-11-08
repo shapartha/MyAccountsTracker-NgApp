@@ -15,6 +15,8 @@ export class AddTransComponent implements OnInit {
   isTransferTrans = false;
   isRecurringTrans = false;
   isMf = false;
+  isMfSchemeSelected = false;
+  selectedMfNavDate = "";
   trans: Transaction = {};
   mainAccList: Account[] = [];
   fromAcc: Account[] = [];
@@ -91,6 +93,10 @@ export class AddTransComponent implements OnInit {
         if (this.isRecurringTrans) {
           this.saveTransactionTrans.rec_date = this.reccDate;
         }
+        if (this.isMf) {
+          this.saveTransactionTrans.scheme_code = this.mfSchemeCode;
+          this.saveTransactionTrans.mf_nav = trans.mfNav;
+        }
       }
       this.saveTransaction.amount = trans.amount;
       this.saveTransaction.date = trans.date;
@@ -100,6 +106,10 @@ export class AddTransComponent implements OnInit {
       this.saveTransaction.user_id = trans.user_id;
       if (this.isRecurringTrans) {
         this.saveTransaction.rec_date = this.reccDate;
+      }
+      if (this.isMf) {
+        this.saveTransaction.scheme_code = this.mfSchemeCode;
+        this.saveTransaction.mf_nav = trans.mfNav;
       }
       this.showAlert("Saved Successfully", "Close");
       console.log(this.saveTransaction);
@@ -121,6 +131,10 @@ export class AddTransComponent implements OnInit {
       this.showAlert("From Account is invalid or blank", "Close");
     } else if (this.isTransferTrans && (this.toAccDetails == undefined || this.toAccDetails == null || this.toAccDetails == "")) {
       this.showAlert("To Account is invalid or blank", "Close");
+    } else if (this.isMf && (this.mfSchemeCode == undefined || this.mfSchemeCode == null || this.mfSchemeCode == "")) {
+      this.showAlert("For the selected MF Account, MF Scheme is invalid or blank", "Close");
+    } else if (this.isMfSchemeSelected && (this.trans.mfNav == undefined || this.trans.mfNav == null || parseInt(this.trans.mfNav) == 0)) {
+      this.showAlert("For the selected MF Scheme, NAV Amount is invalid or blank", "Close");
     } else if (this.isRecurringTrans && (this.reccDate == undefined || this.reccDate == null || this.reccDate == "")) {
       this.showAlert("Recurring Date is invalid or blank", "Close");
     } else {
@@ -129,7 +143,24 @@ export class AddTransComponent implements OnInit {
     return this.isValid;
   }
 
-  populateMfSchemes(_accId: any) {}
+  populateMfSchemes(_accId: any) {
+    this.mfSchemes = [];
+    this.appService.showLoader();
+    this.appService.getMfSchemesByAccount('{"account_id": ' + _accId + '}').then(data => {
+      data.dataArray.forEach((element: any) => {
+        this.mfSchemes.push(element);
+      });
+      this.appService.hideLoader();
+    }, err => {
+      console.error(err);
+      this.appService.hideLoader();
+      this.showAlert("Error loading Mutual Fund Schemes. Try refreshing the page.", "Close");
+    }).catch(fault => {
+      console.error(fault);
+      this.appService.hideLoader();
+      this.showAlert("Fault occurred while loading Mutual Fund schemes. Try refreshing the page.", "Close");
+    });
+  }
 
   onChangeFromAccount(_data: any) {
     let _frmAcc = this.checkMfByAccId(_data.value);
@@ -162,7 +193,7 @@ export class AddTransComponent implements OnInit {
     this.isMf = ((_frmAcc != undefined && _frmAcc.is_mf == "1") || _toAcc.is_mf == "1");
     if (_toAcc.is_mf == true) {
       _isThisMf = true;
-      this.populateMfSchemes(_frmAcc.id);
+      this.populateMfSchemes(_toAcc.id);
     } else {
       _isThisMf = false;
     }
@@ -184,6 +215,13 @@ export class AddTransComponent implements OnInit {
   }
 
   onChangeMfScheme(_data: any) {
-
+    if (_data.value !== undefined) {
+      this.isMfSchemeSelected = true;
+      let _selectedScheme = this.mfSchemes.find(obj => obj.scheme_code === _data.value);
+      this.selectedMfNavDate = _selectedScheme.nav_date;
+      this.trans.mfNav = _selectedScheme.nav_amt;
+    } else {
+      this.isMfSchemeSelected = false;
+    }
   }
 }
