@@ -29,6 +29,7 @@ export class AddTransComponent implements OnInit {
   saveTransaction: SaveTransaction = {};
   saveTransactionTrans: SaveTransaction = {};
   constructor(private appService: AppService, private router: Router, private snackBar: MatSnackBar) {
+    this.appService.showLoader();
   }
 
   ngOnInit(): void {
@@ -74,7 +75,6 @@ export class AddTransComponent implements OnInit {
   }
 
   saveTrans(trans: Transaction) {
-    debugger;
     this.saveTransaction = {};
     this.saveTransactionTrans = {};
     if (this.validateForm()) {
@@ -102,6 +102,7 @@ export class AddTransComponent implements OnInit {
         this.saveTransaction.rec_date = this.reccDate;
       }
       this.showAlert("Saved Successfully", "Close");
+      console.log(this.saveTransaction);
     } else {
     }
   }
@@ -128,23 +129,54 @@ export class AddTransComponent implements OnInit {
     return this.isValid;
   }
 
+  populateMfSchemes(_accId: any) {}
+
   onChangeFromAccount(_data: any) {
     let _frmAcc = this.checkMfByAccId(_data.value);
+    let _isThisMf = false;
+    let _toAcc = this.checkMfByAccId(this.toAccDetails);
+    this.isMf = ((_toAcc != undefined && _toAcc.is_mf == "1") || _frmAcc.is_mf == "1");
     if (_frmAcc.is_mf == true) {
-      this.isMf = true;
+      _isThisMf = true;
+      this.populateMfSchemes(_frmAcc.id);
     } else {
-      this.isMf = false;
+      _isThisMf = false;
     }
     this.toAcc = this.mainAccList.map(obj => ({ ...obj }));
-    let _spliceIdx = this.toAcc.findIndex(_acc => _acc.id === _frmAcc.id);
-    this.toAcc.splice(_spliceIdx, 1);
+    if (_isThisMf) {
+      let filteredArr = this.toAcc.filter(_acc => _acc.is_mf === "1");
+      filteredArr.forEach((element: any) => {
+        let _spliceIdx = this.toAcc.findIndex(_acc => _acc.id === element.id);
+        this.toAcc.splice(_spliceIdx, 1);
+      });
+    } else {
+      let _spliceIdx = this.toAcc.findIndex(_acc => _acc.id === _frmAcc.id);
+      this.toAcc.splice(_spliceIdx, 1);
+    }
   }
 
   onChangeToAccount(_data: any) {
+    let _toAcc = this.checkMfByAccId(_data.value);
+    let _isThisMf = false;
+    let _frmAcc = this.checkMfByAccId(this.fromAccDetails);
+    this.isMf = ((_frmAcc != undefined && _frmAcc.is_mf == "1") || _toAcc.is_mf == "1");
+    if (_toAcc.is_mf == true) {
+      _isThisMf = true;
+      this.populateMfSchemes(_frmAcc.id);
+    } else {
+      _isThisMf = false;
+    }
     this.fromAcc = this.mainAccList.map(obj => ({ ...obj }));
-    let _toAcc = _data.value;
-    let _spliceIdx = this.fromAcc.findIndex(_acc => _acc.id === _toAcc);
-    this.fromAcc.splice(_spliceIdx, 1);
+    if (_isThisMf) {
+      let filteredArr = this.fromAcc.filter(_acc => _acc.is_mf === "1");
+      filteredArr.forEach((element: any) => {
+        let _spliceIdx = this.fromAcc.findIndex(_acc => _acc.id === element.id);
+        this.fromAcc.splice(_spliceIdx, 1);
+      });
+    } else {
+      let _spliceIdx = this.fromAcc.findIndex(_acc => _acc.id === _toAcc.id);
+      this.fromAcc.splice(_spliceIdx, 1);
+    }
   }
 
   checkMfByAccId(_accId: string): any {

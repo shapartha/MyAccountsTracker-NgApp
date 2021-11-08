@@ -5,7 +5,7 @@ export class Account {
     public category_name?: string;
     public balance?: string;
     public is_equity?: boolean;
-    public is_mf?: boolean;
+    public is_mf?: boolean | string;
     public created_date?: string;
     public updated_date?: string;
     public user_id?: number;
