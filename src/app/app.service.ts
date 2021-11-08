@@ -13,6 +13,7 @@ export class AppService {
     API_GET_ALL_TRANS: string = "getTransByUser";
     API_GET_TRANS_BY_ACCOUNT: string = "getTransByAccount";
     API_USER_LOGIN: string = "getUserDataEmailPassword";
+    API_GET_ALL_ACCOUNTS: string = "getAccountsByUser";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -92,6 +93,11 @@ export class AppService {
     
     getTransByAccount(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_TRANS_BY_ACCOUNT;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
+    }
+    
+    getAllAccounts(apiFuncParams: any) {
+        this.apiFuncName = this.API_GET_ALL_ACCOUNTS;
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
     }
 

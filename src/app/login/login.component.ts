@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
     let _loggedInUser = this.appService.getAppUserId;
     if (_loggedInUser != undefined && !isNaN(_loggedInUser) && _loggedInUser != 0) {
       this.currentTab = "Home";
-      this.handleTabChange('/home');
+      this.handleTabChange('home');
     }
     this.appService.hideLoader();
   }

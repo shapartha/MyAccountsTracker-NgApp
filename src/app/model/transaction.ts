@@ -16,3 +16,18 @@ export class Transaction {
 
     }
 }
+
+export class SaveTransaction {
+    public desc?: string;
+    public type?: string;
+    public amount?: string;
+    public date?: string;
+    public acc_id?: string;
+    public user_id?: string;
+    public rec_date?: string;
+    public image_path?: string;
+    public scheme_code?: string;
+    public mf_nav?: string;
+
+    constructor() {}
+}

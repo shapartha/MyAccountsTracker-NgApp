@@ -3,54 +3,85 @@
 <form>
     <mat-form-field appearance="fill">
         <mat-label>Amount</mat-label>
-        <input type="number" min="0" matInput placeholder="Amount">
+        <input type="number" min="0" matInput placeholder="Amount" name="transAmount" required [(ngModel)]="trans.amount">
+        <mat-error *ngIf="trans.amount == null || trans.amount == undefined">
+            Valid amount required.
+        </mat-error>
     </mat-form-field>
     <mat-form-field appearance="fill">
         <mat-label>Description</mat-label>
-        <input type="text" matInput placeholder="Description">
+        <input type="text" matInput placeholder="Description" name="transDesc" required [(ngModel)]="trans.description">
+        <mat-error>
+            Valid description required.
+        </mat-error>
     </mat-form-field>
     <mat-form-field appearance="fill">
         <mat-label>Transaction Date</mat-label>
-        <input matInput [matDatepicker]="picker">
+        <input matInput [matDatepicker]="picker" required name="transDate" [(ngModel)]="trans.date">
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
+        <mat-error>
+           Valid date required.
+        </mat-error>
     </mat-form-field>
     <mat-slide-toggle [(ngModel)]="isTransferTrans" name="isTransferTrans">Is this transfer transaction ? </mat-slide-toggle>
-    <br>
-    <br>
-    <label id="label-trans-type">Select Transaction Type:</label>
-    <br>
-    <mat-radio-group aria-label="label-trans-type">
+    <br *ngIf="!isTransferTrans">
+    <br *ngIf="!isTransferTrans">
+    <label id="label-trans-type" *ngIf="!isTransferTrans">Select Transaction Type:</label>
+    <br *ngIf="!isTransferTrans">
+    <mat-radio-group aria-label="label-trans-type" name="transType" [(ngModel)]="trans.transType" *ngIf="!isTransferTrans">
         <mat-radio-button value="DEBIT">DEBIT</mat-radio-button><br>
         <mat-radio-button value="CREDIT">CREDIT</mat-radio-button>
     </mat-radio-group>
+    <mat-error *ngIf="!isTransferTrans && !isValid && (trans.transType == null || trans.transType == undefined)" style="font-size: 75%;">
+       Valid transaction type required.
+    </mat-error>  
     <br>
     <br>
     <mat-form-field appearance="fill">
         <mat-label>From Account: </mat-label>
-        <mat-select>
+        <mat-select [(ngModel)]="fromAccDetails" required name="fromAccDetails" (selectionChange)="onChangeFromAccount($event)">
           <mat-option>None</mat-option>
-          <mat-option value="option1">Option 1</mat-option>
+          <mat-option *ngFor="let item of fromAcc" value="{{item.id}}">{{item.name}}</mat-option>
         </mat-select>
+        <mat-error>
+            Valid from account required.
+        </mat-error>
     </mat-form-field>
     <mat-form-field appearance="fill" *ngIf="isTransferTrans">
         <mat-label>To Account: </mat-label>
-        <mat-select>
+        <mat-select [(ngModel)]="toAccDetails" required name="toAccDetails" (selectionChange)="onChangeToAccount($event)">
           <mat-option>None</mat-option>
-          <mat-option value="option1">Option 1</mat-option>
+          <mat-option *ngFor="let item of toAcc" value="{{item.id}}">{{item.name}}</mat-option>
         </mat-select>
+        <mat-error>
+            Valid to account required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill" *ngIf="isMf">
+        <mat-label>Select Mutual Fund Scheme: </mat-label>
+        <mat-select [(ngModel)]="mfSchemeCode" required name="mfSchemeCode" (selectionChange)="onChangeMfScheme($event)">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let item of mfSchemes" value="{{item.schemeCode}}">{{item.schemeName}}</mat-option>
+        </mat-select>
+        <mat-error>
+            Valid Mutual Fund scheme required.
+        </mat-error>
     </mat-form-field>
     <mat-slide-toggle [(ngModel)]="isRecurringTrans" name="isRecurringTrans">Is this monthly recurring transaction ? </mat-slide-toggle>
     <br>
     <br>
     <mat-form-field appearance="fill" *ngIf="isRecurringTrans">
         <mat-label>Select Day of Month: </mat-label>
-        <mat-select>
+        <mat-select [(ngModel)]="reccDate" required name="reccDate">
           <mat-option>None</mat-option>
-          <mat-option value="option1">Option 1</mat-option>
+          <mat-option *ngFor="let item of monthDays" value="{{item}}">{{item}}</mat-option>
         </mat-select>
+        <mat-error>
+            Valid reccuring date required.
+        </mat-error>
     </mat-form-field>
-    <button mat-raised-button color="primary">Save</button>
+    <button mat-raised-button color="primary" (click)="saveTrans(trans)">Save</button>
     <button mat-raised-button color="accent">Save & Add More</button>
     <button mat-raised-button color="warn" (click)="handleRoute('/home')">Cancel</button>
 </form>

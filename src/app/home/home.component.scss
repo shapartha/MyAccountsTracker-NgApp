@@ -27,9 +27,10 @@
     flex-wrap: wrap;
 }
 #app-main, #app-header {
-    display: inline-block;
+    display: block;
 }
 .header-tab {
+    display: inline-flex;
     border-radius: 5px;
     padding: 5px 15px;
     width: 120px;

@@ -41,10 +41,10 @@ export class TransactionsComponent implements OnInit, OnChanges {
         this.filterDisplayTrans();
         this.appService.hideLoader();
       }, err => {
-        this.handleRedirect("/error?err");
+        this.handleRedirect("error?err");
         this.appService.hideLoader();
       }).catch(fault => {
-        this.handleRedirect("/error?fault");
+        this.handleRedirect("error?fault");
         this.appService.hideLoader();
       });
     } else if (this.selectedAccount == "") {
@@ -70,10 +70,10 @@ export class TransactionsComponent implements OnInit, OnChanges {
         this.filterDisplayTrans();
         this.appService.hideLoader();
       }, err => {
-        this.handleRedirect("/error?err");
+        this.handleRedirect("error?err");
         this.appService.hideLoader();
       }).catch(fault => {
-        this.handleRedirect("/error?fault");
+        this.handleRedirect("error?fault");
         this.appService.hideLoader();
       });
     }
