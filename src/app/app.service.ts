@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({providedIn:'root'})
 export class AppService {
-    apiServerUrl: string = "https://shapartha-android-zone.000webhostapp.com/accounts-tracker/api";
+    apiServerUrl: string = "https://shapartha-android-zone.000webhostapp.com/accounts-tracker/api/";
     apiFuncName: string = "";
     API_GET_TOKEN: string = "getToken";
     API_GET_CATEGORY: string = "getCategoryUserId";
@@ -15,6 +15,8 @@ export class AppService {
     API_USER_LOGIN: string = "getUserDataEmailPassword";
     API_GET_ALL_ACCOUNTS: string = "getAccountsByUser";
     API_GET_MF_SCHEMES_BY_ACCOUNT: string = "getMfMappingByAccount";
+    API_SAVE_TRANSACTION: string = "addTransactionProcess";
+    API_UPLOAD_RECEIPT: string = "storeReceipt";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -106,6 +108,24 @@ export class AppService {
         this.apiFuncName = this.API_GET_ALL_ACCOUNTS;
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
     }
+    
+    saveTransaction(apiFuncParams: any) {
+        this.apiFuncName = this.API_SAVE_TRANSACTION;
+        let _apiFuncParams = JSON.parse(apiFuncParams);
+        let _formattedDateStr = _apiFuncParams.date.split("T")[0];
+        _apiFuncParams.date = _formattedDateStr;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(JSON.stringify(_apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+    }
+    
+    uploadReceiptImage(apiFuncParams: any) : Observable<any> {
+        this.apiFuncName = this.API_UPLOAD_RECEIPT;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        return this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams(),
+        {'headers': headers});
+    }
 
     showLoader() {
         let _loaderDiv = document.getElementById("loader-container");
@@ -151,6 +171,11 @@ export class AppService {
     formatDate(val: string): string {
         let _temp = val.split("-");
         return _temp[2] + "-" + this.getMonthName(_temp[1]) + "-" + _temp[0];
+    }
+
+    getDate(): string {
+        let _currDate = new Date();
+        return _currDate.getFullYear() + "-" + (_currDate.getMonth() + 1) + "-" + _currDate.getDate();
     }
 
     getMonthName(val: string): string {

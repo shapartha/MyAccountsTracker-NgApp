@@ -21,6 +21,10 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatFileUploadModule } from 'angular-material-fileupload';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
 
 @NgModule({
   declarations: [
@@ -46,7 +50,10 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatRadioModule,
     MatSelectModule,
     MatButtonModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatFileUploadModule,
+    MatToolbarModule,
+    NoopAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

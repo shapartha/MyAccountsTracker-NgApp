@@ -88,6 +88,22 @@
             Valid reccuring date required.
         </mat-error>
     </mat-form-field>
+
+    <mat-form-field appearance="fill">
+        <mat-label>Upload Transaction Receipt: </mat-label>
+        <div>
+            <mat-toolbar>
+            <input matInput [value]="fileName" readonly />
+            <button mat-flat-button color="primary" (click)="fileUpload.click()">Select</button>
+            </mat-toolbar>
+            <input type="file" id="fileInput" (change)="selectFile($event)" name="fileInput" #fileUpload/>
+        </div>
+        <img id="upload-preview" *ngIf="currentFile" [src]="previewUrl" alt="your image" />
+        <mat-error *ngIf="fileUploadMessage" class="message">
+            {{ fileUploadMessage }}
+        </mat-error>
+    </mat-form-field>
+
     <button mat-raised-button color="primary" (click)="saveTrans(trans)">Save</button>
     <button mat-raised-button color="accent">Save & Add More</button>
     <button mat-raised-button color="warn" (click)="handleRoute('/home')">Cancel</button>

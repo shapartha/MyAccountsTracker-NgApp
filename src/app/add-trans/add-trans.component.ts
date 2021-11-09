@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AppService } from '../app.service';
 import { Router } from "@angular/router"
 import { SaveTransaction, Transaction } from '../model/transaction';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Account } from '../model/account';
-import { AppConstant } from '../constant/app-const';
+import { Observable } from 'rxjs';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-add-trans',
@@ -12,6 +13,11 @@ import { AppConstant } from '../constant/app-const';
   styleUrls: ['./add-trans.component.scss']
 })
 export class AddTransComponent implements OnInit {
+
+  currentFile?: File;
+  fileUploadMessage = '';
+  fileName = 'Select File';
+
   isTransferTrans = false;
   isRecurringTrans = false;
   isMf = false;
@@ -30,9 +36,50 @@ export class AddTransComponent implements OnInit {
   isValid: boolean = true;
   saveTransaction: SaveTransaction = {};
   saveTransactionTrans: SaveTransaction = {};
-  constructor(private appService: AppService, private router: Router, private snackBar: MatSnackBar) {
+  previewUrl: any;
+  fileBitmap: any;
+
+  constructor(private appService: AppService, private router: Router, private snackBar: MatSnackBar, private domSanitizer: DomSanitizer) {
     this.appService.showLoader();
   }
+
+  //#region File Upload
+  selectFile(event: any): void {
+    if (event.target.files && event.target.files[0]) {
+      const file: File = event.target.files[0];
+      this.currentFile = file;
+      this.fileName = this.currentFile.name;
+      this.previewUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(file));
+      var reader = new FileReader();
+      reader.onload = this._handleReaderLoaded.bind(this);
+      reader.readAsBinaryString(file);
+    }
+  }
+
+  _handleReaderLoaded(readerEvt: any) {
+    var binaryString = readerEvt.target.result;
+    this.fileBitmap = btoa(binaryString);
+    console.log(this.fileBitmap);
+  }
+
+  upload() {
+    let _inpObj = {
+      bitmap_data: this.fileBitmap,
+      created_at: this.appService.getDate()
+    }
+    this.appService.uploadReceiptImage(JSON.stringify(_inpObj)).subscribe(data => {
+      console.log("Data -> " + JSON.stringify(data));
+      this.saveTransaction.image_path = data.dataArray[0].receipt_id;
+      if (this.isTransferTrans) {
+        this.saveTransactionTrans.image_path = data.dataArray[0].receipt_id;
+      }
+      this.uploadWithoutImage();
+    }, err => {
+      console.error("Error -> " + err);
+      this.showAlert("Image Upload Failed due to Error", "Close");
+    });
+  }
+  //#endregion File Upload
 
   ngOnInit(): void {
     for (var i = 1; i <= 28; i++) {
@@ -111,10 +158,40 @@ export class AddTransComponent implements OnInit {
         this.saveTransaction.scheme_code = this.mfSchemeCode;
         this.saveTransaction.mf_nav = trans.mfNav;
       }
-      this.showAlert("Saved Successfully", "Close");
-      console.log(this.saveTransaction);
-    } else {
+      if (this.currentFile) {
+        this.upload();
+      } else {
+        this.uploadWithoutImage();
+      }
     }
+  }
+
+  uploadWithoutImage() {
+    this.invokeSaveTransactionApi(this.saveTransaction);
+    if (this.isTransferTrans) {
+      this.invokeSaveTransactionApi(this.saveTransactionTrans);
+    }
+  }
+
+  invokeSaveTransactionApi(_inpData: any) {
+    this.appService.showLoader();
+    this.appService.saveTransaction(JSON.stringify(_inpData)).then(resp => {
+      if (resp.response == "200") {
+        this.trans.amount = undefined;
+        this.showAlert("Saved Successfully", "Close");
+      } else {
+        this.showAlert("Some error occurred while saving. Please try again.", "Close");
+      }
+      this.appService.hideLoader();
+    }, err => {
+      console.error("Error -> " + err);
+      this.appService.hideLoader();
+      this.showAlert("Error Occurred while Saving ! Please try again.", "Close");
+    }).catch(fault => {
+      console.error("Fault -> " + fault);
+      this.appService.hideLoader();
+      this.showAlert("Fault Occurred while Saving ! Please try again.", "Close");
+    });
   }
 
   validateForm(): any {
