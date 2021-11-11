@@ -21,6 +21,7 @@ export class AppMenuItems {
     constructor() {
         this.menuItem = [
             { name : "Add Transaction", path: "add-trans" },
+            { name : "Add Account", path: "add-account" },
             { name : "Add Category", path: "add-category" },
             { name : "Logout", path: "logout" }
         ];

@@ -7,11 +7,13 @@ import { ErrorComponent } from './error/error.component';
 import { AddTransComponent } from './add-trans/add-trans.component';
 import { AddCategoryComponent } from './add-category/add-category.component';
 import { AuthService } from './auth.service';
+import { AddAccountComponent } from './add-account/add-account.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent, canActivate : [AuthService]  },
   { path: 'add-trans', component: AddTransComponent, canActivate : [AuthService]  },
+  { path: 'add-account', component: AddAccountComponent, canActivate : [AuthService]  },
   { path: 'add-category', component: AddCategoryComponent, canActivate : [AuthService] },
   { path: 'logout', component: LogoutComponent, canActivate : [AuthService] },
   { path: '', redirectTo: 'login', pathMatch: 'full' },

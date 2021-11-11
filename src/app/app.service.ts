@@ -19,6 +19,7 @@ export class AppService {
     API_SAVE_TRANSACTION: string = "addTransactionProcess";
     API_UPLOAD_RECEIPT: string = "storeReceipt";
     API_SAVE_CATEGORY: string = "storeCategory";
+    API_SAVE_ACCOUNT: string = "storeAccount";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -131,6 +132,24 @@ export class AppService {
     
     saveCategory(apiFuncParams: any) : Promise<any> {
         this.apiFuncName = this.API_SAVE_CATEGORY;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
+    }
+    
+    saveAccount(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_SAVE_ACCOUNT;
         const headers = { 
             'content-type': 'application/x-www-form-urlencoded',
             'accept': 'application/json'

@@ -1,0 +1,30 @@
+<mat-label id="addAccountHeader">Add New Account</mat-label>
+<br><br>
+<form>
+    <mat-form-field appearance="fill">
+        <mat-label>Account Name</mat-label>
+        <input type="text" matInput placeholder="Enter Account Name" name="accountName" required [(ngModel)]="saveAccount.account_name">
+        <mat-error>
+            Valid account name required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Category</mat-label>
+        <mat-select [(ngModel)]="saveAccount.category_id" required name="categoryDetails">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let item of categories" value="{{item.category_id}}">{{item.category_name}}</mat-option>
+        </mat-select>
+        <mat-error>
+            Valid from account required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Initial Balance</mat-label>
+        <input type="number" matInput placeholder="Enter Initial Balance" name="accountBal" required [(ngModel)]="saveAccount.balance">
+        <mat-error>
+            Valid account balance required.
+        </mat-error>
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="saveAccountDetails()">Save</button>
+    <button mat-raised-button color="warn" (click)="handleRoute('/home')">Cancel</button>
+</form>

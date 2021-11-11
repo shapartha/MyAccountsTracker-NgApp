@@ -27,6 +27,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AddCategoryComponent } from './add-category/add-category.component';
 import { AppInterceptor } from './app.interceptor';
 import { AuthService } from './auth.service';
+import { AddAccountComponent } from './add-account/add-account.component';
 
 
 @NgModule({
@@ -38,7 +39,8 @@ import { AuthService } from './auth.service';
     LogoutComponent,
     TransactionsComponent,
     AddTransComponent,
-    AddCategoryComponent
+    AddCategoryComponent,
+    AddAccountComponent
   ],
   imports: [
     BrowserModule,

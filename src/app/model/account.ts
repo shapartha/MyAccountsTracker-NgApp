@@ -14,3 +14,14 @@ export class Account {
         
     }
 }
+
+export class SaveAccount {
+    public account_name?: string;
+    public category_id?: string;
+    public user_id?: string;
+    public balance?: string | number;
+    public is_mf?: string | boolean;
+    public is_equity?: string | boolean;
+
+    constructor() {}
+}
