@@ -1,0 +1,13 @@
+<mat-label id="addCatHeader">Add New Category</mat-label>
+<br><br>
+<form>
+    <mat-form-field appearance="fill">
+        <mat-label>Category Name</mat-label>
+        <input type="text" matInput placeholder="Enter Category" name="categoryName" required [(ngModel)]="categoryName">
+        <mat-error>
+            Valid category name required.
+        </mat-error>
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="saveCategory()">Save</button>
+    <button mat-raised-button color="warn" (click)="handleRoute('/home')">Cancel</button>
+</form>

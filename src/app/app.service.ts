@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AppConstant } from './constant/app-const';
 import { Observable } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({providedIn:'root'})
 export class AppService {
@@ -17,11 +18,12 @@ export class AppService {
     API_GET_MF_SCHEMES_BY_ACCOUNT: string = "getMfMappingByAccount";
     API_SAVE_TRANSACTION: string = "addTransactionProcess";
     API_UPLOAD_RECEIPT: string = "storeReceipt";
+    API_SAVE_CATEGORY: string = "storeCategory";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private snackBar: MatSnackBar) {
         if (this.getAppToken == "") {
             this.invokeTokenCall();
         }
@@ -126,6 +128,24 @@ export class AppService {
         return this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams(),
         {'headers': headers});
     }
+    
+    saveCategory(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_SAVE_CATEGORY;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
+    }
 
     showLoader() {
         let _loaderDiv = document.getElementById("loader-container");
@@ -189,5 +209,9 @@ export class AppService {
 
     getMonthName(val: string): string {
         return AppConstant.MONTH[parseInt(val)];
+    }
+
+    showAlert(msg: string, actionTxt: string) {
+      this.snackBar.open(msg, actionTxt);
     }
 }

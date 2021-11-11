@@ -2,9 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { AppService } from '../app.service';
 import { Router } from "@angular/router"
 import { SaveTransaction, Transaction } from '../model/transaction';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Account } from '../model/account';
-import { Observable } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
@@ -40,7 +38,7 @@ export class AddTransComponent implements OnInit {
   fileBitmap: any;
   isGoBack = false;
 
-  constructor(private appService: AppService, private router: Router, private snackBar: MatSnackBar, private domSanitizer: DomSanitizer) {
+  constructor(private appService: AppService, private router: Router, private domSanitizer: DomSanitizer) {
     this.appService.showLoader();
   }
 
@@ -77,7 +75,7 @@ export class AddTransComponent implements OnInit {
       this.uploadWithoutImage();
     }, err => {
       console.error("Error -> " + err);
-      this.showAlert("Image Upload Failed due to Error", "Close");
+      this.appService.showAlert("Image Upload Failed due to Error", "Close");
     });
   }
   //#endregion File Upload
@@ -118,10 +116,6 @@ export class AddTransComponent implements OnInit {
 
   handleRoute(uri: any) {
     this.router.navigate([uri]);
-  }
-
-  showAlert(msg: string, actionTxt: string) {
-    this.snackBar.open(msg, actionTxt);
   }
 
   saveTransAndGoBack(trans: Transaction) {
@@ -184,9 +178,9 @@ export class AddTransComponent implements OnInit {
     this.appService.saveTransaction(JSON.stringify(_inpData)).then(resp => {
       if (resp.response == "200") {
         this.trans.amount = undefined;
-        this.showAlert("Saved Successfully", "Close");
+        this.appService.showAlert("Saved Successfully", "Close");
       } else {
-        this.showAlert("Some error occurred while saving. Please try again.", "Close");
+        this.appService.showAlert("Some error occurred while saving. Please try again.", "Close");
       }
       this.appService.hideLoader();
       if (this.isGoBack) {
@@ -196,34 +190,34 @@ export class AddTransComponent implements OnInit {
     }, err => {
       console.error("Error -> " + err);
       this.appService.hideLoader();
-      this.showAlert("Error Occurred while Saving ! Please try again.", "Close");
+      this.appService.showAlert("Error Occurred while Saving ! Please try again.", "Close");
     }).catch(fault => {
       console.error("Fault -> " + fault);
       this.appService.hideLoader();
-      this.showAlert("Fault Occurred while Saving ! Please try again.", "Close");
+      this.appService.showAlert("Fault Occurred while Saving ! Please try again.", "Close");
     });
   }
 
   validateForm(): any {
     this.isValid = false;
     if (this.trans.amount == undefined || this.trans.amount == null) {
-      this.showAlert("Amount cannot be blank or empty", "Close");
+      this.appService.showAlert("Amount cannot be blank or empty", "Close");
     } else if (this.trans.description == undefined || this.trans.description?.length! < 3) {
-      this.showAlert("Description must be atleast 3 characters", "Close");
+      this.appService.showAlert("Description must be atleast 3 characters", "Close");
     } else if (!this.isTransferTrans && (this.trans.transType == undefined || this.trans.transType == null)) {
-      this.showAlert("Please select the transaction type", "Close");
+      this.appService.showAlert("Please select the transaction type", "Close");
     } else if (this.trans.date == undefined || this.trans.date == null) {
-      this.showAlert("Date is invalid or blank", "Close");
+      this.appService.showAlert("Date is invalid or blank", "Close");
     } else if (this.fromAccDetails == undefined || this.fromAccDetails == null || this.fromAccDetails == "") {
-      this.showAlert("From Account is invalid or blank", "Close");
+      this.appService.showAlert("From Account is invalid or blank", "Close");
     } else if (this.isTransferTrans && (this.toAccDetails == undefined || this.toAccDetails == null || this.toAccDetails == "")) {
-      this.showAlert("To Account is invalid or blank", "Close");
+      this.appService.showAlert("To Account is invalid or blank", "Close");
     } else if (this.isMf && (this.mfSchemeCode == undefined || this.mfSchemeCode == null || this.mfSchemeCode == "")) {
-      this.showAlert("For the selected MF Account, MF Scheme is invalid or blank", "Close");
+      this.appService.showAlert("For the selected MF Account, MF Scheme is invalid or blank", "Close");
     } else if (this.isMfSchemeSelected && (this.trans.mfNav == undefined || this.trans.mfNav == null || parseInt(this.trans.mfNav) == 0)) {
-      this.showAlert("For the selected MF Scheme, NAV Amount is invalid or blank", "Close");
+      this.appService.showAlert("For the selected MF Scheme, NAV Amount is invalid or blank", "Close");
     } else if (this.isRecurringTrans && (this.reccDate == undefined || this.reccDate == null || this.reccDate == "")) {
-      this.showAlert("Recurring Date is invalid or blank", "Close");
+      this.appService.showAlert("Recurring Date is invalid or blank", "Close");
     } else {
       this.isValid = true;
     }
@@ -241,11 +235,11 @@ export class AddTransComponent implements OnInit {
     }, err => {
       console.error(err);
       this.appService.hideLoader();
-      this.showAlert("Error loading Mutual Fund Schemes. Try refreshing the page.", "Close");
+      this.appService.showAlert("Error loading Mutual Fund Schemes. Try refreshing the page.", "Close");
     }).catch(fault => {
       console.error(fault);
       this.appService.hideLoader();
-      this.showAlert("Fault occurred while loading Mutual Fund schemes. Try refreshing the page.", "Close");
+      this.appService.showAlert("Fault occurred while loading Mutual Fund schemes. Try refreshing the page.", "Close");
     });
   }
 
