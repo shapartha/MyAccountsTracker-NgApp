@@ -38,6 +38,7 @@ export class AddTransComponent implements OnInit {
   saveTransactionTrans: SaveTransaction = {};
   previewUrl: any;
   fileBitmap: any;
+  isGoBack = false;
 
   constructor(private appService: AppService, private router: Router, private snackBar: MatSnackBar, private domSanitizer: DomSanitizer) {
     this.appService.showLoader();
@@ -123,6 +124,11 @@ export class AddTransComponent implements OnInit {
     this.snackBar.open(msg, actionTxt);
   }
 
+  saveTransAndGoBack(trans: Transaction) {
+    this.isGoBack = true;
+    this.saveTrans(trans);
+  }
+
   saveTrans(trans: Transaction) {
     this.saveTransaction = {};
     this.saveTransactionTrans = {};
@@ -131,7 +137,7 @@ export class AddTransComponent implements OnInit {
       trans.user_id = this.appService.getAppUserId.toString();
       if (this.isTransferTrans) {
         this.saveTransactionTrans.amount = trans.amount;
-        this.saveTransactionTrans.date = trans.date;
+        this.saveTransactionTrans.date = this.appService.convertDate(trans.date);
         this.saveTransactionTrans.desc = trans.description;
         this.saveTransactionTrans.type = "CREDIT";
         trans.transType = "DEBIT";
@@ -146,7 +152,7 @@ export class AddTransComponent implements OnInit {
         }
       }
       this.saveTransaction.amount = trans.amount;
-      this.saveTransaction.date = trans.date;
+      this.saveTransaction.date = this.appService.convertDate(trans.date);
       this.saveTransaction.desc = trans.description;
       this.saveTransaction.type = trans.transType;
       this.saveTransaction.acc_id = trans.acc_id;
@@ -183,6 +189,10 @@ export class AddTransComponent implements OnInit {
         this.showAlert("Some error occurred while saving. Please try again.", "Close");
       }
       this.appService.hideLoader();
+      if (this.isGoBack) {
+        this.handleRoute("/home");
+        this.isGoBack = false;
+      }
     }, err => {
       console.error("Error -> " + err);
       this.appService.hideLoader();

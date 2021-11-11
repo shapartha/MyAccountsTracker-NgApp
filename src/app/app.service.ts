@@ -178,6 +178,15 @@ export class AppService {
         return _currDate.getFullYear() + "-" + (_currDate.getMonth() + 1) + "-" + _currDate.getDate();
     }
 
+    convertDate(_date: any) {
+        function pad(s: any) { return (s < 10) ? '0' + s : s; }
+        var d = new Date();
+        if (_date !== undefined) {
+            d = new Date(_date);
+        }
+        return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('-')
+    }
+
     getMonthName(val: string): string {
         return AppConstant.MONTH[parseInt(val)];
     }

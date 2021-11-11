@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -24,6 +24,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatFileUploadModule } from 'angular-material-fileupload';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { AddCategoryComponent } from './add-category/add-category.component';
+import { AppInterceptor } from './app.interceptor';
+import { AuthService } from './auth.service';
 
 
 @NgModule({
@@ -34,7 +37,8 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
     LoginComponent,
     LogoutComponent,
     TransactionsComponent,
-    AddTransComponent
+    AddTransComponent,
+    AddCategoryComponent
   ],
   imports: [
     BrowserModule,
@@ -55,7 +59,10 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
     MatToolbarModule,
     NoopAnimationsModule
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AppInterceptor, multi: true },
+    AuthService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

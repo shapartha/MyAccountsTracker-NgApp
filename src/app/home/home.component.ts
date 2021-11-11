@@ -21,14 +21,8 @@ export class HomeComponent implements OnInit {
   selectedAccountObject: Account = {};
   title = 'My Accounts Tracker';
   constructor(private router: Router, private appService: AppService) {
-    let _loggedInUser = this.appService.getAppUserId;
-    if (_loggedInUser == undefined || isNaN(_loggedInUser) || _loggedInUser == 0) {
-      this.currentTab = "Login";
-      this.handleTabChange({path: '/login'});
-    } else {
-      this.currentTab = "Home";
-      this.getAllCategories();
-    }
+    this.currentTab = "Home";
+    this.getAllCategories();
   }
 
   getAllCategories() {

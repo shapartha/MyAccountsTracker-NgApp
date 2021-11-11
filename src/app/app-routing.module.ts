@@ -5,13 +5,15 @@ import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
 import { ErrorComponent } from './error/error.component';
 import { AddTransComponent } from './add-trans/add-trans.component';
-import { AppComponent } from './app.component';
+import { AddCategoryComponent } from './add-category/add-category.component';
+import { AuthService } from './auth.service';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'home', component: HomeComponent },
-  { path: 'add-trans', component: AddTransComponent },
-  { path: 'logout', component: LogoutComponent },
+  { path: 'home', component: HomeComponent, canActivate : [AuthService]  },
+  { path: 'add-trans', component: AddTransComponent, canActivate : [AuthService]  },
+  { path: 'add-category', component: AddCategoryComponent, canActivate : [AuthService] },
+  { path: 'logout', component: LogoutComponent, canActivate : [AuthService] },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', component: ErrorComponent }
 ];
