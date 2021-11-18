@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppService } from '../app.service';
 import { SaveAccount } from '../model/account';
+import { SaveTransaction } from '../model/transaction';
 
 @Component({
   selector: 'app-add-account',
@@ -49,11 +50,33 @@ export class AddAccountComponent implements OnInit {
     this.appService.saveAccount([this.saveAccount]).then(data => {
       if (data[0].response === "200") {
         this.appService.showAlert("Account : '" + this.saveAccount.account_name + "' created successfully", "Close");
-        this.saveAccount = new SaveAccount();
+        this.appService.getAccountsByName(JSON.stringify({account_name: this.saveAccount.account_name, user_id: this.saveAccount.user_id})).then(data => {
+          let _inpData = new SaveTransaction();
+          _inpData.amount = this.saveAccount.balance;
+          _inpData.acc_id = data.dataArray[0].account_id;
+          _inpData.date = this.appService.getDate();
+          _inpData.desc = "Initial Balance";
+          _inpData.type = "CREDIT";
+          _inpData.user_id = this.appService.getAppUserId.toString();
+          this.appService.saveTransaction(JSON.stringify(_inpData)).then(resp => {
+            if (resp.response !== "200") {
+              this.appService.showAlert("Some error occurred while saving Transaction. Please try again.", "Close");
+            }
+            this.appService.hideLoader();
+            this.saveAccount = new SaveAccount();
+          }, err => {
+            console.error("Error -> " + err);
+            this.appService.hideLoader();
+            this.appService.showAlert("Error Occurred while Saving Transaction ! Please try again.", "Close");
+          }).catch(fault => {
+            console.error("Fault -> " + fault);
+            this.appService.hideLoader();
+            this.appService.showAlert("Fault Occurred while Saving Transaction ! Please try again.", "Close");
+          });
+        });
       } else {
         this.appService.showAlert("Error Occurred : " + data[0].response + " | " + data[0].responseDescription, "Close");
       }
-      this.appService.hideLoader();
     }, err => {
       console.error(err);
       this.appService.hideLoader();

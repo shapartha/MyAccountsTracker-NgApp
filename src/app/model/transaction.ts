@@ -9,10 +9,13 @@ export class Transaction {
     public updatedDate?: string;
     public acc_id?: string;
     public acc_name?: string;
+    public acc_balance?: string;
     public cat_id?: string;
     public cat_name?: string;
     public user_id?: string;
     public mfNav?: string;
+    public is_equity?: string;
+    public is_mf?: string;
     constructor() {
 
     }

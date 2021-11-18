@@ -8,20 +8,31 @@
     </div>
     <div id="app-main">
       <div id="app-categories-pane">
-        <div class="category-item-vertical" (click)="showAccounts(item)" *ngFor="let item of categories; let i = index;">
+        <div class="category-item-vertical" (click)="showAccounts(item)" *ngFor="let item of categories; let i = index;" (contextmenu)="onContextMenu($event, item, 'Category')">
             <span id="category_name_{{i}}">{{item.name}}</span><br/>
             <span id="category_amount_{{i}}" class="money-val" [ngClass]="getClassVal(item.amount)">{{item.amount}}</span>
         </div>
       </div>
       <div id="accounts-header" *ngIf="selectedCategory != ''">Showing Accounts for "{{selectedCategory}}" : <span id="clear-category" (click)="clearCategory()">Clear Category</span></div>
       <div id="app-accounts-pane">
-        <div class="account-item-vertical" (click)="showTransactions(item)" *ngFor="let item of accounts; let i = index;">
+        <div class="account-item-vertical" (click)="showTransactions(item)" *ngFor="let item of accounts; let i = index;" (contextmenu)="onContextMenu($event, item, 'Account')">
             <span id="account_name_{{i}}">{{item.name}}</span><br/>
             <span id="account_category_name_{{i}}">{{item.category_name}}</span><br/>
             <span id="account_balance_{{i}}" class="money-val" [ngClass]="getClassVal(item.balance)">{{item.balance}}</span>
         </div>
       </div>
       <div id="transactions-header" *ngIf="selectedAccount != ''">Showing Transactions for "{{selectedAccount}}" : <span id="clear-account" *ngIf="selectedAccount != '' && selectedAccount != 'ALL'" (click)="clearAccount()">Clear Account</span></div>
-      <app-transactions [selectedAccount]=selectedAccount [selectedAccountObject]=selectedAccountObject></app-transactions>
+      <app-transactions [selectedAccount]=selectedAccount [selectedAccountObject]=selectedAccountObject [(refreshTransactions)]="refreshTransactions"
+      (onContextMenuEvent)="onContextMenuEvent($event)"></app-transactions>
     </div>
 </div>
+
+
+<div style="visibility: hidden; position: fixed" [style.left]="menuTopLeftPosition.x" [style.top]="menuTopLeftPosition.y" [matMenuTriggerFor]="contextMenu">
+</div>
+<mat-menu #contextMenu="matMenu">
+	<ng-template matMenuContent let-item="item">
+		<button mat-menu-item (click)="updateItem(item)">Update</button>
+		<button mat-menu-item (click)="deleteItem(item)">Delete</button>
+	</ng-template>
+</mat-menu>

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { AppService } from '../app.service';
 import { Transaction } from '../model/transaction';
 import { Account } from '../model/account';
@@ -11,10 +11,13 @@ import { Account } from '../model/account';
 export class TransactionsComponent implements OnInit, OnChanges {
   @Input() selectedAccount: string = "ALL";
   @Input() selectedAccountObject: Account = {};
+  @Output() onContextMenuEvent = new EventEmitter();
   transactions: Transaction[] = [];
   displayTrans: Transaction[] = [];
   currentTransRecordCount: number = 0;
   showMoreLabel: boolean = false;
+  @Input() refreshTransactions: boolean = false;
+  @Output() refreshTransactionsChange = new EventEmitter();
 
   constructor(private appService: AppService) { 
     this.populateTransactions();
@@ -27,6 +30,11 @@ export class TransactionsComponent implements OnInit, OnChanges {
       this.appService.showLoader();
       this.appService.getAllTrans('{"user_id": ' + user_id + '}')
       .then(data => {
+        if (data.dataArray === undefined) {
+          this.displayTrans = [];
+          this.appService.hideLoader();
+          return;
+        }
         data.dataArray!.forEach((item: any) => {
           let _trans = new Transaction();
           _trans.id = item.trans_id;
@@ -35,6 +43,13 @@ export class TransactionsComponent implements OnInit, OnChanges {
           _trans.amount = this.appService.formatAmountWithComma((Math.round(item.trans_amount! * 100) / 100).toFixed(2));
           _trans.date = this.appService.formatDate(item.trans_date);
           _trans.acc_name = item.account_name;
+          _trans.is_mf = item.is_mf;
+          _trans.is_equity = item.is_equity;
+          _trans.acc_id = item.account_id;
+          _trans.acc_name = item.account_name;
+          _trans.cat_id = item.category_id;
+          _trans.user_id = item.user_id;
+          _trans.acc_balance = item.balance;
           this.transactions.push(_trans);
         });
         this.currentTransRecordCount = 30;
@@ -55,6 +70,11 @@ export class TransactionsComponent implements OnInit, OnChanges {
       this.appService.showLoader();
       this.appService.getTransByAccount('{"user_id": ' + user_id + ', "account_id": ' + acc_id + '}')
       .then(data => {
+        if (data.dataArray === undefined) {
+          this.displayTrans = [];
+          this.appService.hideLoader();
+          return;
+        }
         data.dataArray!.forEach((item: any) => {
           let _trans = new Transaction();
           _trans.id = item.trans_id;
@@ -63,6 +83,13 @@ export class TransactionsComponent implements OnInit, OnChanges {
           _trans.amount = this.appService.formatAmountWithComma((Math.round(item.trans_amount! * 100) / 100).toFixed(2));
           _trans.date = this.appService.formatDate(item.trans_date);
           _trans.acc_name = item.account_name;
+          _trans.is_mf = item.is_mf;
+          _trans.is_equity = item.is_equity;
+          _trans.acc_id = item.account_id;
+          _trans.acc_name = item.account_name;
+          _trans.cat_id = item.category_id;
+          _trans.user_id = item.user_id;
+          _trans.acc_balance = item.balance;
           this.transactions.push(_trans);
         });
         console.log("Fetch Transactions API Success");
@@ -83,6 +110,11 @@ export class TransactionsComponent implements OnInit, OnChanges {
     console.log(this.selectedAccount);
     if (changes.selectedAccount && !changes.selectedAccount.firstChange) {
       this.populateTransactions();
+    }
+    if (changes.refreshTransactions && changes.refreshTransactions.currentValue === true) {
+      this.populateTransactions();
+      this.refreshTransactions = false;
+      this.refreshTransactionsChange.emit();
     }
   }
 
@@ -115,6 +147,15 @@ export class TransactionsComponent implements OnInit, OnChanges {
   getClassVal(value: any) {
     let _type = value.transType;
     return _type.toUpperCase().indexOf("DEBIT") != -1 ? 'negative-val' : 'positive-val';
+  }
+
+  onContextMenu(event: MouseEvent, item: any, type: string) { 
+    let _emitObj = {
+      evt: event,
+      itm: item,
+      typ: type
+    }
+    this.onContextMenuEvent.emit(_emitObj);
   }
 
 }

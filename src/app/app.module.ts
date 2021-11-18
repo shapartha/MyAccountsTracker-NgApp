@@ -8,7 +8,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
+import { HomeComponent, DialogDeleteContent } from './home/home.component';
 import { ErrorComponent } from './error/error.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
@@ -28,12 +28,13 @@ import { AddCategoryComponent } from './add-category/add-category.component';
 import { AppInterceptor } from './app.interceptor';
 import { AuthService } from './auth.service';
 import { AddAccountComponent } from './add-account/add-account.component';
-
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
+    HomeComponent, DialogDeleteContent,
     ErrorComponent,
     LoginComponent,
     LogoutComponent,
@@ -43,23 +44,10 @@ import { AddAccountComponent } from './add-account/add-account.component';
     AddAccountComponent
   ],
   imports: [
-    BrowserModule,
-    HttpClientModule,
-    FormsModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatNativeDateModule,
-    MatInputModule,
-    MatSlideToggleModule,
-    MatRadioModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatSnackBarModule,
-    MatFileUploadModule,
-    MatToolbarModule,
-    NoopAnimationsModule
+    BrowserModule,    HttpClientModule,    FormsModule,    AppRoutingModule,    BrowserAnimationsModule,
+    MatDatepickerModule,    MatFormFieldModule,    MatNativeDateModule,    MatInputModule,    MatSlideToggleModule,
+    MatRadioModule,    MatSelectModule,    MatButtonModule,    MatSnackBarModule,    MatFileUploadModule,    MatToolbarModule,
+    NoopAnimationsModule,    MatMenuModule,    MatDialogModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AppInterceptor, multi: true },

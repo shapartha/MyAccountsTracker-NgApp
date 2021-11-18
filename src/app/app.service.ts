@@ -11,6 +11,7 @@ export class AppService {
     API_GET_TOKEN: string = "getToken";
     API_GET_CATEGORY: string = "getCategoryUserId";
     API_GET_ACCOUNTS_BY_CATEGORY: string = "getAccountsByCategory";
+    API_GET_ACCOUNTS_BY_NAME: string = "getAccountByName";
     API_GET_ALL_TRANS: string = "getTransByUser";
     API_GET_TRANS_BY_ACCOUNT: string = "getTransByAccount";
     API_USER_LOGIN: string = "getUserDataEmailPassword";
@@ -20,6 +21,10 @@ export class AppService {
     API_UPLOAD_RECEIPT: string = "storeReceipt";
     API_SAVE_CATEGORY: string = "storeCategory";
     API_SAVE_ACCOUNT: string = "storeAccount";
+    API_DELETE_ACCOUNT: string = "deleteAccount";
+    API_DELETE_CATEGORY: string = "deleteCategory";
+    API_DELETE_TRANSACTION: string = "deleteTrans";
+    API_UPDATE_ACCOUNT: string = "updateAccount";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -79,6 +84,11 @@ export class AppService {
     
     getAccountsByCategory(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_ACCOUNTS_BY_CATEGORY;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
+    }
+    
+    getAccountsByName(apiFuncParams: any) {
+        this.apiFuncName = this.API_GET_ACCOUNTS_BY_NAME;
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
     }
     
@@ -165,6 +175,78 @@ export class AppService {
         });
         return promise;       
     }
+    
+    deleteCategory(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_DELETE_CATEGORY;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
+    }
+    
+    deleteAccount(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_DELETE_ACCOUNT;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
+    }
+    
+    deleteTransaction(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_DELETE_TRANSACTION;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
+    }
+    
+    updateAccount(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_UPDATE_ACCOUNT;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
+    }
 
     showLoader() {
         let _loaderDiv = document.getElementById("loader-container");
@@ -232,5 +314,9 @@ export class AppService {
 
     showAlert(msg: string, actionTxt: string) {
       this.snackBar.open(msg, actionTxt);
+    }
+
+    formatStringValueToAmount(amt: string) : number {
+        return parseFloat((amt.split(AppConstant.RUPEE_SYMBOL)[1]).replace(/,/g, ""));
     }
 }
