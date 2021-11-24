@@ -23,7 +23,7 @@ export class AddAccountComponent implements OnInit {
           this.categories.push(_category);
         });
       } else {
-        this.handleRoute('/error');
+        this.handleRoute('error');
       }
       this.appService.hideLoader();
     });

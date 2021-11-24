@@ -6,10 +6,10 @@
                 <h2>Sign In</h2>
                 <div class="col-md-12">
                     <label for="email">Email</label>
-                    <input type="text" class="form-control" [(ngModel)]="user.email_id" id="email" placeholder="Ex. youremail@mail.com">
+                    <input type="text" class="form-control" (keydown.enter)="submitSignIn(user)" [(ngModel)]="user.email_id" id="email" placeholder="Ex. youremail@mail.com">
                     <br>
                     <label for="password">Password</label>
-                    <input type="password" class="form-control" [(ngModel)]="user.password" id="password" placeholder="Ex. A123@paswod">
+                    <input type="password" class="form-control" (keydown.enter)="submitSignIn(user)" [(ngModel)]="user.password" id="password" placeholder="Ex. A123@paswod">
                 </div>
             </div>
             <div class="row">

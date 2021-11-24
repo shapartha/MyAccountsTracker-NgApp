@@ -192,7 +192,7 @@ export class AddTransComponent implements OnInit {
       }
       this.appService.hideLoader();
       if (this.isGoBack) {
-        this.handleRoute("/home");
+        this.handleRoute("home");
         this.isGoBack = false;
       }
     }, err => {

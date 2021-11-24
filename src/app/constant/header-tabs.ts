@@ -3,7 +3,7 @@ export class HeaderTabs {
 
     constructor() {
         this.header = [
-            { name: 'Home', path: '/home' }
+            { name: 'Home', path: 'home' }
         ];
     }
 };

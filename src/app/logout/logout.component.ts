@@ -13,13 +13,13 @@ export class LogoutComponent implements OnInit {
     let _loggedInUser = this.appService.getAppUserId;
     if (_loggedInUser == undefined || isNaN(_loggedInUser) || _loggedInUser == 0) {
       this.currentTab = "Login";
-      this.handleTabChange({path: '/login'});
+      this.handleTabChange({path: 'login'});
     } else {
       this.appService.eraseCookie("app-user-id");
       this.appService.eraseCookie("app-token");
       setTimeout(() => {
         this.currentTab = "Login";
-        this.handleTabChange({path: '/login'});
+        this.handleTabChange({path: 'login'});
       }, 3000);
     }
     this.appService.hideLoader();

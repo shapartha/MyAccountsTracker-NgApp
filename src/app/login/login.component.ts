@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
           this.disableButtons();
           setTimeout(() => {
             this.currentTab = "Home";
-            this.handleTabChange('/home');
+            this.handleTabChange('home');
           }, 1000);
         } else {
           this.alertClass = "alert-danger";
