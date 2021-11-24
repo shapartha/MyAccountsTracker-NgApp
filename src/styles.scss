@@ -9,6 +9,11 @@ body {
 .mat-form-field-label {
     color: purple !important;
 }
+
+mat-dialog-content .mat-form-field-label {
+    color: grey !important;
+}
+
 .mat-form-field {
     display: flex !important;
 }
@@ -17,4 +22,42 @@ body {
 }
 .mat-select-value {
     color: #000;
+}
+mat-dialog-container .mat-select-value {
+    color: #fff !important;
+}
+
+#loader-container {
+    position: absolute;
+    width: 100%;
+    height: 250%;
+    z-index: 1500;
+    background: white;
+    opacity: 0.8;
+}
+
+.loader {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid blue;
+    border-right: 16px solid green;
+    border-bottom: 16px solid red;
+    border-left: 16px solid pink;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 100px;
+}
+
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

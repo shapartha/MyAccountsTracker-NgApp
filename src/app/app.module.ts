@@ -8,7 +8,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HomeComponent, DialogDeleteContent } from './home/home.component';
+import { HomeComponent, DialogDeleteContent, DialogUpdateContent } from './home/home.component';
 import { ErrorComponent } from './error/error.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
@@ -34,7 +34,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent, DialogDeleteContent,
+    HomeComponent, DialogDeleteContent, DialogUpdateContent,
     ErrorComponent,
     LoginComponent,
     LogoutComponent,

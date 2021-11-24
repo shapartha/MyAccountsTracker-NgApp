@@ -1,0 +1,89 @@
+<style>
+    
+.app-select-box .mat-select-value {
+    color: white !important;
+}
+
+  
+#fileInput {
+    position: absolute;
+    cursor: pointer;
+    z-index: 10;
+    opacity: 0;
+    height: 50px;
+    left: 0px;
+    top: 0px;
+}
+  
+.mat-toolbar-single-row {
+    height: auto !important;
+    background: transparent;
+    padding: 0;
+}
+</style>
+<h2 mat-dialog-title>Update {{data.menuType}} - {{data.name || data.description}} ?</h2>
+<mat-dialog-content class="mat-typography">
+    <div *ngIf="data.menuType === 'Category'">
+        <form>
+            <mat-form-field appearance="fill">
+                <mat-label>Category Name*</mat-label>
+                <input type="text" matInput placeholder="Enter Category" name="categoryName" [(ngModel)]="data.newName">
+            </mat-form-field>
+        </form>
+    </div>
+    <div *ngIf="data.menuType === 'Account'">
+        <form>
+            <mat-form-field appearance="fill">
+                <mat-label>Account Name*</mat-label>
+                <input type="text" matInput placeholder="Enter Account Name" name="accountName" [(ngModel)]="data.newAccName">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Category*</mat-label>
+                <mat-select [(ngModel)]="data.newAccCategory" name="categoryDetails" class="app-select-box">
+                  <mat-option>None</mat-option>
+                  <mat-option *ngFor="let item of data.categories" value="{{item.id}}">{{item.name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Current Balance*</mat-label>
+                <input type="number" matInput placeholder="Enter Current Account Balance" name="accountBalance" [(ngModel)]="data.newAccBalance">
+            </mat-form-field>
+        </form>
+    </div>
+    <div *ngIf="data.menuType === 'Transaction'">
+        <form>
+            <mat-form-field appearance="fill">
+                <mat-label>Amount</mat-label>
+                <input type="text" matInput disabled name="transAmt" [ngModel]="data.amount">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Description*</mat-label>
+                <input type="text" matInput placeholder="Enter Description" name="transDesc" [(ngModel)]="data.newTransDesc">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Transaction Date*</mat-label>
+                <input matInput [matDatepicker]="picker" name="transDate" [(ngModel)]="data.newTransDate">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>View/Replace Transaction Receipt: </mat-label>
+                <div>
+                    <mat-toolbar>
+                    <input matInput [value]="fileName" readonly />
+                    <button mat-flat-button color="primary" (click)="fileUpload.click()">Select</button>
+                    </mat-toolbar>
+                    <input type="file" id="fileInput" (change)="selectFile($event)" name="fileInput" #fileUpload/>
+                </div>
+                <img id="upload-preview" *ngIf="data.imageId" [src]="newPreviewUrl || data.previewUrl" alt="receipt image loadig ..." />
+                <div *ngIf="fileUploadMessage != ''" class="message">
+                    {{ fileUploadMessage }}
+                </div>
+            </mat-form-field>
+        </form>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCloseDialog()">Cancel</button>
+  <button mat-button (click)="onUpdateDialog(data)" cdkFocusInitial>Update</button>
+</mat-dialog-actions>

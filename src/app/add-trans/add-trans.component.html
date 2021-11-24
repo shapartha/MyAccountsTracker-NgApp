@@ -99,9 +99,9 @@
             <input type="file" id="fileInput" (change)="selectFile($event)" name="fileInput" #fileUpload/>
         </div>
         <img id="upload-preview" *ngIf="currentFile" [src]="previewUrl" alt="your image" />
-        <mat-error *ngIf="fileUploadMessage" class="message">
+        <div *ngIf="fileUploadMessage != ''" class="message">
             {{ fileUploadMessage }}
-        </mat-error>
+        </div>
     </mat-form-field>
 
     <button mat-raised-button color="primary" (click)="saveTransAndGoBack(trans)">Save</button>

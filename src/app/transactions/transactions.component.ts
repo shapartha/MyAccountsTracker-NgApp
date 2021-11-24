@@ -50,6 +50,7 @@ export class TransactionsComponent implements OnInit, OnChanges {
           _trans.cat_id = item.category_id;
           _trans.user_id = item.user_id;
           _trans.acc_balance = item.balance;
+          _trans.receiptImgId = item.trans_receipt_image_id;
           this.transactions.push(_trans);
         });
         this.currentTransRecordCount = 30;
@@ -90,6 +91,7 @@ export class TransactionsComponent implements OnInit, OnChanges {
           _trans.cat_id = item.category_id;
           _trans.user_id = item.user_id;
           _trans.acc_balance = item.balance;
+          _trans.receiptImgId = item.trans_receipt_image_id;
           this.transactions.push(_trans);
         });
         console.log("Fetch Transactions API Success");

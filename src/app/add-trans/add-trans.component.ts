@@ -36,6 +36,7 @@ export class AddTransComponent implements OnInit {
   saveTransactionTrans: SaveTransaction = {};
   previewUrl: any;
   fileBitmap: any;
+  fileType: any;
   isGoBack = false;
 
   constructor(private appService: AppService, private router: Router, private domSanitizer: DomSanitizer) {
@@ -52,13 +53,20 @@ export class AddTransComponent implements OnInit {
       var reader = new FileReader();
       reader.onload = this._handleReaderLoaded.bind(this);
       reader.readAsBinaryString(file);
+      this.fileType = file.type;
+      this.fileUploadMessage = "File selected for uploading"
+    } else {
+      this.currentFile = undefined;
+      this.fileName = 'Select File';
+      this.previewUrl = null;
+      this.fileType = null;
+      this.fileUploadMessage = '';
     }
   }
 
   _handleReaderLoaded(readerEvt: any) {
     var binaryString = readerEvt.target.result;
-    this.fileBitmap = btoa(binaryString);
-    console.log(this.fileBitmap);
+    this.fileBitmap = "data:" + this.fileType + ";base64," + btoa(binaryString);
   }
 
   upload() {

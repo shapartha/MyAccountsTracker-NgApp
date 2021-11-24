@@ -19,12 +19,15 @@ export class AppService {
     API_GET_MF_SCHEMES_BY_ACCOUNT: string = "getMfMappingByAccount";
     API_SAVE_TRANSACTION: string = "addTransactionProcess";
     API_UPLOAD_RECEIPT: string = "storeReceipt";
+    API_GET_RECEIPT: string = "getReceiptImage";
     API_SAVE_CATEGORY: string = "storeCategory";
     API_SAVE_ACCOUNT: string = "storeAccount";
     API_DELETE_ACCOUNT: string = "deleteAccount";
     API_DELETE_CATEGORY: string = "deleteCategory";
     API_DELETE_TRANSACTION: string = "deleteTrans";
+    API_UPDATE_CATEGORY: string = "updateCategory";
     API_UPDATE_ACCOUNT: string = "updateAccount";
+    API_UPDATE_TRANSACTION: string = "updateTrans";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -37,7 +40,7 @@ export class AppService {
 
     getToken(apiFuncParams: any): Observable<any> {
         this.apiFuncName = this.API_GET_TOKEN;
-        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams));
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams));
     }
 
     public get getAppToken() : string {
@@ -84,42 +87,42 @@ export class AppService {
     
     getAccountsByCategory(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_ACCOUNTS_BY_CATEGORY;
-        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams) + this.appendMandatoryParams()).toPromise();
     }
     
     getAccountsByName(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_ACCOUNTS_BY_NAME;
-        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams) + this.appendMandatoryParams()).toPromise();
     }
     
     getCategory(apiFuncParams: any): Observable<any> {
         this.apiFuncName = this.API_GET_CATEGORY;
-        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams());
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams) + this.appendMandatoryParams());
     }
 
     loginUser(apiFuncParams: any) {
         this.apiFuncName = this.API_USER_LOGIN;
-        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams) + this.appendMandatoryParams()).toPromise();
     }
     
     getAllTrans(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_ALL_TRANS;
-        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams) + this.appendMandatoryParams()).toPromise();
     }
     
     getTransByAccount(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_TRANS_BY_ACCOUNT;
-        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams) + this.appendMandatoryParams()).toPromise();
     }
     
     getMfSchemesByAccount(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_MF_SCHEMES_BY_ACCOUNT;
-        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams) + this.appendMandatoryParams()).toPromise();
     }
     
     getAllAccounts(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_ALL_ACCOUNTS;
-        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams()).toPromise();
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams) + this.appendMandatoryParams()).toPromise();
     }
     
     saveTransaction(apiFuncParams: any) {
@@ -127,7 +130,7 @@ export class AppService {
         let _apiFuncParams = JSON.parse(apiFuncParams);
         let _formattedDateStr = _apiFuncParams.date.split("T")[0];
         _apiFuncParams.date = _formattedDateStr;
-        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(JSON.stringify(_apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(_apiFuncParams)) + this.appendMandatoryParams()).toPromise();
     }
     
     uploadReceiptImage(apiFuncParams: any) : Observable<any> {
@@ -136,8 +139,26 @@ export class AppService {
             'content-type': 'application/x-www-form-urlencoded',
             'accept': 'application/json'
         };
-        return this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(apiFuncParams) + this.appendMandatoryParams(),
+        return this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams) + this.appendMandatoryParams(),
         {'headers': headers});
+    }
+
+    getReceiptImage(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_GET_RECEIPT;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise; 
     }
     
     saveCategory(apiFuncParams: any) : Promise<any> {
@@ -147,7 +168,7 @@ export class AppService {
             'accept': 'application/json'
         };
         let promise = new Promise((resolve, reject) => {
-            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
             {'headers': headers}).toPromise()
             .then(resp => {
                 resolve(resp);
@@ -165,7 +186,7 @@ export class AppService {
             'accept': 'application/json'
         };
         let promise = new Promise((resolve, reject) => {
-            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
             {'headers': headers}).toPromise()
             .then(resp => {
                 resolve(resp);
@@ -183,7 +204,7 @@ export class AppService {
             'accept': 'application/json'
         };
         let promise = new Promise((resolve, reject) => {
-            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
             {'headers': headers}).toPromise()
             .then(resp => {
                 resolve(resp);
@@ -201,7 +222,7 @@ export class AppService {
             'accept': 'application/json'
         };
         let promise = new Promise((resolve, reject) => {
-            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
             {'headers': headers}).toPromise()
             .then(resp => {
                 resolve(resp);
@@ -219,7 +240,25 @@ export class AppService {
             'accept': 'application/json'
         };
         let promise = new Promise((resolve, reject) => {
-            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
+    }
+    
+    updateCategory(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_UPDATE_CATEGORY;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
             {'headers': headers}).toPromise()
             .then(resp => {
                 resolve(resp);
@@ -237,7 +276,25 @@ export class AppService {
             'accept': 'application/json'
         };
         let promise = new Promise((resolve, reject) => {
-            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURI(this.apiFuncName) + "&apiFunctionParams=" + encodeURI(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
+    }
+    
+    updateTransaction(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_UPDATE_TRANSACTION;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
             {'headers': headers}).toPromise()
             .then(resp => {
                 resolve(resp);
@@ -302,7 +359,7 @@ export class AppService {
     convertDate(_date: any) {
         function pad(s: any) { return (s < 10) ? '0' + s : s; }
         var d = new Date();
-        if (_date !== undefined) {
+        if (_date !== undefined && _date !== null) {
             d = new Date(_date);
         }
         return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('-')
@@ -314,9 +371,15 @@ export class AppService {
 
     showAlert(msg: string, actionTxt: string) {
       this.snackBar.open(msg, actionTxt);
+      setTimeout(() => {
+          this.snackBar.dismiss();
+      }, 5000);
     }
 
-    formatStringValueToAmount(amt: string) : number {
+    formatStringValueToAmount(amt: string | undefined) : number {
+        if (amt === undefined) {
+            return 0;
+        }
         return parseFloat((amt.split(AppConstant.RUPEE_SYMBOL)[1]).replace(/,/g, ""));
     }
 }

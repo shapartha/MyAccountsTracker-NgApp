@@ -6,6 +6,8 @@ import { AppService } from '../app.service';
 import { Account } from '../model/account';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { SaveTransaction } from '../model/transaction';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -26,7 +28,8 @@ export class HomeComponent implements OnInit {
   selectedAccount: string = "ALL";
   selectedAccountObject: Account = {};
   title = 'My Accounts Tracker';
-  constructor(private router: Router, private appService: AppService, public dialog: MatDialog) {
+  fileBitmap: any;
+  constructor(private router: Router, private appService: AppService, public dialog: MatDialog, private domSanitizer: DomSanitizer) {
     this.currentTab = "Home";
     this.getAllCategories();
   }
@@ -137,18 +140,125 @@ export class HomeComponent implements OnInit {
     this.contextMenu.openMenu();
   }
 
+  invokeSaveTransactionApi(_inpData: any) {
+    this.appService.showLoader();
+    this.appService.saveTransaction(JSON.stringify(_inpData)).then(resp => {
+      if (resp.response !== "200") {
+        this.appService.showAlert("Some error occurred while saving transaction. Please contact admin.", "Close");
+      }
+      this.refreshTransactions = true;
+      this.appService.hideLoader();
+    }, err => {
+      console.error(err);
+      this.appService.hideLoader();
+      this.appService.showAlert("Error Occurred while Saving Transaction ! Please contact admin.", "Close");
+    }).catch(fault => {
+      console.error(fault);
+      this.appService.hideLoader();
+      this.appService.showAlert("Fault Occurred while Saving Transaction ! Please contact admin.", "Close");
+    });
+  }
+
   updateItem(item: any) {
-    console.log(item);
+    if (item.is_mf == true || item.is_equity == true) {
+      this.appService.showAlert("Mutual Funds/Stocks " + (item.menuType == 'Account' ? "account" : "transaction") + " can't be updated. Please Redeem/Sell units to perform transactions", "Close");
+      return;
+    }
+    this.openUpdateDialog(item);
   }
 
   deleteItem(item: any) {
-    this.openDialog(item);
+    if (item.is_mf == true || item.is_equity == true) {
+      this.appService.showAlert("Mutual Funds/Stocks " + (item.menuType == 'Account' ? "account" : "transaction") + " can't be deleted. Please Redeem/Sell units to perform transactions", "Close");
+      return;
+    }
+    this.openDeleteDialog(item);
   }
 
-  openDialog(item: any) {
+  openUpdateDialog(item: any) {
+    if (item.menuType == "Category") {
+      item.newName = item.name;
+    } else if (item.menuType == "Account") {
+      item.newAccName = item.name;
+      item.newAccBalance = this.appService.formatStringValueToAmount(item.balance);
+      item.newAccCategory = item.category_id;
+      item.categories = this.categories;
+    } else if (item.menuType == "Transaction") {
+      item.newTransDesc = item.description;
+      item.newTransDate = new Date(item.date);
+      if (item.receiptImgId != null) {
+        item.imageId = item.receiptImgId;
+        this.appService.showLoader();
+        this.appService.getReceiptImage({"receipt_uid": item.imageId}).then(resp => {
+          let _bitmap_data = resp.dataArray[0].bitmap_data;
+          item.previewUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(_bitmap_data);
+          this.appService.hideLoader();  
+        }, err => {
+          this.appService.showAlert("Error retrieving receipt image : " + JSON.stringify(err), "Close");
+          this.appService.hideLoader();
+        });
+      }
+    }
+    const dialogRef = this.dialog.open(DialogUpdateContent, {
+      data: item,
+      id: 'dialog-update-elements',
+      width: '600px'
+    });
+    dialogRef.disableClose = true;
+    dialogRef.afterClosed().subscribe(result => {
+      if (item.menuType === "Category") {
+        let _category = this.categories.filter(cat => cat.id === result.data.id)[0];
+        _category.name = result.data.newName;
+      } else if (item.menuType === "Account") {
+        let _account = this.accounts.filter(acc => acc.id === result.data.id)[0];
+        if (_account.category_id != result.data.newAccCategory) {
+          if (this.selectedAccount == _account.name) {
+            this.selectedAccount = "";
+          }
+          let _currCat = this.categories.filter(cat => cat.id === result.data.category_id)[0];
+          let _oldCatAmt = this.appService.formatStringValueToAmount(_currCat.amount) - this.appService.formatStringValueToAmount(_account.balance);
+          _currCat.amount = this.appService.formatAmountWithComma(_oldCatAmt.toString());
+          this.accounts.splice(this.accounts.findIndex(acc => acc.id === result.data.id), 1);
+        }
+        _account.name = result.data.newAccName;
+
+        if (this.appService.formatStringValueToAmount(_account.balance) !== result.data.newAccBalance) {
+          let _diffAmt = result.data.newAccBalance - this.appService.formatStringValueToAmount(_account.balance);
+          let _trans = new SaveTransaction();
+          _trans.amount = Math.abs(_diffAmt).toString();
+          _trans.date = this.appService.convertDate(null);
+          _trans.desc = "Adjustments";
+          _trans.type = (_diffAmt < 0 ? "DEBIT" : "CREDIT");
+          _trans.acc_id = _account.id;
+          _trans.user_id = this.appService.getAppUserId.toString();
+          this.invokeSaveTransactionApi(_trans);
+          if (_account.category_id == result.data.newAccCategory) {
+            let _currCat = this.categories.filter(cat => cat.id === _account.category_id)[0];
+            _currCat.amount = this.appService.formatAmountWithComma((this.appService.formatStringValueToAmount(_currCat.amount) + _diffAmt).toString());
+          }
+        }
+        _account.balance = this.appService.formatAmountWithComma(result.data.newAccBalance.toString());
+
+        if (_account.category_id != result.data.newAccCategory) {
+          _account.category_id = result.data.newAccCategory;
+          _account.category_name = this.categories.filter(_cat => _cat.id === _account.category_id)[0].name;
+          let _catgry = this.categories.filter(cat => cat.id === result.data.newAccCategory)[0];
+          _catgry.amount = this.appService.formatAmountWithComma((this.appService.formatStringValueToAmount(_catgry.amount) + result.data.newAccBalance).toString());
+          _catgry.accounts?.push(_account);
+        }
+      } else if (item.menuType === 'Transaction') {
+        if (item.refreshTransactions == true) {
+          this.refreshTransactions = true;
+        }
+      }
+    });
+  }
+
+  openDeleteDialog(item: any) {
     const dialogRef = this.dialog.open(DialogDeleteContent, {
       data: item
     });
+    dialogRef.disableClose = true;
     dialogRef.afterClosed().subscribe(result => {
       if (result !== true) {
         if (item.menuType === 'Account') {
@@ -244,3 +354,171 @@ export class DialogDeleteContent {
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 }
 
+@Component({
+  selector: 'dialog-update',
+  templateUrl: '../dialog/dialog-update.html',
+  styleUrls: ['./home.component.scss']
+})
+export class DialogUpdateContent {
+  fileUploadMessage: string = '';
+  fileName = 'Replace file';
+  fileType: any;
+  currentFile: any;
+  newPreviewUrl: any;
+  fileBitmap: any;
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialog: MatDialog, public appService: AppService,
+    public domSanitizer: DomSanitizer) {}
+
+  onCloseDialog() {
+    const dialogRef = this.dialog.getDialogById('dialog-update-elements');
+    dialogRef?.close();
+  }
+
+  onUpdateDialog(data: any) {
+    if (data.menuType === "Category") {
+      if (data.newName.length < 3) {
+        this.appService.showAlert("Valid Category Name required", "Close");
+        return;
+      }
+      let _category = {
+        category_id: data.id,
+        category_name: data.newName,
+        user_id: this.appService.getAppUserId
+      };
+      this.appService.showLoader();
+      this.appService.updateCategory([_category]).then(resp => {
+        if (resp[0].response == '200') {
+          this.close(data);
+        } else {
+          this.appService.showAlert(resp[0].responseDescription, "Close");
+        }
+        this.appService.hideLoader();
+      }, err => {
+        this.appService.showAlert(err, "Close");
+        this.appService.hideLoader();
+      });
+    } else if (data.menuType === "Account") {
+      if (data.newAccName == undefined || data.newAccName?.length! < 3) {
+        this.appService.showAlert("Account name must be atleast 3 characters", "Close");
+        return;
+      }
+      if (data.newAccCategory == undefined || data.newAccCategory == "") {
+        this.appService.showAlert("Select a valid Category for the account", "Close");
+        return;
+      }
+      if (data.newAccBalance == undefined) {
+        this.appService.showAlert("Please enter the current balance. If no current balance, enter '0'", "Close");
+        return;
+      }
+      let _acc = {
+        account_id: data.id,
+        account_name: data.newAccName,
+        balance: data.newAccBalance.toString(),
+        user_id: this.appService.getAppUserId,
+        category_id: data.newAccCategory
+      };
+      this.appService.showLoader();
+      this.appService.updateAccount([_acc]).then(resp => {
+        if (resp[0].response == '200') {
+          this.close(data);
+        } else {
+          this.appService.showAlert("Some Error occurred updating the account details.", "Close");
+        }
+        this.appService.hideLoader();
+      });
+    } else if (data.menuType === "Transaction") {
+      if (data.newTransDesc == undefined || data.newTransDesc?.length! < 3) {
+        this.appService.showAlert("Description must be atleast 3 characters", "Close");
+        return;
+      }
+      if (data.newTransDate == undefined || data.newTransDate == null) {
+        this.appService.showAlert("Date is invalid or blank.", "Close");
+        return;
+      }
+      this.appService.showLoader();
+      if (this.newPreviewUrl !== null && this.newPreviewUrl !== undefined) {
+        this.upload(data);
+      } else {
+        let _updTrans = {
+          trans_desc: data.newTransDesc,
+          trans_id: data.id,
+          trans_date: this.appService.convertDate(data.newTransDate)
+        };
+        this.updateTrans(_updTrans, data);
+      }
+    }
+  }
+
+  close(data: any) {
+    const dialogRef = this.dialog.getDialogById('dialog-update-elements');
+    if (dialogRef != undefined && dialogRef != null) {
+      dialogRef.close({ data : data });
+      this.appService.showAlert(data.menuType + " updated successfully", "Close");
+    }
+  }
+
+  //#region File Upload
+  selectFile(event: any): void {
+    if (event.target.files && event.target.files[0]) {
+      const file: File = event.target.files[0];
+      this.currentFile = file;
+      this.fileName = this.currentFile.name;
+      this.newPreviewUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(file));
+      var reader = new FileReader();
+      reader.onload = this._handleReaderLoaded.bind(this);
+      reader.readAsBinaryString(file);
+      this.fileType = file.type;
+      this.fileUploadMessage = "File selected for uploading"
+    } else {
+      this.currentFile = undefined;
+      this.fileName = 'Replace File';
+      this.newPreviewUrl = null;
+      this.fileType = null;
+      this.fileUploadMessage = '';
+    }
+  }
+
+  _handleReaderLoaded(readerEvt: any) {
+    var binaryString = readerEvt.target.result;
+    this.fileBitmap = "data:" + this.fileType + ";base64," + btoa(binaryString);
+  }
+  
+  updateTrans(_obj_: any, _data_: any) {
+    this.appService.updateTransaction([_obj_]).then(resp => {
+      if (resp[0].response == '200') {
+        this.appService.showAlert("Transaction Updated Successfully.", "Close");
+        _data_.refreshTransactions = true;
+        this.close(_data_);
+      } else {
+        this.appService.showAlert("Transaction Update Failed. Failure: " + JSON.stringify(resp[0]), "Close");
+      }
+      this.appService.hideLoader();
+    }, err => {
+      this.appService.showAlert("Transaction Update Failed. Error: " + JSON.stringify(err), "Close");
+      this.appService.hideLoader();
+    });
+  }
+
+  upload(_obj_: any) {
+    let _inpObj = {
+      bitmap_data: this.fileBitmap,
+      created_at: this.appService.getDate()
+    }
+    this.appService.uploadReceiptImage(JSON.stringify(_inpObj)).subscribe(data => {
+      console.log("Data -> " + JSON.stringify(data));
+      let _updTrans = {
+        trans_desc: _obj_.newTransDesc,
+        trans_id: _obj_.id,
+        trans_date: this.appService.convertDate(_obj_.newTransDate),
+        trans_receipt_image_id: data.dataArray[0].receipt_id
+      };
+      this.updateTrans(_updTrans, _obj_);
+    }, err => {
+      console.error("Error -> " + JSON.stringify(err));
+      this.appService.showAlert("Image Upload Failed due to Error", "Close");
+      this.appService.hideLoader();
+    });
+  }
+  //#endregion File Upload
+}
