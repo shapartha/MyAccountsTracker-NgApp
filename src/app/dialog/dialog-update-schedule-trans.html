@@ -1,0 +1,59 @@
+<style>
+    
+.app-select-box .mat-select-value {
+    color: white !important;
+}
+
+</style>
+<h2 mat-dialog-title>Update {{data.menuType}} - {{data.name || data.description}} ?</h2>
+<mat-dialog-content class="mat-typography">
+    <div *ngIf="data.menuType === 'Scheduled Transaction'">
+        <form>
+            <mat-form-field appearance="fill">
+                <mat-label>Amount*</mat-label>
+                <input type="text" matInput name="transAmt" [(ngModel)]="data.newAmount">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Description*</mat-label>
+                <input type="text" matInput placeholder="Enter Description" name="transDesc" [(ngModel)]="data.newDesc">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Transaction Date*</mat-label>
+                <input matInput [matDatepicker]="picker" name="transDate" [(ngModel)]="data.newDate">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Select Account: </mat-label>
+                <mat-select [(ngModel)]="data.newAccId" name="transAccId" (selectionChange)="onChangeAcc($event)">
+                  <mat-option>None</mat-option>
+                  <mat-option *ngFor="let item of data.accList" value="{{item.id}}">{{item.name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill" *ngIf="data.is_mf == '1'">
+                <mat-label>Select Mutual Fund Scheme: </mat-label>
+                <mat-select [(ngModel)]="data.newMfId" name="mfSchemeCode" (selectionChange)="onChangeMfScheme($event)">
+                  <mat-option>None</mat-option>
+                  <mat-option *ngFor="let item of data.mfSchemes" value="{{item.scheme_code}}">{{item.scheme_name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill" *ngIf="data.is_mf == '1'">
+                <mat-label>NAV Amount (as of {{data.nav_date}})</mat-label>
+                <input type="number" matInput placeholder="NAV Amount" name="mfNavAmt" required [(ngModel)]="data.newMfNav">
+            </mat-form-field>
+            <mat-form-field appearance="fill" *ngIf="data.rec_date !== null && data.rec_date !== undefined && data.rec_date !== ''">
+                <mat-label>Select Day of Month: </mat-label>
+                <mat-select [(ngModel)]="data.newReccDate" name="reccDate">
+                  <mat-option>None</mat-option>
+                  <mat-option *ngFor="let item of monthDays" value="{{item}}">{{item}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-label *ngIf="data.imageId">Uploaded Image: </mat-label>
+            <img id="upload-preview" *ngIf="data.imageId" [src]="data.previewUrl" alt="receipt image loading ..." />
+        </form>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCloseDialog()">Cancel</button>
+  <button mat-button (click)="onUpdateDialog(data)" cdkFocusInitial>Update</button>
+</mat-dialog-actions>

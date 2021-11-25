@@ -30,6 +30,7 @@ import { AuthService } from './auth.service';
 import { AddAccountComponent } from './add-account/add-account.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
+import { DeleteDialogScheduleTrans, ScheduledTransComponent, UpdateDialogScheduleTrans} from './scheduled-trans/scheduled-trans.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     TransactionsComponent,
     AddTransComponent,
     AddCategoryComponent,
-    AddAccountComponent
+    AddAccountComponent,
+    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans
   ],
   imports: [
     BrowserModule,    HttpClientModule,    FormsModule,    AppRoutingModule,    BrowserAnimationsModule,

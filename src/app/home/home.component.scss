@@ -13,7 +13,7 @@
     padding: 5px 15px;
     border: 1px solid #1000ff2e;
     cursor: pointer;
-    width: 200px;
+    width: 150px;
     background: #d78ac3;
     background: linear-gradient(90deg, #f7b0d7 0%, #bb82a7 81%, #cf9b6f 100%);
 }
@@ -26,14 +26,17 @@
     display: inline-flex;
     flex-wrap: wrap;
 }
-#app-main, #app-header {
+#app-header {
+    display: flex;
+}
+#app-main {
     display: block;
 }
 .header-tab {
     display: inline-flex;
     border-radius: 5px;
     padding: 5px 15px;
-    width: 120px;
+    min-width: 120px;
     cursor: pointer;
     text-align: center;
     background: linear-gradient(317deg, #d5b469 0%, #f3ddd0 50%, #f79c87 100%);

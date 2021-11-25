@@ -28,6 +28,9 @@ export class AppService {
     API_UPDATE_CATEGORY: string = "updateCategory";
     API_UPDATE_ACCOUNT: string = "updateAccount";
     API_UPDATE_TRANSACTION: string = "updateTrans";
+    API_GET_ALL_SCHEDULED_TRANS: string = "getAllScheduledTrans";
+    API_PROCESS_SCHEDULED_TRANS: string = "processScheduledTransaction";
+    API_UPDATE_SCHEDULED_TRANS: string = "updateScheduledTrans";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -73,7 +76,7 @@ export class AppService {
       if (amountVal.length > 1) {
         return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText + "." + amountVal[1];
       } else {
-        return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText;
+        return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText + ".00";
       }
     }
 
@@ -304,6 +307,51 @@ export class AppService {
         });
         return promise;       
     }
+    
+    getAllScheduledTrans(apiFuncParams: any) {
+        this.apiFuncName = this.API_GET_ALL_SCHEDULED_TRANS;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+    }
+
+    /**
+     * 
+     * @param apiFuncParams ops_mode : 1 - PROCESS, 2 - DELETE, 3 - POSTPONE
+     */
+    processScheduledTrans(apiFuncParams: any) {
+        this.apiFuncName = this.API_PROCESS_SCHEDULED_TRANS;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;   
+    }
+    
+    updateScheduledTrans(apiFuncParams: any) {
+        this.apiFuncName = this.API_UPDATE_SCHEDULED_TRANS;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;   
+    }
 
     showLoader() {
         let _loaderDiv = document.getElementById("loader-container");
@@ -348,6 +396,9 @@ export class AppService {
     
     formatDate(val: string): string {
         let _temp = val.split("-");
+        if (_temp[2].length == 4) {
+            return _temp[0] + "-" + this.getMonthName(_temp[1]) + "-" + _temp[2];
+        }
         return _temp[2] + "-" + this.getMonthName(_temp[1]) + "-" + _temp[0];
     }
 
@@ -369,11 +420,14 @@ export class AppService {
         return AppConstant.MONTH[parseInt(val)];
     }
 
-    showAlert(msg: string, actionTxt: string) {
-      this.snackBar.open(msg, actionTxt);
-      setTimeout(() => {
-          this.snackBar.dismiss();
-      }, 5000);
+    showAlert(msg: string, actionTxt?: string) {
+        if (actionTxt == undefined || actionTxt == null) {
+            actionTxt = "Close";
+        }
+        this.snackBar.open(msg, actionTxt);
+        setTimeout(() => {
+            this.snackBar.dismiss();
+        }, 5000);
     }
 
     formatStringValueToAmount(amt: string | undefined) : number {

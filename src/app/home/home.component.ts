@@ -186,7 +186,7 @@ export class HomeComponent implements OnInit {
     } else if (item.menuType == "Transaction") {
       item.newTransDesc = item.description;
       item.newTransDate = new Date(item.date);
-      if (item.receiptImgId != null) {
+      if (item.receiptImgId != null && item.receiptImgId != undefined && item.receiptImgId != 0) {
         item.imageId = item.receiptImgId;
         this.appService.showLoader();
         this.appService.getReceiptImage({"receipt_uid": item.imageId}).then(resp => {

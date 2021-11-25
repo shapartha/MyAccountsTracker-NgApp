@@ -1,0 +1,35 @@
+<div>
+    <div id="app-header">
+      <div *ngFor="let item of headerTabs.header; let i = index;">
+        <div class="header-tab" (click)="handleTabChange(item)">
+          <span id="header_{{i}}">{{item.name}}</span>
+        </div>
+      </div>
+    </div>
+    <div id="app-main">
+      <div *ngIf="s_trans === undefined || s_trans === null || s_trans.size === 0" class="no-s-trans-header">
+        No scheduled transactions are pending !!
+      </div>
+      <div class="s-transaction-item" *ngFor="let item of s_trans; let i = index;" (click)="onContextMenu($event, item)">
+          <span id="s_trans_desc_{{i}}">{{item.trans_desc}}</span>
+          <div style="display: flex;">
+              <div id="s_trans_acc_{{i}}">
+                {{ (item.is_mf !== '1') ? item.account_name : item.account_name + " | " + item.scheme_name + " | " + rupeeSymbol + item.mf_nav }}
+              </div>
+              <div id="s_trans_date_{{i}}">{{item.trans_date}}</div>
+              <div id="s_trans_amount_{{i}}" class="money-val" [ngClass]="getClassVal(item)">{{item.trans_amount}}</div>
+          </div>
+          <div id="s_trans_rec_date_{{i}}" *ngIf="item.rec_date !== null && item.rec_date !== undefined && item.rec_date !== ''">Recurring every month on Day {{item.rec_date}}</div>
+      </div>
+    </div>
+</div>
+
+
+<div style="visibility: hidden; position: fixed" [style.left]="menuTopLeftPosition.x" [style.top]="menuTopLeftPosition.y" [matMenuTriggerFor]="contextMenu">
+</div>
+<mat-menu #contextMenu="matMenu">
+	<ng-template matMenuContent let-item="item">
+		<button mat-menu-item (click)="updateItem(item)">Update</button>
+		<button mat-menu-item (click)="deleteItem(item)">Delete</button>
+	</ng-template>
+</mat-menu>
