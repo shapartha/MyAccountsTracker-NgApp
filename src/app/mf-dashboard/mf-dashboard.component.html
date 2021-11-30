@@ -1,0 +1,36 @@
+<div id="app-mf-dashboard">
+    <div id="app-mf-trans-header">
+        <div *ngFor="let item of headerTabs.header; let i = index;">
+            <div class="header-tab" (click)="handleTabChange(item)">
+            <span id="header_{{i}}">{{item.name}}</span>
+            </div>
+        </div>
+    </div>
+    <div id="refreshMfBtn"><span (click)="refreshMfData()">Refresh</span></div>
+</div>
+<app-transactions *ngIf="selectedTab === 'transactions' && selectedAccount != '' && selectedAccountObject.is_mf == true"
+[selectedAccount]="selectedAccount" [selectedAccountObject]=selectedAccountObject [(refreshTransactions)]="refreshTransactions"
+(onContextMenuEvent)="onContextMenu($event)"></app-transactions>
+<div *ngIf="selectedTab === 'mf-dashboard' && selectedAccount != '' && selectedAccountObject.is_mf == true">
+    <div *ngIf="selectedAccount !== '' && (mfMappings === undefined || mfMappings.length === 0)" class="no-mf-mapping-header">
+        No Mutual Funds available for the selected account.
+    </div>
+    <div class="mf-mapping-item"*ngFor="let item of mfMappings; let i = index;" (click)="onContextMenuMf($event, item, 'MF Dashboard')">
+        <div id="mf_details_{{i}}">
+            <div class="bold-val">{{item.scheme_name}}</div>
+            <div style="display: flex;">
+                <div id="mf_code_{{i}}">MF Scheme Code: <span class="purple-val">{{item.scheme_code}}</span></div>
+                <div id="mf_nav_amt_{{i}}">NAV Amount: <span class="purple-val">{{item.nav_amt}}</span></div>
+            </div>
+            <div style="display: flex;">
+                <div id="mf_inv_amt_{{i}}">Inv Amount: <span class="purple-val">{{item.inv_amt}}</span></div>
+                <div id="mf_units_{{i}}">No. of Units: <span class="purple-val">{{item.units}}</span></div>
+            </div>
+            <div style="display: flex;">
+                <div id="mf_nav_date_{{i}}">NAV Date: <span class="purple-val">{{item.nav_date}}</span></div>
+                <div id="mf_avg_nav_{{i}}">Avg NAV: <span class="purple-val">{{item.avg_nav}}</span></div>
+            </div>
+        </div>
+        <div id="mf_curr_val_{{i}}" class="money-val positive-val bold-val">{{item.curr_amt}}</div>
+    </div>
+</div>

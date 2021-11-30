@@ -1,0 +1,50 @@
+<style>
+    .app-select-box .mat-select-value {
+        color: white !important;
+    }
+    #fileInput {
+        position: absolute;
+        cursor: pointer;
+        z-index: 10;
+        opacity: 0;
+        height: 50px;
+        left: 0px;
+        top: 0px;
+    }
+    .mat-toolbar-single-row {
+        height: auto !important;
+        background: transparent;
+        padding: 0;
+    }
+</style>
+<h2 mat-dialog-title>Redeem "{{data.scheme_name}}" {{data.redeemType}} ?</h2>
+<mat-dialog-content class="mat-typography">
+    <div *ngIf="data.menuType === 'MF Dashboard'">
+        <form>
+            <mat-form-field appearance="fill">
+                <mat-label>Amount</mat-label>
+                <input type="number" matInput placeholder="Enter Amount to Redeem" name="rdmAmt" [disabled]="data.redeemType === 'Fully'"
+                (keyup)="onChangeRedeemAmount(data)" [(ngModel)]="data.rdmAmt">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Units</mat-label>
+                <input type="number" matInput placeholder="Enter No of Units" name="rdmUnits" disabled [ngModel]="data.rdmUnits">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>NAV Date</mat-label>
+                <input matInput [matDatepicker]="picker" name="rdmDate" [(ngModel)]="data.rdmDte">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>NAV Amount</mat-label>
+                <input type="number" matInput placeholder="Enter NAV" name="rdmNav" [(ngModel)]="data.rdmNav">
+            </mat-form-field>
+        </form>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button (click)="onCloseDialog()" cdkFocusInitial>Cancel</button>
+    <button mat-button (click)="onUpdateDialog(data)">Redeem</button>
+</mat-dialog-actions>
+    

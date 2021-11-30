@@ -17,6 +17,7 @@ export class AppService {
     API_USER_LOGIN: string = "getUserDataEmailPassword";
     API_GET_ALL_ACCOUNTS: string = "getAccountsByUser";
     API_GET_MF_SCHEMES_BY_ACCOUNT: string = "getMfMappingByAccount";
+    API_UPDATE_MF_MAPPING: string = "updateMfMapping";
     API_SAVE_TRANSACTION: string = "addTransactionProcess";
     API_UPLOAD_RECEIPT: string = "storeReceipt";
     API_GET_RECEIPT: string = "getReceiptImage";
@@ -34,6 +35,7 @@ export class AppService {
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
+    API_FETCH_MF_NAV: string = "https://api.mfapi.in/mf/";
 
     constructor(private http: HttpClient, private snackBar: MatSnackBar) {
         if (this.getAppToken == "") {
@@ -68,13 +70,20 @@ export class AppService {
         return _apiJsonParams;
     }
 
+    roundUpAmount(amount: string | number) {
+        if (typeof amount == 'string') {
+            amount = Number(amount);
+        }
+        return amount.toFixed(2);
+    }
+
     formatAmountWithComma(amount: string): string {
       var amountVal = amount.split(".");
       var formattedAmount = Math.abs(parseInt(amountVal[0]));
       var isNegative = parseInt(amountVal[0]) < 0 ? "-" : "";
       var formattedAmountText = formattedAmount.toLocaleString();
       if (amountVal.length > 1) {
-        return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText + "." + amountVal[1];
+        return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText + "." + amountVal[1].substr(0, 2);
       } else {
         return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText + ".00";
       }
@@ -120,7 +129,25 @@ export class AppService {
     
     getMfSchemesByAccount(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_MF_SCHEMES_BY_ACCOUNT;
-        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams) + this.appendMandatoryParams()).toPromise();
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+    }
+    
+    updateMfMapping(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_UPDATE_MF_MAPPING;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
     }
     
     getAllAccounts(apiFuncParams: any) {
@@ -179,7 +206,7 @@ export class AppService {
                 reject(err)
             });
         });
-        return promise;       
+        return promise;
     }
     
     saveAccount(apiFuncParams: any) : Promise<any> {
@@ -353,6 +380,21 @@ export class AppService {
         return promise;   
     }
 
+    fetchMfNav(schemeCode: any) {
+        const headers = { 
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.get(this.API_FETCH_MF_NAV + schemeCode, {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise; 
+    }
+
     showLoader() {
         let _loaderDiv = document.getElementById("loader-container");
         let _displayStatus = _loaderDiv!.style.display;
@@ -407,7 +449,7 @@ export class AppService {
         return _currDate.getFullYear() + "-" + (_currDate.getMonth() + 1) + "-" + _currDate.getDate();
     }
 
-    convertDate(_date: any) {
+    convertDate(_date?: any) {
         function pad(s: any) { return (s < 10) ? '0' + s : s; }
         var d = new Date();
         if (_date !== undefined && _date !== null) {

@@ -20,7 +20,6 @@ export class TransactionsComponent implements OnInit, OnChanges {
   @Output() refreshTransactionsChange = new EventEmitter();
 
   constructor(private appService: AppService) { 
-    this.populateTransactions();
   }
 
   populateTransactions() {
@@ -144,6 +143,7 @@ export class TransactionsComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.populateTransactions();
   }
 
   getClassVal(value: any) {

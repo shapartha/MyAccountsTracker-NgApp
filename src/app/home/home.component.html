@@ -21,9 +21,20 @@
             <span id="account_balance_{{i}}" class="money-val" [ngClass]="getClassVal(item.balance)">{{item.balance}}</span>
         </div>
       </div>
-      <div id="transactions-header" *ngIf="selectedAccount != ''">Showing Transactions for "{{selectedAccount}}" : <span id="clear-account" *ngIf="selectedAccount != '' && selectedAccount != 'ALL'" (click)="clearAccount()">Clear Account</span></div>
-      <app-transactions [selectedAccount]=selectedAccount [selectedAccountObject]=selectedAccountObject [(refreshTransactions)]="refreshTransactions"
-      (onContextMenuEvent)="onContextMenuEvent($event)"></app-transactions>
+      <ng-container *ngIf="selectedAccount != '' && selectedAccountObject.is_mf != '1' && selectedAccountObject.is_equity != '1'">
+        <div id="transactions-header">Showing Transactions for "{{selectedAccount}}" : <span id="clear-account" *ngIf="selectedAccount != '' && selectedAccount != 'ALL'" (click)="clearAccount()">Clear Account</span></div>
+        <app-transactions [selectedAccount]=selectedAccount [selectedAccountObject]=selectedAccountObject [(refreshTransactions)]="refreshTransactions"
+        (onContextMenuEvent)="onContextMenuEvent($event)"></app-transactions>
+      </ng-container>
+      <ng-container *ngIf="selectedAccount != '' && selectedAccountObject.is_mf == '1'">
+        <div id="transactions-header">Showing MF Dashboard & Transactions for "{{selectedAccount}}" : <span id="clear-account" *ngIf="selectedAccount != '' && selectedAccount != 'ALL'" (click)="clearAccount()">Clear Account</span></div>
+        <app-mf-dashboard [selectedAccount]=selectedAccount [selectedAccountObject]=selectedAccountObject [(refreshTransactions)]="refreshTransactions"
+        (onContextMenuEvent)="onContextMenuEvent($event)"></app-mf-dashboard>
+      </ng-container>
+      <ng-container *ngIf="selectedAccount != '' && selectedAccountObject.is_equity == '1'">
+        <div id="transactions-header">Showing Equity Dashboard & Transactions for "{{selectedAccount}}" : <span id="clear-account" *ngIf="selectedAccount != '' && selectedAccount != 'ALL'" (click)="clearAccount()">Clear Account</span></div>
+        <!-- TODO -->
+      </ng-container>
     </div>
 </div>
 
@@ -32,7 +43,13 @@
 </div>
 <mat-menu #contextMenu="matMenu">
 	<ng-template matMenuContent let-item="item">
-		<button mat-menu-item (click)="updateItem(item)">Update</button>
-		<button mat-menu-item (click)="deleteItem(item)">Delete</button>
+    <div *ngIf="item.menuType !== 'MF Dashboard'">
+      <button mat-menu-item (click)="updateItem(item)">Update</button>
+      <button mat-menu-item (click)="deleteItem(item)">Delete</button>
+    </div>
+    <div *ngIf="item.menuType === 'MF Dashboard'">
+      <button mat-menu-item (click)="redeemAll(item)">Redeem All</button>
+      <button mat-menu-item (click)="redeemPartial(item)">Redeem Partial</button>
+    </div>
 	</ng-template>
 </mat-menu>

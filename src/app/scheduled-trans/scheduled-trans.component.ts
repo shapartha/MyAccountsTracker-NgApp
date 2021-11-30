@@ -170,7 +170,7 @@ export class ScheduledTransComponent implements OnInit {
       item.mfSchemes = [];
       if (item.is_mf === '1') {
         this.appService.showLoader();
-        this.appService.getMfSchemesByAccount('{"account_id": ' + item.newAccId + '}').then(data => {
+        this.appService.getMfSchemesByAccount({ account_id: item.newAccId }).then(data => {
           data.dataArray.forEach((element: any) => {
             item.mfSchemes.push(element);
           });
@@ -256,7 +256,7 @@ export class UpdateDialogScheduleTrans {
       this.data.mfSchemes = [];
       this.data.newMfNav = undefined;
       this.appService.showLoader();
-      this.appService.getMfSchemesByAccount('{"account_id": ' + _newAcc.id + '}').then(data => {
+      this.appService.getMfSchemesByAccount({ account_id: _newAcc.id }).then(data => {
         data.dataArray.forEach((element: any) => {
           this.data.mfSchemes.push(element);
         });

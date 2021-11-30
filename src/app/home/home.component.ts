@@ -159,11 +159,17 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  redeemAll(item: any) {
+    item.redeemType = 'Fully';
+    this.openRedeemDialog(item);
+  }
+
+  redeemPartial(item: any) {
+    item.redeemType = 'Partially';
+    this.openRedeemDialog(item);
+  }
+
   updateItem(item: any) {
-    if (item.is_mf == true || item.is_equity == true) {
-      this.appService.showAlert("Mutual Funds/Stocks " + (item.menuType == 'Account' ? "account" : "transaction") + " can't be updated. Please Redeem/Sell units to perform transactions", "Close");
-      return;
-    }
     this.openUpdateDialog(item);
   }
 
@@ -173,6 +179,20 @@ export class HomeComponent implements OnInit {
       return;
     }
     this.openDeleteDialog(item);
+  }
+
+  openRedeemDialog(item: any) {
+    if (item.menuType === 'MF Dashboard') {
+      item.rdmAmt = this.appService.formatStringValueToAmount(item.curr_amt);
+      item.rdmUnits = item.units;
+      item.rdmNav = item.nav_amt;
+      item.rdmDte = new Date(item.nav_date);
+    }
+    const dialogRef = this.dialog.open(DialogRedeemContent, {
+      data: item,
+      id: 'dialog-redeem-elements'
+    });
+    dialogRef.disableClose = true;
   }
 
   openUpdateDialog(item: any) {
@@ -352,6 +372,36 @@ export class HomeComponent implements OnInit {
 })
 export class DialogDeleteContent {
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
+}
+
+@Component({
+  selector: 'dialog-redeem',
+  templateUrl: '../dialog/dialog-redeem.html',
+  styleUrls: ['./home.component.scss']
+})
+export class DialogRedeemContent {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialog: MatDialog, public appService: AppService) {}
+
+  onCloseDialog() {
+    const dialogRef = this.dialog.getDialogById('dialog-redeem-elements');
+    dialogRef?.close();
+  }
+
+  onUpdateDialog(data: any) {
+    this.close(data);
+  }
+
+  onChangeRedeemAmount(data: any) {
+    data.rdmUnits = this.appService.formatStringValueToAmount(this.appService.formatAmountWithComma((data.rdmAmt / data.rdmNav).toString()));
+  }
+
+  close(data: any) {
+    const dialogRef = this.dialog.getDialogById('dialog-update-elements');
+    if (dialogRef != undefined && dialogRef != null) {
+      dialogRef.close({ data : data });
+      this.appService.showAlert(data.menuType + " updated successfully", "Close");
+    }
+  }
 }
 
 @Component({

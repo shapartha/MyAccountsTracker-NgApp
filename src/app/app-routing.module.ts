@@ -9,11 +9,13 @@ import { AddCategoryComponent } from './add-category/add-category.component';
 import { AuthService } from './auth.service';
 import { AddAccountComponent } from './add-account/add-account.component';
 import { ScheduledTransComponent } from './scheduled-trans/scheduled-trans.component';
+import { MfDashboardComponent } from './mf-dashboard/mf-dashboard.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomeComponent, canActivate : [AuthService]  },
   { path: 'scheduled-trans', component: ScheduledTransComponent, canActivate : [AuthService] },
+  { path: 'mf-trans', component: MfDashboardComponent, canActivate : [AuthService] },
   { path: 'add-trans', component: AddTransComponent, canActivate : [AuthService]  },
   { path: 'add-account', component: AddAccountComponent, canActivate : [AuthService]  },
   { path: 'add-category', component: AddCategoryComponent, canActivate : [AuthService] },

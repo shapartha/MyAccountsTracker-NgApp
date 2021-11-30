@@ -8,7 +8,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HomeComponent, DialogDeleteContent, DialogUpdateContent } from './home/home.component';
+import { HomeComponent, DialogDeleteContent, DialogUpdateContent, DialogRedeemContent } from './home/home.component';
 import { ErrorComponent } from './error/error.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
@@ -31,11 +31,12 @@ import { AddAccountComponent } from './add-account/add-account.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { DeleteDialogScheduleTrans, ScheduledTransComponent, UpdateDialogScheduleTrans} from './scheduled-trans/scheduled-trans.component';
+import { MfDashboardComponent } from './mf-dashboard/mf-dashboard.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent, DialogDeleteContent, DialogUpdateContent,
+    HomeComponent, DialogDeleteContent, DialogUpdateContent, DialogRedeemContent,
     ErrorComponent,
     LoginComponent,
     LogoutComponent,
@@ -43,7 +44,7 @@ import { DeleteDialogScheduleTrans, ScheduledTransComponent, UpdateDialogSchedul
     AddTransComponent,
     AddCategoryComponent,
     AddAccountComponent,
-    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans
+    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent
   ],
   imports: [
     BrowserModule,    HttpClientModule,    FormsModule,    AppRoutingModule,    BrowserAnimationsModule,

@@ -8,3 +8,14 @@ export class HeaderTabs {
         ];
     }
 };
+
+export class MfTransHeaderTabs {
+    public header: any[];
+
+    constructor() {
+        this.header = [
+            { name: 'Dashboard', path: 'mf-dashboard' },
+            { name: 'Transactions', path: 'transactions' }
+        ];
+    }
+};
