@@ -110,6 +110,15 @@ export class HomeComponent implements OnInit {
     this.selectedAccountObject = {};
   }
 
+  onMfAccRefresh(data: any) {
+    let _category = this.categories.filter(cat => cat.id === data.category_id)[0];
+    let _categorySum = 0;
+    _category.accounts?.forEach(element => {
+      _categorySum += this.appService.formatStringValueToAmount(element.balance);
+    });
+    _category.amount = this.appService.formatAmountWithComma(_categorySum.toFixed(2));
+  }
+
   formatAmountWithComma(amount: string): string {
     return this.appService.formatAmountWithComma(amount);
   }
@@ -387,7 +396,92 @@ export class DialogRedeemContent {
     dialogRef?.close();
   }
 
-  onUpdateDialog(data: any) {
+  onRedeemDialog(data: any) {
+    if (data.menuType === 'MF Dashboard') {
+      if (data.redeemType === 'Partially') {
+        let _transObj_ = {
+          trans_desc : "Redeemed " + this.appService.formatAmountWithComma(data.rdmAmt.toFixed(2)) + " from " + data.scheme_name,
+          trans_date : this.appService.convertDate(data.rdmDte),
+          trans_amount : data.rdmAmt.toFixed(2),
+          trans_type : "DEBIT",
+          account_id : data.account_id,
+          user_id : this.appService.getAppUserId.toString()
+        };
+        this.appService.showLoader();
+        this.appService.saveTransactionOnly([_transObj_]).then(resp => {
+          if (resp[0].response === '200') {
+            let _accObj_ = {
+              account_id: data.account_id,
+              account_name: data.account_data.name,
+              category_id: data.account_data.category_id,
+              user_id: this.appService.getAppUserId,
+              balance: this.appService.formatStringValueToAmount(data.account_data.balance) - data.rdmAmt
+            };
+            this.appService.showLoader();
+            this.appService.updateAccount([_accObj_]).then(accResp => {
+              if (accResp[0].response === '200') {
+                let _mfTransObj_ = {
+                  scheme_code: data.scheme_code,
+                  account_id: data.account_id,
+                  trans_date: this.appService.convertDate(data.rdmDte),
+                  units: data.rdmUnits,
+                  nav: data.rdmNav,
+                  amount: data.rdmAmt,
+                  balance_units: 0.00
+                };
+                this.appService.saveMfTrans([_mfTransObj_]).then(mfResp => {
+                  if (mfResp[0].response === '200') {
+                    //
+                  } else {
+                    this.appService.showAlert(mfResp[0]);
+                  }
+                }, mfErr => {
+                  this.appService.showAlert(mfErr);
+                  this.appService.hideLoader();
+                });
+                // update mf trans
+              } else {
+                this.appService.showAlert(accResp[0]);
+              }
+              this.appService.hideLoader();
+            }, accErr => {
+              this.appService.showAlert(accErr);
+              this.appService.hideLoader();
+            });
+          } else {
+            this.appService.showAlert(resp[0]);
+          }
+          this.appService.hideLoader();
+        }, err => {
+          this.appService.showAlert(err);
+          this.appService.hideLoader();
+        });
+
+        let _inpObj_ = {
+          account_id: data.account_id,
+          scheme_code: data.scheme_code,
+          user_id: this.appService.getAppUserId
+        };
+        let _balUnits = 0.0, _invAmt = 0.0;
+        // this.appService.showLoader();
+        // this.appService.getMfTransByAccScheme(_inpObj_).then(resp => {
+        //   if (resp.response === '200') {
+        //     resp.dataArray.forEach((_a: any) => {
+        //       _balUnits += this.appService.roundUpAmt(_a.balance_units);
+        //       _invAmt += this.appService.roundUpAmt(_a.balance_units * _a.nav);
+        //     });
+        //     debugger;
+        //     let _updMfMapObj_ = {};
+        //   } else {
+        //     this.appService.showAlert(resp);
+        //   }
+        //   this.appService.hideLoader();
+        // }, err => {
+        //   this.appService.showAlert(err);
+        //   this.appService.hideLoader();
+        // });
+      }
+    }
     this.close(data);
   }
 

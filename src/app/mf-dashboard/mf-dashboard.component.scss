@@ -60,6 +60,12 @@ div[id^="mf_code_"], div[id^="mf_nav_amt_"], div[id^="mf_inv_amt_"], div[id^="mf
 .purple-val {
     color: purple;
 }
-.money-val {
+.right-align-val {
     text-align: right;
+}
+.font12-val {
+    font-size: 12px;
+}
+div#acc-xirr-val {
+    float: left;
 }

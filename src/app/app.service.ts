@@ -19,6 +19,7 @@ export class AppService {
     API_GET_MF_SCHEMES_BY_ACCOUNT: string = "getMfMappingByAccount";
     API_UPDATE_MF_MAPPING: string = "updateMfMapping";
     API_SAVE_TRANSACTION: string = "addTransactionProcess";
+    API_SAVE_TRANSACTION_ONLY: string = "storeTrans";
     API_UPLOAD_RECEIPT: string = "storeReceipt";
     API_GET_RECEIPT: string = "getReceiptImage";
     API_SAVE_CATEGORY: string = "storeCategory";
@@ -32,6 +33,10 @@ export class AppService {
     API_GET_ALL_SCHEDULED_TRANS: string = "getAllScheduledTrans";
     API_PROCESS_SCHEDULED_TRANS: string = "processScheduledTransaction";
     API_UPDATE_SCHEDULED_TRANS: string = "updateScheduledTrans";
+    API_GET_MF_TRANS_BY_ACC_SCHEME_ASC: string = "getMfTransByAccountSchemeAscending";
+    API_GET_MF_TRANS_BY_ACC_SCHEME: string = "getMfTransByAccountScheme";
+    API_GET_MF_TRANS_BY_ACC: string = "getMfTransByAccount";
+    API_SAVE_MF_TRANS: string = "storeMfTrans";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -75,6 +80,10 @@ export class AppService {
             amount = Number(amount);
         }
         return amount.toFixed(2);
+    }
+
+    roundUpAmt(amount: string | number) {
+        return Number(this.roundUpAmount(amount));
     }
 
     formatAmountWithComma(amount: string): string {
@@ -163,6 +172,24 @@ export class AppService {
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(_apiFuncParams)) + this.appendMandatoryParams()).toPromise();
     }
     
+    saveTransactionOnly(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_SAVE_TRANSACTION_ONLY;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;
+    }
+    
     uploadReceiptImage(apiFuncParams: any) : Observable<any> {
         this.apiFuncName = this.API_UPLOAD_RECEIPT;
         const headers = { 
@@ -211,6 +238,24 @@ export class AppService {
     
     saveAccount(apiFuncParams: any) : Promise<any> {
         this.apiFuncName = this.API_SAVE_ACCOUNT;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
+    }
+    
+    saveMfTrans(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_SAVE_MF_TRANS;
         const headers = { 
             'content-type': 'application/x-www-form-urlencoded',
             'accept': 'application/json'
@@ -394,6 +439,21 @@ export class AppService {
         });
         return promise; 
     }
+    
+    getMfTransByAccSchemeAsc(apiFuncParams: any) {
+        this.apiFuncName = this.API_GET_MF_TRANS_BY_ACC_SCHEME_ASC;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+    }
+    
+    getMfTransByAccScheme(apiFuncParams: any) {
+        this.apiFuncName = this.API_GET_MF_TRANS_BY_ACC_SCHEME;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+    }
+    
+    getMfTransByAcc(apiFuncParams: any) {
+        this.apiFuncName = this.API_GET_MF_TRANS_BY_ACC;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+    }
 
     showLoader() {
         let _loaderDiv = document.getElementById("loader-container");
@@ -444,9 +504,14 @@ export class AppService {
         return _temp[2] + "-" + this.getMonthName(_temp[1]) + "-" + _temp[0];
     }
 
-    getDate(): string {
-        let _currDate = new Date();
-        return _currDate.getFullYear() + "-" + (_currDate.getMonth() + 1) + "-" + _currDate.getDate();
+    getDate(_currDate? : string): string {
+        let _cDate: Date;
+        if (_currDate === undefined || _currDate === null) {
+            _cDate = new Date();
+        } else {
+            _cDate = new Date(_currDate);
+        }
+        return _cDate.getFullYear() + "-" + (_cDate.getMonth() + 1) + "-" + _cDate.getDate();
     }
 
     convertDate(_date?: any) {
@@ -462,9 +527,12 @@ export class AppService {
         return AppConstant.MONTH[parseInt(val)];
     }
 
-    showAlert(msg: string, actionTxt?: string) {
+    showAlert(msg: string | object, actionTxt?: string) {
         if (actionTxt == undefined || actionTxt == null) {
             actionTxt = "Close";
+        }
+        if (typeof msg !== 'string') {
+            msg = JSON.stringify(msg);
         }
         this.snackBar.open(msg, actionTxt);
         setTimeout(() => {
@@ -477,5 +545,59 @@ export class AppService {
             return 0;
         }
         return parseFloat((amt.split(AppConstant.RUPEE_SYMBOL)[1]).replace(/,/g, ""));
+    }
+}
+
+
+@Injectable({providedIn:'root'})
+export class XIRR {
+    constructor() {}
+    private tol = 0.001;
+
+    dateDiff(d1: Date, d2: Date) {
+        let day = 24*60*60*1000;
+        let diff = (d1.getTime() - d2.getTime());
+        return diff/day;
+    }
+
+    f_xirr(p: number, dt: Date, dt0: Date, x: number) {
+        let calcXirr = p * Math.pow((1.0 + x), (this.dateDiff(dt0,dt) / 365.0));
+        return calcXirr;
+    }
+
+    df_xirr(p: number, dt: Date, dt0: Date, x: number) {
+        return (1.0 / 365.0) * this.dateDiff(dt0,dt) * p * Math.pow((x + 1.0), ((this.dateDiff(dt0,dt) / 365.0) - 1.0));
+    }
+
+    total_f_xirr(payments: number[], days: Date[], x: number) {
+        let resf = 0.0;
+        for (var i = 0; i < payments.length; i++) {
+            resf = resf + this.f_xirr(payments[i], days[i], days[0], x);
+        }
+        return resf;
+    }
+
+    total_df_xirr(payments: number[], days: Date[], x: number) {
+        let resf = 0.0;
+        for (var i = 0; i < payments.length; i++) {
+            resf = resf + this.df_xirr(payments[i], days[i], days[0], x);
+        }
+        return resf;
+    }
+
+    getXirrVal(guess: number, payments: number[], days: Date[]) {
+        let x0 = guess;
+        let x1 = 0.0;
+        let err = 1e+100;
+        while (err > this.tol) {
+            var dfXirr = this.total_df_xirr(payments, days, x0);
+            if (dfXirr == 0) {
+                break;
+            }
+            x1 = x0 - this.total_f_xirr(payments, days, x0) / dfXirr;
+            err = Math.abs(x1 - x0);
+            x0 = x1;
+        }
+        return x0;
     }
 }

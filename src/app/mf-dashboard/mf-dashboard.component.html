@@ -6,7 +6,10 @@
             </div>
         </div>
     </div>
-    <div id="refreshMfBtn"><span (click)="refreshMfData()">Refresh</span></div>
+    <div id="refreshMfBtn">
+        <div id="acc-xirr-val">XIRR: {{overallXirr}}%</div>
+        <span (click)="refreshMfData()">Refresh</span>
+    </div>
 </div>
 <app-transactions *ngIf="selectedTab === 'transactions' && selectedAccount != '' && selectedAccountObject.is_mf == true"
 [selectedAccount]="selectedAccount" [selectedAccountObject]=selectedAccountObject [(refreshTransactions)]="refreshTransactions"
@@ -31,6 +34,10 @@
                 <div id="mf_avg_nav_{{i}}">Avg NAV: <span class="purple-val">{{item.avg_nav}}</span></div>
             </div>
         </div>
-        <div id="mf_curr_val_{{i}}" class="money-val positive-val bold-val">{{item.curr_amt}}</div>
+        <div id="mf_curr_val_{{i}}" class="right-align-val">
+            <div class="money-val positive-val bold-val">{{item.curr_amt}}</div>
+            <div class="font12-val purple-val bold-val">XIRR : {{item.xirr_val}}%</div>
+            <div class="font12-val purple-val bold-val">Abs. Return : {{item.abs_return}}%</div>
+        </div>
     </div>
 </div>

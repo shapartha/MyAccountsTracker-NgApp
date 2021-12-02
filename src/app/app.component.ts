@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Router } from "@angular/router"
 import { AppService } from './app.service';
 import { AppMenuItems } from './constant/app-const';
 
@@ -14,7 +13,7 @@ export class AppComponent {
   menuItems: any[];
   isShown: boolean = false;
 
-  constructor(private router: Router, private appService: AppService) {
+  constructor(private appService: AppService) {
     this.menuItems = this.menu.menuItem!;
   }
 
