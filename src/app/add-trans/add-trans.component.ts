@@ -131,6 +131,12 @@ export class AddTransComponent implements OnInit {
     this.saveTrans(trans);
   }
 
+  onChangeTransferTrans(data: any) {
+    if (!data.checked) {
+      this.toAccDetails = "";
+    }
+  }
+
   saveTrans(trans: Transaction) {
     this.saveTransaction = {};
     this.saveTransactionTrans = {};

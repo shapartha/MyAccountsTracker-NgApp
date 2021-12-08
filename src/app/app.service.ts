@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { AppConstant } from './constant/app-const';
 import { Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 @Injectable({providedIn:'root'})
 export class AppService {
@@ -37,12 +38,15 @@ export class AppService {
     API_GET_MF_TRANS_BY_ACC_SCHEME: string = "getMfTransByAccountScheme";
     API_GET_MF_TRANS_BY_ACC: string = "getMfTransByAccount";
     API_SAVE_MF_TRANS: string = "storeMfTrans";
+    API_UPDATE_MF_TRANS: string = "updateMfTrans";
+    API_DELETE_MF_MAPPING: string = "deleteMfMapping";
+    API_GET_ALL_RECUR_TRANS: string = "getRecTransByUser";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
     API_FETCH_MF_NAV: string = "https://api.mfapi.in/mf/";
 
-    constructor(private http: HttpClient, private snackBar: MatSnackBar) {
+    constructor(private http: HttpClient, private snackBar: MatSnackBar, private router: Router) {
         if (this.getAppToken == "") {
             this.invokeTokenCall();
         }
@@ -75,27 +79,34 @@ export class AppService {
         return _apiJsonParams;
     }
 
-    roundUpAmount(amount: string | number) {
+    roundUpAmount(amount: string | number, digitCount?: number) {
         if (typeof amount == 'string') {
             amount = Number(amount);
         }
-        return amount.toFixed(2);
+        let _dCount = digitCount;
+        if (_dCount === undefined || _dCount === null) {
+            _dCount = 2;
+        }
+        return amount.toFixed(_dCount);
     }
 
     roundUpAmt(amount: string | number) {
         return Number(this.roundUpAmount(amount));
     }
 
-    formatAmountWithComma(amount: string): string {
-      var amountVal = amount.split(".");
-      var formattedAmount = Math.abs(parseInt(amountVal[0]));
-      var isNegative = parseInt(amountVal[0]) < 0 ? "-" : "";
-      var formattedAmountText = formattedAmount.toLocaleString();
-      if (amountVal.length > 1) {
-        return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText + "." + amountVal[1].substr(0, 2);
-      } else {
-        return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText + ".00";
-      }
+    formatAmountWithComma(amount: string | number): string {
+        if (typeof amount == 'number') {
+            amount = amount.toString();
+        }
+        var amountVal = amount.split(".");
+        var formattedAmount = Math.abs(parseInt(amountVal[0]));
+        var isNegative = parseInt(amountVal[0]) < 0 ? "-" : "";
+        var formattedAmountText = formattedAmount.toLocaleString();
+        if (amountVal.length > 1) {
+            return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText + "." + amountVal[1].substr(0, 2);
+        } else {
+            return isNegative + AppConstant.RUPEE_SYMBOL + formattedAmountText + ".00";
+        }
     }
 
     invokeTokenCall() {
@@ -272,8 +283,44 @@ export class AppService {
         return promise;       
     }
     
+    updateMfTrans(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_UPDATE_MF_TRANS;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
+    }
+    
     deleteCategory(apiFuncParams: any) : Promise<any> {
         this.apiFuncName = this.API_DELETE_CATEGORY;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
+    }
+    
+    deleteMfMapping(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_DELETE_MF_MAPPING;
         const headers = { 
             'content-type': 'application/x-www-form-urlencoded',
             'accept': 'application/json'
@@ -424,6 +471,11 @@ export class AppService {
         });
         return promise;   
     }
+    
+    getAllRecurringTrans(apiFuncParams: any) {
+        this.apiFuncName = this.API_GET_ALL_RECUR_TRANS;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+    }
 
     fetchMfNav(schemeCode: any) {
         const headers = { 
@@ -546,6 +598,15 @@ export class AppService {
         }
         return parseFloat((amt.split(AppConstant.RUPEE_SYMBOL)[1]).replace(/,/g, ""));
     }
+
+    handleTabChange(uri: any) {
+      this.router.navigate([uri.path]);
+    }
+
+    getClassVal(value: any) {
+      let _type = value;
+      return _type.toUpperCase().indexOf("DEBIT") != -1 ? 'negative-val' : 'positive-val';
+    }
 }
 
 
@@ -589,7 +650,7 @@ export class XIRR {
         let x0 = guess;
         let x1 = 0.0;
         let err = 1e+100;
-        while (err > this.tol) {
+        while (err > this.tol && x1 <= 100000) {
             var dfXirr = this.total_df_xirr(payments, days, x0);
             if (dfXirr == 0) {
                 break;

@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { AppService, XIRR } from '../app.service';
 import { MfTransHeaderTabs } from '../constant/header-tabs';
 import { Account } from '../model/account';
-import { SaveTransaction } from '../model/transaction';
 
 @Component({
   selector: 'app-mf-dashboard',
@@ -25,12 +24,18 @@ export class MfDashboardComponent implements OnInit, OnChanges {
   investmentValuation: number = 0;
   investmentChange: number = 0;
   overallXirr: number = 0.00;
+  apiRespData: any | any[];
 
   constructor(public router: Router, public appService: AppService, public xirrService: XIRR) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.selectedAccount && !changes.selectedAccount.firstChange) {
       this.populateDashboard();
+    }
+    if (changes.refreshTransactions && changes.refreshTransactions.currentValue === true) {
+      this.populateDashboard();
+      this.refreshTransactions = false;
+      this.refreshTransactionsChange.emit(this.refreshTransactions);
     }
   }
 
@@ -74,43 +79,38 @@ export class MfDashboardComponent implements OnInit, OnChanges {
     });
   }
 
-  populateXIRR() {
-    this.mfMappings.forEach(element => {
+  async populateXIRR() {
+    this.appService.showLoader();
+    this.mfMappings.forEach(async element => {
       let _inpObj_ = {
         scheme_code: element.scheme_code,
         account_id: element.account_id
       };
-      this.appService.showLoader();
-      this.appService.getMfTransByAccSchemeAsc(_inpObj_).then(resp => {
-        if (resp.response === '200') {
-          let _payments: number[] = [];
-          let _days: Date[] = [];
-          resp.dataArray.forEach((itm: any) => {
-            if (itm.trans_type.toUpperCase() === 'CREDIT') {
-              _payments.push(0 - itm.amount);
-            } else {
-              _payments.push(Number(this.appService.roundUpAmount(itm.amount)));
-            }
-            _days.push(new Date(itm.trans_date));
-          });
-          _payments.push(Number(this.appService.roundUpAmount(element.nav_amt * element.units)));
-          _days.push(new Date(element.nav_date));
-          
-          let xirrVal = this.xirrService.getXirrVal(0.1, _payments, _days);
-          if (isNaN(xirrVal) || !isFinite(xirrVal)) {
-            xirrVal = 0.00;
+      const mfTransAscResp = await this.appService.getMfTransByAccSchemeAsc(_inpObj_);
+      if (mfTransAscResp.response === '200') {
+        let _payments: number[] = [];
+        let _days: Date[] = [];
+        mfTransAscResp.dataArray.forEach((itm: any) => {
+          if (itm.trans_type.toUpperCase() === 'CREDIT') {
+            _payments.push(0 - itm.amount);
           } else {
-            xirrVal = Number(this.appService.roundUpAmount(xirrVal * 100));
+            _payments.push(Number(this.appService.roundUpAmount(itm.amount)));
           }
-          element.xirr_val = xirrVal;
+          _days.push(new Date(itm.trans_date));
+        });
+        _payments.push(Number(this.appService.roundUpAmount(element.nav_amt * element.units)));
+        _days.push(new Date(element.nav_date));
+        
+        let xirrVal = this.xirrService.getXirrVal(0.1, _payments, _days);
+        if (isNaN(xirrVal) || !isFinite(xirrVal)) {
+          xirrVal = 0.00;
         } else {
-          this.appService.showAlert(resp);
+          xirrVal = Number(this.appService.roundUpAmount(xirrVal * 100));
         }
-        this.appService.hideLoader();
-      }, err => {
-        this.appService.showAlert(err);
-        this.appService.hideLoader();
-      });
+        element.xirr_val = xirrVal;
+      } else {
+        this.appService.showAlert(mfTransAscResp);
+      }
       let _absYearlyReturn: number = 0;
       _absYearlyReturn = this.appService.roundUpAmt(((this.appService.formatStringValueToAmount(element.curr_amt) - element.inv_amt) / element.inv_amt) * 100);
       element.abs_return = _absYearlyReturn;
@@ -119,35 +119,31 @@ export class MfDashboardComponent implements OnInit, OnChanges {
       account_id: this.selectedAccountObject.id,
       user_id: this.appService.getAppUserId
     }
-    this.appService.getMfTransByAcc(_accInpObj_).then(resp => {
-      if (resp.response === '200') {
-        let _payments: number[] = [];
-          let _days: Date[] = [];
-          resp.dataArray.forEach((itm: any) => {
-            if (itm.trans_type.toUpperCase() === 'CREDIT') {
-              _payments.push(0 - itm.amount);
-            } else {
-              _payments.push(Number(this.appService.roundUpAmount(itm.amount)));
-            }
-            _days.push(new Date(itm.trans_date));
-          });
-          _payments.push(Number(this.appService.formatStringValueToAmount(this.selectedAccountObject.balance).toFixed(2)));
-          _days.push(new Date());
-          let xirrVal = this.xirrService.getXirrVal(0.1, _payments, _days);
-          if (isNaN(xirrVal) || !isFinite(xirrVal)) {
-            xirrVal = 0.00;
+    const mfTransResp = await this.appService.getMfTransByAcc(_accInpObj_);
+    if (mfTransResp.response === '200') {
+      let _payments: number[] = [];
+        let _days: Date[] = [];
+        mfTransResp.dataArray.forEach((itm: any) => {
+          if (itm.trans_type.toUpperCase() === 'CREDIT') {
+            _payments.push(0 - itm.amount);
           } else {
-            xirrVal = Number(this.appService.roundUpAmount(xirrVal * 100));
+            _payments.push(Number(this.appService.roundUpAmount(itm.amount)));
           }
-          this.overallXirr = xirrVal;
-      } else {
-        this.appService.showAlert(resp);
-      }
-      this.appService.hideLoader();
-    }, err => {
-      this.appService.showAlert(err);
-      this.appService.hideLoader();
-    });
+          _days.push(new Date(itm.trans_date));
+        });
+        _payments.push(Number(this.appService.formatStringValueToAmount(this.selectedAccountObject.balance).toFixed(2)));
+        _days.push(new Date());
+        let xirrVal = this.xirrService.getXirrVal(0.1, _payments, _days);
+        if (isNaN(xirrVal) || !isFinite(xirrVal)) {
+          xirrVal = 0.00;
+        } else {
+          xirrVal = Number(this.appService.roundUpAmount(xirrVal * 100));
+        }
+        this.overallXirr = xirrVal;
+    } else {
+      this.appService.showAlert(mfTransResp);
+    }
+    this.appService.hideLoader();
   }
 
   ngOnInit(): void {
@@ -167,6 +163,7 @@ export class MfDashboardComponent implements OnInit, OnChanges {
     this.investmentValuation = 0;
     this.appService.showLoader();
     var counter = 0;
+    this.appService.showLoader();
     this.mfMappings.forEach(element => {
       this.appService.fetchMfNav(element.scheme_code).then((resp: any) => {
         var _mappedMf_ = this.mfMappings.filter(mfMap => mfMap.scheme_code === element.scheme_code)[0];
@@ -178,9 +175,8 @@ export class MfDashboardComponent implements OnInit, OnChanges {
         counter++;
         if (counter === this.mfMappings.length) {
           this.updateMfMapping();
+          this.appService.hideLoader();
         }
-        this.appService.hideLoader();
-        this.populateXIRR();
       }, err => {
         this.appService.showAlert("Error Occurred Fetching Latest MF NAVs -> " + JSON.stringify(err));
         this.appService.hideLoader();
@@ -189,8 +185,7 @@ export class MfDashboardComponent implements OnInit, OnChanges {
     });
   }
 
-  updateMfMapping() {
-    this.appService.showLoader();
+  async updateMfMapping() {
     let _updObj_: any[] = [];
     this.mfMappings.forEach(element => {
       let _indObj_ = {
@@ -204,15 +199,36 @@ export class MfDashboardComponent implements OnInit, OnChanges {
       }
       _updObj_.push(_indObj_);
     });
-    this.appService.updateMfMapping(_updObj_).then(resp => {
-      if (this.validateMfMappingResponse(resp)) {
-        this.updateAccountData();
+    this.investmentChange = Number(this.appService.roundUpAmount(this.investmentValuation - this.appService.formatStringValueToAmount(this.selectedAccountObject.balance)));
+    if (this.investmentChange != 0) {
+      this.apiRespData = await this.appService.updateMfMapping(_updObj_);
+      if (this.validateMfMappingResponse(this.apiRespData)) {
+          let _acc = {
+            account_id: this.selectedAccountObject.id,
+            balance: this.appService.roundUpAmt(this.investmentValuation),
+            user_id: this.appService.getAppUserId
+          };
+          this.apiRespData = await this.appService.updateAccount([_acc]);
+          if (this.apiRespData[0].response === '200') {
+            this.selectedAccountObject.balance = this.appService.formatAmountWithComma(_acc.balance.toFixed(2));
+            this.selectedAccountObjectChange.emit(this.selectedAccountObject);
+            let _inpData = {
+              trans_amount : this.investmentChange.toString(),
+              account_id : this.selectedAccountObject.id,
+              trans_date : this.appService.convertDate(),
+              trans_desc : "Periodic Profit/Loss",
+              trans_type : (this.investmentChange < 0) ? "DEBIT" : "CREDIT",
+              user_id : this.appService.getAppUserId.toString()
+            }
+            this.apiRespData = await this.appService.saveTransactionOnly([_inpData]);
+            this.populateXIRR();
+          } else {
+            this.appService.showAlert(this.apiRespData);
+          }
+      } else {
+        this.appService.showAlert("Validation of MF Mapping Update Response Failed !");
       }
-      this.appService.hideLoader();
-    }, err => {
-      this.appService.showAlert(err);
-      this.appService.hideLoader();
-    });
+    }
   }
 
   validateMfMappingResponse(data: any) {
@@ -223,42 +239,6 @@ export class MfDashboardComponent implements OnInit, OnChanges {
       }
     });
     return _resp;
-  }
-
-  updateAccountData() {
-    this.investmentChange = Number(this.appService.roundUpAmount(this.investmentValuation - this.appService.formatStringValueToAmount(this.selectedAccountObject.balance)));
-    if (this.investmentChange != 0) {
-      let _acc = {
-        account_id: this.selectedAccountObject.id,
-        balance: this.appService.roundUpAmt(this.investmentValuation),
-        user_id: this.appService.getAppUserId
-      };
-      this.appService.showLoader();
-      this.appService.updateAccount([_acc]).then(resp => {
-        if (resp[0].response === '200') {
-          this.selectedAccountObject.balance = this.appService.formatAmountWithComma(_acc.balance.toFixed(2));
-          this.selectedAccountObjectChange.emit(this.selectedAccountObject);
-          this.addTransactionData(this.investmentChange);
-        } else {
-          this.appService.showAlert(resp);
-        }
-        this.appService.hideLoader();
-      }, err => {
-        this.appService.showAlert(err);
-        this.appService.hideLoader();
-      });
-    }
-  }
-
-  addTransactionData(diffAmt: number) {
-    let _inpData = new SaveTransaction();
-    _inpData.amount = diffAmt.toString();
-    _inpData.acc_id = this.selectedAccountObject.id;
-    _inpData.date = this.appService.convertDate();
-    _inpData.desc = "Periodic Profit/Loss";
-    _inpData.type = (diffAmt < 0) ? "DEBIT" : "CREDIT";
-    _inpData.user_id = this.appService.getAppUserId.toString();
-    this.appService.saveTransaction(JSON.stringify(_inpData));
   }
 
   onContextMenuMf(event: MouseEvent, item: any, type: string) {

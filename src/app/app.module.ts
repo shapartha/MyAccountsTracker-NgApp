@@ -23,6 +23,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatFileUploadModule } from 'angular-material-fileupload';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AddCategoryComponent } from './add-category/add-category.component';
 import { AppInterceptor } from './app.interceptor';
@@ -32,6 +33,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { DeleteDialogScheduleTrans, ScheduledTransComponent, UpdateDialogScheduleTrans} from './scheduled-trans/scheduled-trans.component';
 import { MfDashboardComponent } from './mf-dashboard/mf-dashboard.component';
+import { RecurringTransComponent } from './recurring-trans/recurring-trans.component';
 
 @NgModule({
   declarations: [
@@ -44,13 +46,13 @@ import { MfDashboardComponent } from './mf-dashboard/mf-dashboard.component';
     AddTransComponent,
     AddCategoryComponent,
     AddAccountComponent,
-    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent
+    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent
   ],
   imports: [
     BrowserModule,    HttpClientModule,    FormsModule,    AppRoutingModule,    BrowserAnimationsModule,
     MatDatepickerModule,    MatFormFieldModule,    MatNativeDateModule,    MatInputModule,    MatSlideToggleModule,
     MatRadioModule,    MatSelectModule,    MatButtonModule,    MatSnackBarModule,    MatFileUploadModule,    MatToolbarModule,
-    NoopAnimationsModule,    MatMenuModule,    MatDialogModule
+    NoopAnimationsModule,    MatMenuModule,    MatDialogModule, MatTooltipModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AppInterceptor, multi: true },

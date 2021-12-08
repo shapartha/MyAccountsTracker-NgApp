@@ -6,7 +6,7 @@
             </div>
         </div>
     </div>
-    <div id="refreshMfBtn">
+    <div id="refreshMfBtn" *ngIf="selectedAccount !== '' && mfMappings !== undefined && mfMappings.length !== 0">
         <div id="acc-xirr-val">XIRR: {{overallXirr}}%</div>
         <span (click)="refreshMfData()">Refresh</span>
     </div>

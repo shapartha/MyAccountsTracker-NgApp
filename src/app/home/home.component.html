@@ -28,7 +28,7 @@
       </ng-container>
       <ng-container *ngIf="selectedAccount != '' && selectedAccountObject.is_mf == '1'">
         <div id="transactions-header">Showing MF Dashboard & Transactions for "{{selectedAccount}}" : <span id="clear-account" *ngIf="selectedAccount != '' && selectedAccount != 'ALL'" (click)="clearAccount()">Clear Account</span></div>
-        <app-mf-dashboard [selectedAccount]=selectedAccount [(selectedAccountObject)]=selectedAccountObject [(refreshTransactions)]="refreshTransactions"
+        <app-mf-dashboard [selectedAccount]=selectedAccount [(selectedAccountObject)]=selectedAccountObject [(refreshTransactions)]="refreshMfTransactions"
         (onContextMenuEvent)="onContextMenuEvent($event)" (selectedAccountObjectChange)="onMfAccRefresh($event)"></app-mf-dashboard>
       </ng-container>
       <ng-container *ngIf="selectedAccount != '' && selectedAccountObject.is_equity == '1'">

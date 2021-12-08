@@ -4,7 +4,8 @@ export class HeaderTabs {
     constructor() {
         this.header = [
             { name: 'Home', path: 'home' },
-            { name: 'Scheduled Transactions', path: 'scheduled-trans' }
+            { name: 'Scheduled Transactions', path: 'scheduled-trans' },
+            { name: 'Recurring Transactions', path: 'recurring-trans' }
         ];
     }
 };

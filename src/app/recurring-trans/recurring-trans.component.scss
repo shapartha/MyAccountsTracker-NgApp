@@ -1,0 +1,67 @@
+#app-header {
+    display: flex;
+}
+#app-main {
+    display: block;
+}
+.header-tab {
+    display: inline-flex;
+    border-radius: 5px;
+    padding: 5px 15px;
+    min-width: 120px;
+    cursor: pointer;
+    text-align: center;
+    background: linear-gradient(317deg, #d5b469 0%, #f3ddd0 50%, #f79c87 100%);
+}
+.r-transaction-item {
+    background: #fafad2;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+.no-r-trans-header {
+    padding: 10px;
+    text-align: center;
+}
+
+div[id^="r_trans_acc_"] {
+    width: 25%;
+    text-align: left;
+    color: purple;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+div[id^="r_trans_rec_date_"] {
+    width: 25%;
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+div[id^="r_trans_exec_date_"] {
+    width: 25%;
+    text-align: center;
+    color: darkgreen;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+div[id^="r_trans_amount_"] {
+    width: 25%;
+    text-align: right;
+}
+
+span[id^="r_trans_desc_"] {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.negative-val {
+    color: #911e1e;
+}
+.positive-val {
+    color: #156410;
+}

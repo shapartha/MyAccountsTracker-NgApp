@@ -20,6 +20,7 @@ export class HomeComponent implements OnInit {
   @ViewChild(MatMenuTrigger)
   contextMenu!: MatMenuTrigger;
   refreshTransactions: boolean = false;
+  refreshMfTransactions: boolean = false;
   categories: Category[] = [];
   accounts: Account[] = [];
   currentTab: string = "Login";
@@ -202,6 +203,16 @@ export class HomeComponent implements OnInit {
       id: 'dialog-redeem-elements'
     });
     dialogRef.disableClose = true;
+    dialogRef.afterClosed().subscribe(result => {
+      if (item.menuType === 'MF Dashboard') {
+        this.refreshMfTransactions = true;
+        let _cat = this.categories.filter(_b => _b.id === this.selectedAccountObject.category_id)[0];
+        let _accnt = this.accounts.filter((_a: any) => _a.id === this.selectedAccountObject.id)[0]
+        _cat.amount = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_cat.amount) - 
+                      (this.appService.formatStringValueToAmount(_accnt.balance) - result.data.newAccBalance));
+        _accnt.balance = this.appService.formatAmountWithComma(this.appService.roundUpAmt(result.data.newAccBalance));
+      }
+    });
   }
 
   openUpdateDialog(item: any) {
@@ -396,93 +407,116 @@ export class DialogRedeemContent {
     dialogRef?.close();
   }
 
-  onRedeemDialog(data: any) {
+  async onRedeemDialog(data: any) {
+    this.appService.showLoader();
     if (data.menuType === 'MF Dashboard') {
-      if (data.redeemType === 'Partially') {
-        let _transObj_ = {
-          trans_desc : "Redeemed " + this.appService.formatAmountWithComma(data.rdmAmt.toFixed(2)) + " from " + data.scheme_name,
-          trans_date : this.appService.convertDate(data.rdmDte),
-          trans_amount : data.rdmAmt.toFixed(2),
-          trans_type : "DEBIT",
-          account_id : data.account_id,
-          user_id : this.appService.getAppUserId.toString()
-        };
-        this.appService.showLoader();
-        this.appService.saveTransactionOnly([_transObj_]).then(resp => {
-          if (resp[0].response === '200') {
-            let _accObj_ = {
-              account_id: data.account_id,
-              account_name: data.account_data.name,
-              category_id: data.account_data.category_id,
-              user_id: this.appService.getAppUserId,
-              balance: this.appService.formatStringValueToAmount(data.account_data.balance) - data.rdmAmt
-            };
-            this.appService.showLoader();
-            this.appService.updateAccount([_accObj_]).then(accResp => {
-              if (accResp[0].response === '200') {
-                let _mfTransObj_ = {
-                  scheme_code: data.scheme_code,
-                  account_id: data.account_id,
-                  trans_date: this.appService.convertDate(data.rdmDte),
-                  units: data.rdmUnits,
-                  nav: data.rdmNav,
-                  amount: data.rdmAmt,
-                  balance_units: 0.00
-                };
-                this.appService.saveMfTrans([_mfTransObj_]).then(mfResp => {
-                  if (mfResp[0].response === '200') {
-                    //
-                  } else {
-                    this.appService.showAlert(mfResp[0]);
-                  }
-                }, mfErr => {
-                  this.appService.showAlert(mfErr);
-                  this.appService.hideLoader();
-                });
-                // update mf trans
-              } else {
-                this.appService.showAlert(accResp[0]);
-              }
-              this.appService.hideLoader();
-            }, accErr => {
-              this.appService.showAlert(accErr);
-              this.appService.hideLoader();
-            });
-          } else {
-            this.appService.showAlert(resp[0]);
-          }
-          this.appService.hideLoader();
-        }, err => {
-          this.appService.showAlert(err);
-          this.appService.hideLoader();
-        });
-
-        let _inpObj_ = {
+      let _transObj_ = {
+        trans_desc : "Redeemed " + this.appService.formatAmountWithComma(data.rdmAmt.toFixed(2)) + " from " + data.scheme_name,
+        trans_date : this.appService.convertDate(data.rdmDte),
+        trans_amount : data.rdmAmt.toFixed(2),
+        trans_type : "DEBIT",
+        account_id : data.account_id,
+        user_id : this.appService.getAppUserId.toString()
+      };
+      const transResp = await this.appService.saveTransactionOnly([_transObj_]);
+      if (transResp[0].response === '200') {
+        let _accObj_ = {
           account_id: data.account_id,
-          scheme_code: data.scheme_code,
-          user_id: this.appService.getAppUserId
+          account_name: data.account_data.name,
+          category_id: data.account_data.category_id,
+          user_id: this.appService.getAppUserId,
+          balance: this.appService.formatStringValueToAmount(data.account_data.balance) - data.rdmAmt
         };
-        let _balUnits = 0.0, _invAmt = 0.0;
-        // this.appService.showLoader();
-        // this.appService.getMfTransByAccScheme(_inpObj_).then(resp => {
-        //   if (resp.response === '200') {
-        //     resp.dataArray.forEach((_a: any) => {
-        //       _balUnits += this.appService.roundUpAmt(_a.balance_units);
-        //       _invAmt += this.appService.roundUpAmt(_a.balance_units * _a.nav);
-        //     });
-        //     debugger;
-        //     let _updMfMapObj_ = {};
-        //   } else {
-        //     this.appService.showAlert(resp);
-        //   }
-        //   this.appService.hideLoader();
-        // }, err => {
-        //   this.appService.showAlert(err);
-        //   this.appService.hideLoader();
-        // });
+        const accResp = await this.appService.updateAccount([_accObj_]);
+        if (accResp[0].response === '200') {
+          let _mfTransObj_ = {
+            scheme_code: data.scheme_code,
+            account_id: data.account_id,
+            trans_date: this.appService.convertDate(data.rdmDte),
+            units: data.rdmUnits,
+            nav: data.rdmNav,
+            amount: data.rdmAmt,
+            balance_units: 0.00
+          };
+          const mfTrans = await this.appService.saveMfTrans([_mfTransObj_]);
+          let _inpObj_ = {
+            account_id: data.account_id,
+            scheme_code: data.scheme_code,
+            user_id: this.appService.getAppUserId
+          };
+          let _balUnits = 0.0, _invAmt = 0.0;
+          const getMfTransResp = await this.appService.getMfTransByAccScheme(_inpObj_);
+          let _redeemedUnits = _mfTransObj_.units;
+          let _toUpdateMfTrans : any[] = [];
+          for (var x = 0; x < getMfTransResp.dataArray.length; x++) {
+            let _b = getMfTransResp.dataArray[x];
+            let _avlBalanceUnits = _b.balance_units;
+            if (_avlBalanceUnits >= _redeemedUnits) {
+              _avlBalanceUnits -= _redeemedUnits;
+              _redeemedUnits = 0;
+            } else {
+              _redeemedUnits -= _avlBalanceUnits;
+              _avlBalanceUnits = 0;
+            }
+            _b.balance_units = _avlBalanceUnits;
+            _toUpdateMfTrans.push(_b);
+            if (_redeemedUnits == 0) {
+              break;
+            }
+          }
+          const updMfTransResp = await this.appService.updateMfTrans(_toUpdateMfTrans);
+          if (mfTrans[0].response === '200' && getMfTransResp.response === '200' && updMfTransResp[0].response === '200') {
+            if (data.redeemType === 'Partially') {
+              const getMfTransResp = await this.appService.getMfTransByAccScheme(_inpObj_);
+              getMfTransResp.dataArray.forEach((_a: any) => {
+                _balUnits += this.appService.roundUpAmt(_a.balance_units);
+                _invAmt += this.appService.roundUpAmt(_a.balance_units * _a.nav);
+              });
+              let _updMfMapObj_ = {
+                scheme_name: data.scheme_name,
+                nav_amt: data.nav_amt,
+                units: _balUnits,
+                inv_amt: _invAmt,
+                nav_date: this.appService.convertDate(data.nav_date),
+                avg_nav: Number((_invAmt / _balUnits).toFixed(4)),
+                account_id: data.account_id,
+                scheme_code: data.scheme_code
+              };
+              const updMfMapResp = await this.appService.updateMfMapping([_updMfMapObj_]);
+              if (updMfMapResp[0].response === '200') {
+                this.appService.showAlert("Partial Redemption Successful");
+                data.newInvAmt = _updMfMapObj_.inv_amt;
+                data.newUnits = _updMfMapObj_.units;
+                data.newAvgNav = _updMfMapObj_.avg_nav;
+                data.newAccBalance = _accObj_.balance;
+              } else {
+                this.appService.showAlert(updMfMapResp[0]);
+              }
+            } else {
+              let _deleteObj_ = {
+                account_id: data.account_id,
+                scheme_code: data.scheme_code
+              };
+              const deleteMfMapResp = await this.appService.deleteMfMapping([_deleteObj_]);
+              if (deleteMfMapResp[0].response === '200') {
+                this.appService.showAlert("Full Redemption Successful");
+                data.newAccBalance = _accObj_.balance;
+              } else {
+                this.appService.showAlert(deleteMfMapResp[0]);
+              }
+            }
+          } else {
+            this.appService.showAlert(mfTrans[0]);
+          }
+        } else {
+          this.appService.showAlert(accResp[0]);
+        }
+      } else {
+        this.appService.showAlert(transResp[0]);
       }
     }
     this.close(data);
+    this.appService.hideLoader();
   }
 
   onChangeRedeemAmount(data: any) {
@@ -490,10 +524,9 @@ export class DialogRedeemContent {
   }
 
   close(data: any) {
-    const dialogRef = this.dialog.getDialogById('dialog-update-elements');
+    const dialogRef = this.dialog.getDialogById('dialog-redeem-elements');
     if (dialogRef != undefined && dialogRef != null) {
       dialogRef.close({ data : data });
-      this.appService.showAlert(data.menuType + " updated successfully", "Close");
     }
   }
 }

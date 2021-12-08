@@ -2,7 +2,6 @@ import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Router } from '@angular/router';
 import { AppService } from '../app.service';
 import { AppConstant } from '../constant/app-const';
 import { HeaderTabs } from '../constant/header-tabs';
@@ -22,9 +21,10 @@ export class ScheduledTransComponent implements OnInit {
   @ViewChild(MatMenuTrigger)
   contextMenu!: MatMenuTrigger;
 
-  constructor(public appService: AppService, public router: Router, public dialog: MatDialog, public domSanitizer: DomSanitizer) { }
+  constructor(public appService: AppService, public dialog: MatDialog, public domSanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
+    this.appService.showLoader();
     this.appService.getAllScheduledTrans({ user_id: this.appService.getAppUserId}).then(resp => {
       if (resp.response === '200') {
         resp.dataArray.forEach((obj: any) => {
@@ -64,7 +64,7 @@ export class ScheduledTransComponent implements OnInit {
   }
 
   handleTabChange(uri: any) {
-    this.router.navigate([uri.path]);
+    this.appService.handleTabChange(uri);
   }
 
   getClassVal(value: any) {

@@ -7,7 +7,7 @@
       </div>
     </div>
     <div id="app-main">
-      <div *ngIf="s_trans === undefined || s_trans === null || s_trans.size === 0" class="no-s-trans-header">
+      <div *ngIf="s_trans === undefined || s_trans === null || s_trans.length === 0" class="no-s-trans-header">
         No scheduled transactions are pending !!
       </div>
       <div class="s-transaction-item" *ngFor="let item of s_trans; let i = index;" (click)="onContextMenu($event, item)">

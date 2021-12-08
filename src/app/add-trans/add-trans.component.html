@@ -24,7 +24,7 @@
            Valid date required.
         </mat-error>
     </mat-form-field>
-    <mat-slide-toggle [(ngModel)]="isTransferTrans" name="isTransferTrans">Is this transfer transaction ? </mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="isTransferTrans" (change)="onChangeTransferTrans($event)" name="isTransferTrans">Is this transfer transaction ? </mat-slide-toggle>
     <br *ngIf="!isTransferTrans">
     <br *ngIf="!isTransferTrans">
     <label id="label-trans-type" *ngIf="!isTransferTrans">Select Transaction Type:</label>
