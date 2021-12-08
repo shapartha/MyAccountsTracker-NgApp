@@ -17,8 +17,8 @@
               [matTooltipDisabled]="item.tooltipDisabled">
                 {{ (item.is_mf !== '1') ? item.account_name : item.account_name + " | " + item.rec_mf_scheme_name }}
               </div>
-              <div id="r_trans_rec_date_{{i}}">Recurring every month on Day: {{item.rec_trans_date}}</div>
-              <div id="r_trans_exec_date_{{i}}">Last Executed: {{item.rec_trans_last_executed_date}}</div>
+              <div id="r_trans_rec_date_{{i}}">Recurring every month on Day: <span class="bold-val purple-val">{{item.rec_trans_date}}</span></div>
+              <div id="r_trans_exec_date_{{i}}">Last Executed: <span class="bold-val darkgreen-val">{{item.rec_trans_last_executed_date}}</span></div>
               <div id="r_trans_amount_{{i}}" class="money-val" [ngClass]="getClassVal(item)">{{item.rec_trans_amount}}</div>
           </div>
       </div>

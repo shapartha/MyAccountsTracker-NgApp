@@ -33,7 +33,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { DeleteDialogScheduleTrans, ScheduledTransComponent, UpdateDialogScheduleTrans} from './scheduled-trans/scheduled-trans.component';
 import { MfDashboardComponent } from './mf-dashboard/mf-dashboard.component';
-import { RecurringTransComponent } from './recurring-trans/recurring-trans.component';
+import { DeleteDialogRecurringTrans, RecurringTransComponent, UpdateDialogRecurringTrans } from './recurring-trans/recurring-trans.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +45,7 @@ import { RecurringTransComponent } from './recurring-trans/recurring-trans.compo
     TransactionsComponent,
     AddTransComponent,
     AddCategoryComponent,
-    AddAccountComponent,
+    AddAccountComponent, UpdateDialogRecurringTrans, DeleteDialogRecurringTrans,
     ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent
   ],
   imports: [

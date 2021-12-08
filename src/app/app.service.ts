@@ -41,6 +41,8 @@ export class AppService {
     API_UPDATE_MF_TRANS: string = "updateMfTrans";
     API_DELETE_MF_MAPPING: string = "deleteMfMapping";
     API_GET_ALL_RECUR_TRANS: string = "getRecTransByUser";
+    API_UPDATE_RECUR_TRANS: string = "updateRecTrans";
+    API_DELETE_RECUR_TRANS: string = "deleteRecTrans";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -475,6 +477,42 @@ export class AppService {
     getAllRecurringTrans(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_ALL_RECUR_TRANS;
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+    }
+    
+    updateRecTrans(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_UPDATE_RECUR_TRANS;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
+    }
+    
+    deleteRecTrans(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_DELETE_RECUR_TRANS;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
     }
 
     fetchMfNav(schemeCode: any) {

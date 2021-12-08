@@ -5,13 +5,13 @@
 }
 
 </style>
-<h2 mat-dialog-title>Update {{data.menuType}} - {{data.name || data.description}} ?</h2>
+<h2 mat-dialog-title>Update {{data.menuType}} - {{data.description}} ?</h2>
 <mat-dialog-content class="mat-typography">
     <div *ngIf="data.menuType === 'Scheduled Transaction'">
         <form>
             <mat-form-field appearance="fill">
                 <mat-label>Amount*</mat-label>
-                <input type="text" matInput name="transAmt" [(ngModel)]="data.newAmount">
+                <input type="number" matInput name="transAmt" [(ngModel)]="data.newAmount">
             </mat-form-field>
             <mat-form-field appearance="fill">
                 <mat-label>Description*</mat-label>
@@ -50,6 +50,49 @@
             </mat-form-field>
             <mat-label *ngIf="data.imageId">Uploaded Image: </mat-label>
             <img id="upload-preview" *ngIf="data.imageId" [src]="data.previewUrl" alt="receipt image loading ..." />
+        </form>
+    </div>
+
+    <div *ngIf="data.menuType === 'Recurring Transaction'">
+        <form>
+            <mat-form-field appearance="fill">
+                <mat-label>Amount*</mat-label>
+                <input type="number" matInput name="transAmt" [(ngModel)]="data.newAmount">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Description*</mat-label>
+                <input type="text" matInput placeholder="Enter Description" name="transDesc" [(ngModel)]="data.newDesc">
+            </mat-form-field>
+            <mat-slide-toggle [(ngModel)]="data.newTransExec" name="hasExecuted">Has Executed in this month ? </mat-slide-toggle>
+            <br/>
+            <br/>
+            <mat-form-field appearance="fill">
+                <mat-label>Last Executed Date*</mat-label>
+                <input matInput [matDatepicker]="picker" name="transDate" [(ngModel)]="data.newLastExecDate">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Select Account: </mat-label>
+                <mat-select [(ngModel)]="data.newAccId" name="transAccId" (selectionChange)="onChangeAcc({d: data, e: $event})">
+                  <mat-option>None</mat-option>
+                  <mat-option *ngFor="let item of data.accList" value="{{item.id}}">{{item.name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill" *ngIf="data.newIsMf == '1'">
+                <mat-label>Select Mutual Fund Scheme: </mat-label>
+                <mat-select [(ngModel)]="data.newMfId" name="mfSchemeCode" (selectionChange)="onChangeMfScheme($event)">
+                  <mat-option>None</mat-option>
+                  <mat-option *ngFor="let item of data.mfSchemes" value="{{item.scheme_code}}">{{item.scheme_name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Select Day of Month: </mat-label>
+                <mat-select [(ngModel)]="data.newRecDate" name="reccDate">
+                  <mat-option>None</mat-option>
+                  <mat-option *ngFor="let item of monthDays" value="{{item}}">{{item}}</mat-option>
+                </mat-select>
+            </mat-form-field>
         </form>
     </div>
 </mat-dialog-content>
