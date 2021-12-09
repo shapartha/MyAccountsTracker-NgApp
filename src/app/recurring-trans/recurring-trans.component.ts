@@ -27,8 +27,13 @@ export class RecurringTransComponent implements OnInit {
   }
 
   async getInitData() {
+    this.appService.showLoader();
     const getAllRecurTransResp = await this.appService.getAllRecurringTrans({ user_id: this.appService.getAppUserId});
-    if (getAllRecurTransResp.response === '200') {
+    if (getAllRecurTransResp.success === true) {
+      if (getAllRecurTransResp.response !== '200') {
+        this.appService.hideLoader();
+        return;
+      }
       getAllRecurTransResp.dataArray.forEach((obj: any) => {
         let _itm = {
           rec_trans_id: obj.rec_trans_id,
@@ -161,7 +166,7 @@ export class RecurringTransComponent implements OnInit {
             rec_trans_id: item.rec_trans_id
           };
           const deleteRecTransResp = await this.appService.deleteRecTrans([_inpObj_]);
-          if (deleteRecTransResp[0].response === '200') {
+          if (deleteRecTransResp[0].success === true) {
             var _transToRemove = this.r_trans.findIndex((trns: any) => trns.rec_trans_id === item.rec_trans_id);
             this.r_trans.splice(_transToRemove, 1);
             this.appService.showAlert(item.menuType + " : " + item.rec_trans_desc + " deleted successfully");
@@ -285,7 +290,7 @@ export class UpdateDialogRecurringTrans {
       }
       this.appService.showLoader();
       const updRecTransResp = await this.appService.updateRecTrans([_updTrans]);
-      if (updRecTransResp[0].response === '200') {
+      if (updRecTransResp[0].success === true) {
         data.newAccName = data.accList.filter((_acc: any) => _acc.id === data.newAccId)[0].name;
         data.newMfName = (data.newIsMf === '1') ? data.mfSchemes.filter((_mf: any) => _mf.scheme_code === data.newMfId)[0].scheme_name : null;
         this.appService.showAlert("Recurring Transaction updated successfully.");

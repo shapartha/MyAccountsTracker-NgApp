@@ -21,6 +21,7 @@ export class HomeComponent implements OnInit {
   contextMenu!: MatMenuTrigger;
   refreshTransactions: boolean = false;
   refreshMfTransactions: boolean = false;
+  refreshPendSchTrans = false;
   categories: Category[] = [];
   accounts: Account[] = [];
   currentTab: string = "Login";
@@ -169,6 +170,67 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  async processSchTransNow(item: any) {
+    this.appService.showLoader();
+    let _inpObj_ = {
+      trans_id: item.trans_id,
+      ops_mode: 1
+    };
+    const procResp: any = await this.appService.processScheduledTrans(_inpObj_);
+    if (procResp.success === true) {
+      this.refreshPendSchTrans = true;
+      this.refreshTransactions = true;
+      
+      let _updCat = this.categories.filter(_cat => _cat.id === item.category_id)[0];
+      let _updAct = _updCat.accounts!.filter(_acc => _acc.id === item.account_id)[0];
+      let _trnAmt = Number(item.trans_amount);
+      if (item.trans_type.toUpperCase() === 'CREDIT') {
+        _updAct.balance = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_updAct.balance) + _trnAmt);
+        _updCat.amount = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_updCat.amount) + _trnAmt);
+      } else {
+        _updAct.balance = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_updAct.balance) - _trnAmt);
+        _updCat.amount = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_updCat.amount) - _trnAmt);
+      }
+      
+      this.appService.showAlert("Scheduled Transaction processed successfully");
+    } else {
+      this.appService.showAlert(procResp);
+    }
+    this.appService.hideLoader();
+  }
+
+  async removeSchTrans(item: any) {
+    this.appService.showLoader();
+    let _inpObj_ = {
+      trans_id: item.trans_id,
+      ops_mode: 2
+    };
+    const procResp: any = await this.appService.processScheduledTrans(_inpObj_);
+    if (procResp.success === true) {
+      this.refreshPendSchTrans = true;
+      this.appService.showAlert("Scheduled Transaction removed successfully");
+    } else {
+      this.appService.showAlert(procResp);
+    }
+    this.appService.hideLoader();
+  }
+
+  async postponeSchTrans(item: any) {
+    this.appService.showLoader();
+    let _inpObj_ = {
+      trans_id: item.trans_id,
+      ops_mode: 3
+    };
+    const procResp: any = await this.appService.processScheduledTrans(_inpObj_);
+    if (procResp.success === true) {
+      this.refreshPendSchTrans = true;
+      this.appService.showAlert("Scheduled Transaction postponed successfully");
+    } else {
+      this.appService.showAlert(procResp);
+    }
+    this.appService.hideLoader();
+  }
+
   redeemAll(item: any) {
     item.redeemType = 'Fully';
     this.openRedeemDialog(item);
@@ -304,7 +366,7 @@ export class HomeComponent implements OnInit {
         if (item.menuType === 'Account') {
           this.appService.showLoader();
           this.appService.deleteAccount([{ account_id : item.id}]).then(data => {
-            if (data[0].response === '200') {
+            if (data[0].success === true) {
               if (this.selectedAccount == this.accounts.filter(acc => acc.id === item.id)[0].name) {
                 this.selectedAccount = "";
               }
@@ -319,7 +381,7 @@ export class HomeComponent implements OnInit {
         } else if (item.menuType === 'Category') {
           this.appService.showLoader();
           this.appService.deleteCategory([{ category_id : item.id}]).then(data => {
-            if (data[0].response === '200') {
+            if (data[0].success === true) {
               if (this.selectedCategory == this.categories.filter(cat => cat.id === item.id)[0].name) {
                 this.selectedCategory = "";
                 this.selectedAccount = "";
@@ -344,7 +406,7 @@ export class HomeComponent implements OnInit {
           }
           this.appService.showLoader();
           this.appService.deleteTransaction([{ trans_id : item.id}]).then(data => {
-            if (data[0].response === '200') {
+            if (data[0].success === true) {
               if (item.transType.toUpperCase() == "DEBIT") {
                 item.acc_balance = parseFloat(item.acc_balance) + this.appService.formatStringValueToAmount(item.amount);
               } else {
@@ -358,7 +420,7 @@ export class HomeComponent implements OnInit {
                 category_id: item.cat_id
               };
               this.appService.updateAccount([_acc]).then(data => {
-                if (data[0].response == '200') {
+                if (data[0].success === true) {
                   this.appService.showAlert(item.menuType + ":" + item.description + " deleted successfully", "Close");
                   var _updCat = this.categories.filter(itm => itm.id === item.cat_id)[0];
                   var _updAccCat = _updCat.accounts?.filter(res => res.id === item.acc_id)[0];
@@ -419,7 +481,7 @@ export class DialogRedeemContent {
         user_id : this.appService.getAppUserId.toString()
       };
       const transResp = await this.appService.saveTransactionOnly([_transObj_]);
-      if (transResp[0].response === '200') {
+      if (transResp[0].success === true) {
         let _accObj_ = {
           account_id: data.account_id,
           account_name: data.account_data.name,
@@ -428,7 +490,7 @@ export class DialogRedeemContent {
           balance: this.appService.formatStringValueToAmount(data.account_data.balance) - data.rdmAmt
         };
         const accResp = await this.appService.updateAccount([_accObj_]);
-        if (accResp[0].response === '200') {
+        if (accResp[0].success === true) {
           let _mfTransObj_ = {
             scheme_code: data.scheme_code,
             account_id: data.account_id,
@@ -465,7 +527,7 @@ export class DialogRedeemContent {
             }
           }
           const updMfTransResp = await this.appService.updateMfTrans(_toUpdateMfTrans);
-          if (mfTrans[0].response === '200' && getMfTransResp.response === '200' && updMfTransResp[0].response === '200') {
+          if (mfTrans[0].success === true && getMfTransResp.success === true && updMfTransResp[0].success === true) {
             if (data.redeemType === 'Partially') {
               const getMfTransResp = await this.appService.getMfTransByAccScheme(_inpObj_);
               getMfTransResp.dataArray.forEach((_a: any) => {
@@ -483,7 +545,7 @@ export class DialogRedeemContent {
                 scheme_code: data.scheme_code
               };
               const updMfMapResp = await this.appService.updateMfMapping([_updMfMapObj_]);
-              if (updMfMapResp[0].response === '200') {
+              if (updMfMapResp[0].success === true) {
                 this.appService.showAlert("Partial Redemption Successful");
                 data.newInvAmt = _updMfMapObj_.inv_amt;
                 data.newUnits = _updMfMapObj_.units;
@@ -498,7 +560,7 @@ export class DialogRedeemContent {
                 scheme_code: data.scheme_code
               };
               const deleteMfMapResp = await this.appService.deleteMfMapping([_deleteObj_]);
-              if (deleteMfMapResp[0].response === '200') {
+              if (deleteMfMapResp[0].success === true) {
                 this.appService.showAlert("Full Redemption Successful");
                 data.newAccBalance = _accObj_.balance;
               } else {
@@ -565,7 +627,7 @@ export class DialogUpdateContent {
       };
       this.appService.showLoader();
       this.appService.updateCategory([_category]).then(resp => {
-        if (resp[0].response == '200') {
+        if (resp[0].success === true) {
           this.close(data);
         } else {
           this.appService.showAlert(resp[0].responseDescription, "Close");
@@ -597,7 +659,7 @@ export class DialogUpdateContent {
       };
       this.appService.showLoader();
       this.appService.updateAccount([_acc]).then(resp => {
-        if (resp[0].response == '200') {
+        if (resp[0].success === true) {
           this.close(data);
         } else {
           this.appService.showAlert("Some Error occurred updating the account details.", "Close");
@@ -663,7 +725,7 @@ export class DialogUpdateContent {
   
   updateTrans(_obj_: any, _data_: any) {
     this.appService.updateTransaction([_obj_]).then(resp => {
-      if (resp[0].response == '200') {
+      if (resp[0].success === true) {
         this.appService.showAlert("Transaction Updated Successfully.", "Close");
         _data_.refreshTransactions = true;
         this.close(_data_);

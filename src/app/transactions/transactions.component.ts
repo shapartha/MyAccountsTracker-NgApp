@@ -108,7 +108,6 @@ export class TransactionsComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log(this.selectedAccount);
     if (changes.selectedAccount && !changes.selectedAccount.firstChange) {
       this.populateTransactions();
     }

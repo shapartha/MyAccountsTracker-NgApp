@@ -32,7 +32,7 @@ export class AddCategoryComponent implements OnInit {
     };
     this.appService.showLoader();
     this.appService.saveCategory([_category]).then(data => {
-      if (data[0].response === "200") {
+      if (data[0].success === true) {
         this.appService.showAlert("Category : '" + this.categoryName + "' created successfully", "Close");
         this.categoryName = "";
       } else {

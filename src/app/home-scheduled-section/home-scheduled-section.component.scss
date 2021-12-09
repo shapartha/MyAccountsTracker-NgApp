@@ -1,0 +1,43 @@
+#pnd-schd-trn-acc , #pnd-schd-trn-mf-name {
+    width: 44%;
+}
+#pnd-schd-trn-date, #pnd-schd-trn-mf-nav {
+    width: 28%;
+}
+#pnd-schd-trn-amt {
+    width: 28%;
+    text-align: right;
+}
+#pnd-schd-trn-mf-name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.pending-scheduled-trans {
+    width: 40%;
+    padding: 5px 10px;
+    background: linear-gradient(347deg, #d4ee95 0%, #82e893 50%, #36d83b 100%);
+    border-radius: 10px;
+}
+#section-scheduled-trans {
+    display: -webkit-box;
+    overflow: hidden;
+}
+#section-scheduled-trans:hover {
+    display: -webkit-box;
+    overflow-x: auto;
+}
+::-webkit-scrollbar {
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent; 
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}

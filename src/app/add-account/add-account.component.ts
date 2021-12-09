@@ -48,7 +48,7 @@ export class AddAccountComponent implements OnInit {
     this.appService.showLoader();
     this.saveAccount.user_id = this.appService.getAppUserId.toString();
     this.appService.saveAccount([this.saveAccount]).then(data => {
-      if (data[0].response === "200") {
+      if (data[0].success === true) {
         this.appService.showAlert("Account : '" + this.saveAccount.account_name + "' created successfully", "Close");
         this.appService.getAccountsByName(JSON.stringify({account_name: this.saveAccount.account_name, user_id: this.saveAccount.user_id})).then(data => {
           let _inpData = new SaveTransaction();

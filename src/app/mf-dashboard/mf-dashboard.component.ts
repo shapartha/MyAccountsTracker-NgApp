@@ -48,7 +48,10 @@ export class MfDashboardComponent implements OnInit, OnChanges {
     }
     this.appService.getMfSchemesByAccount(_inpObj_).then(resp => {
       this.appService.hideLoader();
-      if (resp.response === '200') {
+      if (resp.success === true) {
+        if (resp.response !== '200') {
+          return;
+        }
         resp.dataArray.forEach((element: any) => {
           let _item = {
             account_id: element.account_id,
@@ -87,7 +90,11 @@ export class MfDashboardComponent implements OnInit, OnChanges {
         account_id: element.account_id
       };
       const mfTransAscResp = await this.appService.getMfTransByAccSchemeAsc(_inpObj_);
-      if (mfTransAscResp.response === '200') {
+      if (mfTransAscResp.success === true) {
+        if (mfTransAscResp.response !== '200') {
+          this.appService.hideLoader();
+          return;
+        }
         let _payments: number[] = [];
         let _days: Date[] = [];
         mfTransAscResp.dataArray.forEach((itm: any) => {
@@ -120,7 +127,11 @@ export class MfDashboardComponent implements OnInit, OnChanges {
       user_id: this.appService.getAppUserId
     }
     const mfTransResp = await this.appService.getMfTransByAcc(_accInpObj_);
-    if (mfTransResp.response === '200') {
+    if (mfTransResp.success === true) {
+      if (mfTransResp.response !== '200') {
+        this.appService.hideLoader();
+        return;
+      }
       let _payments: number[] = [];
         let _days: Date[] = [];
         mfTransResp.dataArray.forEach((itm: any) => {
@@ -209,7 +220,7 @@ export class MfDashboardComponent implements OnInit, OnChanges {
             user_id: this.appService.getAppUserId
           };
           this.apiRespData = await this.appService.updateAccount([_acc]);
-          if (this.apiRespData[0].response === '200') {
+          if (this.apiRespData[0].success === true) {
             this.selectedAccountObject.balance = this.appService.formatAmountWithComma(_acc.balance.toFixed(2));
             this.selectedAccountObjectChange.emit(this.selectedAccountObject);
             let _inpData = {

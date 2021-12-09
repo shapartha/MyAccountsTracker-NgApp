@@ -34,6 +34,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { DeleteDialogScheduleTrans, ScheduledTransComponent, UpdateDialogScheduleTrans} from './scheduled-trans/scheduled-trans.component';
 import { MfDashboardComponent } from './mf-dashboard/mf-dashboard.component';
 import { DeleteDialogRecurringTrans, RecurringTransComponent, UpdateDialogRecurringTrans } from './recurring-trans/recurring-trans.component';
+import { HomeScheduledSectionComponent } from './home-scheduled-section/home-scheduled-section.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,7 @@ import { DeleteDialogRecurringTrans, RecurringTransComponent, UpdateDialogRecurr
     AddTransComponent,
     AddCategoryComponent,
     AddAccountComponent, UpdateDialogRecurringTrans, DeleteDialogRecurringTrans,
-    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent
+    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent
   ],
   imports: [
     BrowserModule,    HttpClientModule,    FormsModule,    AppRoutingModule,    BrowserAnimationsModule,

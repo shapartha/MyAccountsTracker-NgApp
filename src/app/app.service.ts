@@ -43,6 +43,7 @@ export class AppService {
     API_GET_ALL_RECUR_TRANS: string = "getRecTransByUser";
     API_UPDATE_RECUR_TRANS: string = "updateRecTrans";
     API_DELETE_RECUR_TRANS: string = "deleteRecTrans";
+    API_GET_TODAY_SCHEDULE_TRANS: string = "getScheduledTransToday";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -433,6 +434,11 @@ export class AppService {
         this.apiFuncName = this.API_GET_ALL_SCHEDULED_TRANS;
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
     }
+    
+    getScheduledTransToday(apiFuncParams: any) {
+        this.apiFuncName = this.API_GET_TODAY_SCHEDULE_TRANS;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+    }
 
     /**
      * 
@@ -622,7 +628,7 @@ export class AppService {
             actionTxt = "Close";
         }
         if (typeof msg !== 'string') {
-            msg = JSON.stringify(msg);
+            msg = "An error occurred -> " + JSON.stringify(msg);
         }
         this.snackBar.open(msg, actionTxt);
         setTimeout(() => {

@@ -190,7 +190,7 @@ export class AddTransComponent implements OnInit {
   invokeSaveTransactionApi(_inpData: any) {
     this.appService.showLoader();
     this.appService.saveTransaction(JSON.stringify(_inpData)).then(resp => {
-      if (resp.response == "200") {
+      if (resp.success === true) {
         this.trans.amount = undefined;
         this.appService.showAlert("Saved Successfully", "Close");
       } else {
@@ -241,7 +241,7 @@ export class AddTransComponent implements OnInit {
   populateMfSchemes(_accId: any) {
     this.mfSchemes = [];
     this.appService.showLoader();
-    this.appService.getMfSchemesByAccount('{"account_id": ' + _accId + '}').then(data => {
+    this.appService.getMfSchemesByAccount({"account_id": _accId }).then(data => {
       data.dataArray.forEach((element: any) => {
         this.mfSchemes.push(element);
       });

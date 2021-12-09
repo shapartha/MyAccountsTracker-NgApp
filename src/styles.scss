@@ -27,6 +27,12 @@ mat-dialog-container .mat-select-value {
     color: #fff !important;
 }
 
+.negative-val {
+    color: #911e1e;
+}
+.positive-val {
+    color: #156410;
+}
 .bold-val {
     font-weight: bold;
 }
@@ -41,6 +47,9 @@ mat-dialog-container .mat-select-value {
 }
 .font12-val {
     font-size: 12px;
+}
+.generic-div {
+    padding: 5px 10px;
 }
 
 #loader-container {

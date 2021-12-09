@@ -26,7 +26,11 @@ export class ScheduledTransComponent implements OnInit {
   ngOnInit(): void {
     this.appService.showLoader();
     this.appService.getAllScheduledTrans({ user_id: this.appService.getAppUserId}).then(resp => {
-      if (resp.response === '200') {
+      if (resp.success === true) {
+        if (resp.response !== '200') {
+          this.appService.hideLoader();
+          return;
+        }
         resp.dataArray.forEach((obj: any) => {
           let _itm = {
             trans_id: obj.trans_id,
@@ -105,7 +109,7 @@ export class ScheduledTransComponent implements OnInit {
             ops_mode: 2
           };
           this.appService.processScheduledTrans(_inpObj_).then((data: any) => {
-            if (data.response === '200') {
+            if (data.success === true) {
               var _transToRemove = this.s_trans.findIndex((trns: any) => trns.trans_id === item.trans_id);
               this.s_trans.splice(_transToRemove, 1);
               this.appService.showAlert(item.menuType + " : " + item.description + " deleted successfully", "Close");
@@ -320,7 +324,7 @@ export class UpdateDialogScheduleTrans {
       }
       this.appService.showLoader();
       this.appService.updateScheduledTrans([_updTrans]).then((resp: any) => {
-        if (resp[0].response === '200') {
+        if (resp[0].success === true) {
           data.newAccName = data.accList.filter((_acc: any) => _acc.id === data.newAccId)[0].name;
           this.appService.showAlert("Scheduled Transaction updated successfully.");
           this.appService.hideLoader();

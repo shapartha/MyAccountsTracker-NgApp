@@ -7,6 +7,7 @@
       </div>
     </div>
     <div id="app-main">
+      <app-home-scheduled-section (onContextMenuEvent)="onContextMenuEvent($event)" [(refreshTrans)]="refreshPendSchTrans"></app-home-scheduled-section>
       <div id="app-categories-pane">
         <div class="category-item-vertical" (click)="showAccounts(item)" *ngFor="let item of categories; let i = index;" (contextmenu)="onContextMenu($event, item, 'Category')">
             <span id="category_name_{{i}}">{{item.name}}</span><br/>
@@ -43,13 +44,18 @@
 </div>
 <mat-menu #contextMenu="matMenu">
 	<ng-template matMenuContent let-item="item">
-    <div *ngIf="item.menuType !== 'MF Dashboard'">
+    <div *ngIf="item.menuType !== 'MF Dashboard' && item.menuType !== 'Today Scheduled Transaction'">
       <button mat-menu-item (click)="updateItem(item)">Update</button>
       <button mat-menu-item (click)="deleteItem(item)">Delete</button>
     </div>
     <div *ngIf="item.menuType === 'MF Dashboard'">
       <button mat-menu-item (click)="redeemAll(item)">Redeem All</button>
       <button mat-menu-item (click)="redeemPartial(item)">Redeem Partial</button>
+    </div>
+    <div *ngIf="item.menuType === 'Today Scheduled Transaction'">
+      <button mat-menu-item (click)="processSchTransNow(item)">Process Now</button>
+      <button mat-menu-item (click)="removeSchTrans(item)">Remove</button>
+      <button mat-menu-item (click)="postponeSchTrans(item)">Postpone Tomorrow</button>
     </div>
 	</ng-template>
 </mat-menu>
