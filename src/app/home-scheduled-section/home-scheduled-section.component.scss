@@ -41,3 +41,15 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #555; 
 }
+@media (max-width: 600px) {
+    .flex-div {
+        display: block;
+    }
+    #pnd-schd-trn-acc, #pnd-schd-trn-date, #pnd-schd-trn-amt, #pnd-schd-trn-mf-name, #pnd-schd-trn-mf-nav {
+        width: 100%;
+    }
+    #pnd-schd-trn-amt {
+        font-weight: bold;
+        font-size: 16px;
+    }
+}

@@ -22,6 +22,7 @@ export class HomeComponent implements OnInit {
   refreshTransactions: boolean = false;
   refreshMfTransactions: boolean = false;
   refreshPendSchTrans = false;
+  refreshPendRecTrans = false;
   categories: Category[] = [];
   accounts: Account[] = [];
   currentTab: string = "Login";
@@ -170,6 +171,67 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  async processRecTransNow(item: any, edit?: number) {
+    this.appService.showLoader();
+    let _inpObj = {
+      desc: item.rec_trans_desc,
+      date: this.appService.convertDate(new Date()),
+      amount: item.rec_trans_amount,
+      rec_trans_id: item.rec_trans_id
+    };
+    if (edit !== undefined) {
+      _inpObj.desc = item.newRecDesc;
+      _inpObj.date = this.appService.convertDate(item.newRecTransExecDate);
+      _inpObj.amount = this.appService.roundUpAmount(item.newRecAmt);
+    }
+    const completeRecTransResp = await this.appService.completeRecurTrans(_inpObj);
+    if (completeRecTransResp.success === true) {
+      this.refreshPendRecTrans = true;
+      this.refreshTransactions = true;
+      
+      let _updCat = this.categories.filter(_cat => _cat.id === item.category_id)[0];
+      let _updAct = _updCat.accounts!.filter(_acc => _acc.id === item.account_id)[0];
+      let _trnAmt = Number(item.rec_trans_amount);
+      if (item.rec_trans_type.toUpperCase() === 'CREDIT') {
+        _updAct.balance = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_updAct.balance) + _trnAmt);
+        _updCat.amount = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_updCat.amount) + _trnAmt);
+      } else {
+        _updAct.balance = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_updAct.balance) - _trnAmt);
+        _updCat.amount = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_updCat.amount) - _trnAmt);
+      }
+
+      this.appService.showAlert("Recurring Transaction completed successfully.")
+    } else {
+      this.appService.showAlert(completeRecTransResp);
+    }
+    this.appService.hideLoader();
+  }
+
+  async skipRecTrans(data: any) {
+    let _updTrans = {
+      rec_trans_desc: data.rec_trans_desc,
+      rec_trans_id: data.rec_trans_id,
+      rec_trans_last_executed: this.appService.convertDate(new Date()),
+      rec_trans_amount: data.rec_trans_amount,
+      rec_account_id: data.rec_account_id,
+      user_id: this.appService.getAppUserId,
+      rec_trans_date: data.rec_trans_date,
+      rec_mf_scheme_name: "0",
+      rec_trans_executed: "true"
+    };
+    if (data.is_mf === '1') {
+      _updTrans.rec_mf_scheme_name = data.rec_mf_scheme_name;
+    }
+    this.appService.showLoader();
+    const updRecTransResp = await this.appService.updateRecTrans([_updTrans]);
+    if (updRecTransResp[0].success === true) {
+      this.refreshPendRecTrans = true;
+      this.appService.showAlert("Recurring Transaction skipped for current occurrence successfully.");
+    } else {
+      this.appService.showAlert(updRecTransResp[0]);
+    }
+    this.appService.hideLoader();}
+
   async processSchTransNow(item: any) {
     this.appService.showLoader();
     let _inpObj_ = {
@@ -191,7 +253,7 @@ export class HomeComponent implements OnInit {
         _updAct.balance = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_updAct.balance) - _trnAmt);
         _updCat.amount = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_updCat.amount) - _trnAmt);
       }
-      
+
       this.appService.showAlert("Scheduled Transaction processed successfully");
     } else {
       this.appService.showAlert(procResp);
@@ -266,7 +328,7 @@ export class HomeComponent implements OnInit {
     });
     dialogRef.disableClose = true;
     dialogRef.afterClosed().subscribe(result => {
-      if (item.menuType === 'MF Dashboard') {
+      if (result !== undefined && item.menuType === 'MF Dashboard') {
         this.refreshMfTransactions = true;
         let _cat = this.categories.filter(_b => _b.id === this.selectedAccountObject.category_id)[0];
         let _accnt = this.accounts.filter((_a: any) => _a.id === this.selectedAccountObject.id)[0]
@@ -300,6 +362,10 @@ export class HomeComponent implements OnInit {
           this.appService.hideLoader();
         });
       }
+    } else if (item.menuType === 'Today Recurring Transaction') {
+      item.newRecDesc = item.rec_trans_desc;
+      item.newRecTransExecDate = new Date();
+      item.newRecAmt = item.rec_trans_amount;
     }
     const dialogRef = this.dialog.open(DialogUpdateContent, {
       data: item,
@@ -308,6 +374,9 @@ export class HomeComponent implements OnInit {
     });
     dialogRef.disableClose = true;
     dialogRef.afterClosed().subscribe(result => {
+      if (result === undefined) {
+        return;
+      }
       if (item.menuType === "Category") {
         let _category = this.categories.filter(cat => cat.id === result.data.id)[0];
         _category.name = result.data.newName;
@@ -352,6 +421,8 @@ export class HomeComponent implements OnInit {
         if (item.refreshTransactions == true) {
           this.refreshTransactions = true;
         }
+      } else if (item.menuType === 'Today Recurring Transaction') {
+        this.processRecTransNow(item, 1);
       }
     });
   }
@@ -686,6 +757,8 @@ export class DialogUpdateContent {
         };
         this.updateTrans(_updTrans, data);
       }
+    } else if (data.menuType === 'Today Recurring Transaction') {
+      this.close(data);
     }
   }
 

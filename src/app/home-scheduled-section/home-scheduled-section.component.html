@@ -2,12 +2,12 @@
 <div id="section-scheduled-trans">
     <div class="pending-scheduled-trans" *ngFor="let item of pending_scheduled_trans; let i = index;" (click)="onContextMenu($event, item, 'Today Scheduled Transaction')">
         <div id="pnd-schd-trn-desc" class="bold-val">{{item.trans_desc}}</div>
-        <div style="display: flex;">
+        <div class="flex-div">
             <div id="pnd-schd-trn-acc">{{item.account_name}}</div>
             <div id="pnd-schd-trn-date">{{appService.formatDate(item.trans_date)}}</div>
             <div id="pnd-schd-trn-amt" [ngClass]="appService.getClassVal(item.trans_type)">{{appService.formatAmountWithComma(item.trans_amount)}}</div>
         </div>
-        <div style="display: flex;" *ngIf="item.is_mf === '1'">
+        <div class="flex-div" *ngIf="item.is_mf === '1'">
             <div id="pnd-schd-trn-mf-name" class="purple-val" matTooltip="{{item.scheme_name}}">{{item.scheme_name}}</div>
             <div id="pnd-schd-trn-mf-nav" class="purple-val">NAV: {{appService.formatAmountWithComma(item.mf_nav)}}</div>
             <div></div>

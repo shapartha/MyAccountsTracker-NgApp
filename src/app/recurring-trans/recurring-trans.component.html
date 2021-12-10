@@ -12,7 +12,7 @@
       </div>
       <div class="r-transaction-item" *ngFor="let item of r_trans; let i = index;" (click)="onContextMenu($event, item)">
           <span id="r_trans_desc_{{i}}">{{item.rec_trans_desc}}</span>
-          <div style="display: flex;">
+          <div class="flex-div">
               <div id="r_trans_acc_{{i}}" matTooltip="{{ (item.is_mf !== '1') ? item.account_name : item.account_name + ' | ' + item.rec_mf_scheme_name }}"
               [matTooltipDisabled]="item.tooltipDisabled">
                 {{ (item.is_mf !== '1') ? item.account_name : item.account_name + " | " + item.rec_mf_scheme_name }}

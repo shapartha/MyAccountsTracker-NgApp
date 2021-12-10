@@ -12,7 +12,7 @@
       </div>
       <div class="s-transaction-item" *ngFor="let item of s_trans; let i = index;" (click)="onContextMenu($event, item)">
           <span id="s_trans_desc_{{i}}">{{item.trans_desc}}</span>
-          <div style="display: flex;">
+          <div class="flex-div">
               <div id="s_trans_acc_{{i}}">
                 {{ (item.is_mf !== '1') ? item.account_name : item.account_name + " | " + item.scheme_name + " | " + rupeeSymbol + item.mf_nav }}
               </div>

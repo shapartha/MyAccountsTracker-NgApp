@@ -1,0 +1,16 @@
+<div class="generic-div bold-val" *ngIf="pending_rec_trans.length > 0">Recurring Transactions to process:</div>
+<div id="section-rec-trans">
+    <div class="pending-rec-trans" *ngFor="let item of pending_rec_trans; let i = index;" (click)="onContextMenu($event, item, 'Today Recurring Transaction')">
+        <div id="pnd-rec-trn-desc" class="bold-val">{{item.rec_trans_desc}}</div>
+        <div class="flex-div">
+            <div id="pnd-rec-trn-acc">{{item.account_name}}</div>
+            <div id="pnd-rec-trn-exec-date">Due on {{appService.formatDate(appService.getFullDate(item.rec_trans_date))}}</div>
+            <div id="pnd-rec-trn-date">Last Executed: {{appService.formatDate(item.rec_trans_last_executed)}}</div>
+            <div id="pnd-rec-trn-amt" [ngClass]="appService.getClassVal(item.rec_trans_type)">{{appService.formatAmountWithComma(item.rec_trans_amount)}}</div>
+        </div>
+        <div style="display: flex;" *ngIf="item.is_mf === '1'">
+            <div id="pnd-rec-trn-mf-name" class="purple-val">{{item.scheme_name}}</div>
+            <div></div>
+        </div>
+    </div>
+</div>

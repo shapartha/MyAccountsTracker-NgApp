@@ -21,7 +21,7 @@
     padding: 0;
 }
 </style>
-<h2 mat-dialog-title>Update {{data.menuType}} - {{data.name || data.description}} ?</h2>
+<h2 mat-dialog-title>Update {{data.menuType}} - {{data.name || data.description || data.rec_trans_desc}} ?</h2>
 <mat-dialog-content class="mat-typography">
     <div *ngIf="data.menuType === 'Category'">
         <form>
@@ -79,6 +79,24 @@
                 <div *ngIf="fileUploadMessage != ''" class="message">
                     {{ fileUploadMessage }}
                 </div>
+            </mat-form-field>
+        </form>
+    </div>
+    <div *ngIf="data.menuType === 'Today Recurring Transaction'">
+        <form>
+            <mat-form-field appearance="fill">
+                <mat-label>Amount</mat-label>
+                <input type="number" matInput name="transAmt" [(ngModel)]="data.newRecAmt">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Description*</mat-label>
+                <input type="text" matInput placeholder="Enter Description" name="transDesc" [(ngModel)]="data.newRecDesc">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Transaction Date*</mat-label>
+                <input matInput [matDatepicker]="picker" name="transDate" [(ngModel)]="data.newRecTransExecDate">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
         </form>
     </div>

@@ -1,5 +1,6 @@
 #app-header {
     display: flex;
+    flex-wrap: wrap;
 }
 #app-main {
     display: block;
@@ -27,25 +28,28 @@ div[id^="r_trans_acc_"] {
     width: 25%;
     text-align: left;
     color: purple;
-    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    white-space: nowrap;
 }
 
 div[id^="r_trans_rec_date_"] {
     width: 25%;
     text-align: center;
-    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    white-space: nowrap;
 }
 
 div[id^="r_trans_exec_date_"] {
     width: 25%;
     text-align: center;
-    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    white-space: nowrap;
 }
 
 div[id^="r_trans_amount_"] {
@@ -63,4 +67,20 @@ span[id^="r_trans_desc_"] {
 }
 .positive-val {
     color: #156410;
+}
+
+@media (max-width: 480px) {
+    .flex-div {
+        display: block;
+    }
+    div[id^="r_trans_acc_"], div[id^="r_trans_rec_date_"], div[id^="r_trans_exec_date_"] {
+        width: 100%;
+        text-align: left;
+    }
+    div[id^="r_trans_amount_"] {
+        width: 100%;
+        text-align: right;
+        font-weight: bold;
+        font-size: 16px;
+    }
 }

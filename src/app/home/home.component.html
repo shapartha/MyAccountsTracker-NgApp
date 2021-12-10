@@ -8,6 +8,7 @@
     </div>
     <div id="app-main">
       <app-home-scheduled-section (onContextMenuEvent)="onContextMenuEvent($event)" [(refreshTrans)]="refreshPendSchTrans"></app-home-scheduled-section>
+      <app-home-recurring-section (onContextMenuEvent)="onContextMenuEvent($event)" [(refreshTrans)]="refreshPendRecTrans"></app-home-recurring-section>
       <div id="app-categories-pane">
         <div class="category-item-vertical" (click)="showAccounts(item)" *ngFor="let item of categories; let i = index;" (contextmenu)="onContextMenu($event, item, 'Category')">
             <span id="category_name_{{i}}">{{item.name}}</span><br/>
@@ -44,7 +45,7 @@
 </div>
 <mat-menu #contextMenu="matMenu">
 	<ng-template matMenuContent let-item="item">
-    <div *ngIf="item.menuType !== 'MF Dashboard' && item.menuType !== 'Today Scheduled Transaction'">
+    <div *ngIf="item.menuType !== 'MF Dashboard' && item.menuType !== 'Today Scheduled Transaction' && item.menuType !== 'Today Recurring Transaction'">
       <button mat-menu-item (click)="updateItem(item)">Update</button>
       <button mat-menu-item (click)="deleteItem(item)">Delete</button>
     </div>
@@ -56,6 +57,11 @@
       <button mat-menu-item (click)="processSchTransNow(item)">Process Now</button>
       <button mat-menu-item (click)="removeSchTrans(item)">Remove</button>
       <button mat-menu-item (click)="postponeSchTrans(item)">Postpone Tomorrow</button>
+    </div>
+    <div *ngIf="item.menuType === 'Today Recurring Transaction'">
+      <button mat-menu-item (click)="skipRecTrans(item)">Skip Current Occurrence</button>
+      <button mat-menu-item (click)="updateItem(item)">Update</button>
+      <button mat-menu-item (click)="processRecTransNow(item)">Process Now</button>
     </div>
 	</ng-template>
 </mat-menu>

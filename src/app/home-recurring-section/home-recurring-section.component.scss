@@ -1,0 +1,58 @@
+#pnd-rec-trn-acc {
+    width: 32%;
+}
+#pnd-rec-trn-date {
+    width: 30%;
+}
+#pnd-rec-trn-exec-date {
+    width: 23%;
+}
+#pnd-rec-trn-amt {
+    width: 15%;
+    text-align: right;
+}
+#pnd-rec-trn-mf-name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+@media (max-width: 800px) {
+    .flex-div {
+        display: block;
+    }
+    #pnd-rec-trn-acc, #pnd-rec-trn-date, #pnd-rec-trn-amt, #pnd-rec-trn-exec-date {
+        width: 100%;
+    }
+    #pnd-rec-trn-amt {
+        font-weight: bold;
+        font-size: 16px;
+    }
+}
+.pending-rec-trans {
+    width: 40%;
+    padding: 5px 10px;
+    background: linear-gradient(347deg, #ec9427 0%, #e4e453 50%, #f3f633 100%);
+    border-radius: 10px;
+}
+#section-rec-trans {
+    display: -webkit-box;
+    overflow: hidden;
+}
+#section-rec-trans:hover {
+    display: -webkit-box;
+    overflow-x: auto;
+}
+::-webkit-scrollbar {
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent; 
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}

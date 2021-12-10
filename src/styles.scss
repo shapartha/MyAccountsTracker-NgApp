@@ -51,7 +51,9 @@ mat-dialog-container .mat-select-value {
 .generic-div {
     padding: 5px 10px;
 }
-
+.flex-div {
+    display: flex;
+}
 #loader-container {
     position: absolute;
     width: 100%;

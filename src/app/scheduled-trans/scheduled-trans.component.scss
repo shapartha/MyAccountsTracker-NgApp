@@ -1,5 +1,6 @@
 #app-header {
     display: flex;
+    flex-wrap: wrap;
 }
 #app-main {
     display: block;
@@ -53,4 +54,20 @@ span[id^="s_trans_desc_"] {
 }
 .positive-val {
     color: #156410;
+}
+
+@media (max-width: 340px) {
+    .flex-div {
+        display: block;
+    }
+    div[id^="s_trans_acc_"], div[id^="s_trans_date_"] {
+        width: 100%;
+        text-align: left;
+    }
+    div[id^="s_trans_amount_"] {
+        width: 100%;
+        text-align: right;
+        font-weight: bold;
+        font-size: 16px;
+    }
 }

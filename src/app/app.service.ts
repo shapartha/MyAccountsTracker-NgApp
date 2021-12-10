@@ -44,6 +44,8 @@ export class AppService {
     API_UPDATE_RECUR_TRANS: string = "updateRecTrans";
     API_DELETE_RECUR_TRANS: string = "deleteRecTrans";
     API_GET_TODAY_SCHEDULE_TRANS: string = "getScheduledTransToday";
+    API_GET_TODAY_RECUR_TRANS: string = "getPendingRecTrans";
+    API_COMPLETE_RECUR_TRANS: string = "completeRecurringTransactionProcess";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -485,6 +487,29 @@ export class AppService {
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
     }
     
+    getRecurringTransToday(apiFuncParams: any) {
+        this.apiFuncName = this.API_GET_TODAY_RECUR_TRANS;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+    }
+    
+    completeRecurTrans(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_COMPLETE_RECUR_TRANS;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;
+    }
+    
     updateRecTrans(apiFuncParams: any) : Promise<any> {
         this.apiFuncName = this.API_UPDATE_RECUR_TRANS;
         const headers = { 
@@ -610,13 +635,16 @@ export class AppService {
         return _cDate.getFullYear() + "-" + (_cDate.getMonth() + 1) + "-" + _cDate.getDate();
     }
 
+    padLeadingZero(s: any) { 
+        return (s < 10) ? '0' + s : s; 
+    }
+
     convertDate(_date?: any) {
-        function pad(s: any) { return (s < 10) ? '0' + s : s; }
         var d = new Date();
         if (_date !== undefined && _date !== null) {
             d = new Date(_date);
         }
-        return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('-')
+        return [this.padLeadingZero(d.getDate()), this.padLeadingZero(d.getMonth()+1), d.getFullYear()].join('-')
     }
 
     getMonthName(val: string): string {
@@ -650,6 +678,14 @@ export class AppService {
     getClassVal(value: any) {
       let _type = value;
       return _type.toUpperCase().indexOf("DEBIT") != -1 ? 'negative-val' : 'positive-val';
+    }
+
+    getFullDate(day: number, month?: number) {
+        let d = new Date();
+        if (month === undefined) {
+            month = d.getMonth() + 1;
+        }
+        return [this.padLeadingZero(day), this.padLeadingZero(month), d.getFullYear()].join('-');
     }
 }
 
