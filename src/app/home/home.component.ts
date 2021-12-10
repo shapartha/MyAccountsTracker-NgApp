@@ -758,6 +758,18 @@ export class DialogUpdateContent {
         this.updateTrans(_updTrans, data);
       }
     } else if (data.menuType === 'Today Recurring Transaction') {
+      if (data.newRecDesc == undefined || data.newRecDesc?.length! < 3) {
+        this.appService.showAlert("Description must be atleast 3 characters", "Close");
+        return;
+      }
+      if (data.newRecTransExecDate == undefined || data.newRecTransExecDate == null) {
+        this.appService.showAlert("Date is invalid or blank.", "Close");
+        return;
+      }
+      if (data.newRecAmt == undefined || data.newRecAmt == 0) {
+        this.appService.showAlert("Amount is invalid or blank");
+        return;
+      }
       this.close(data);
     }
   }
