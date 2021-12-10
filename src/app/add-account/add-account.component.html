@@ -10,7 +10,7 @@
     </mat-form-field>
     <mat-form-field appearance="fill">
         <mat-label>Category</mat-label>
-        <mat-select [(ngModel)]="saveAccount.category_id" required name="categoryDetails">
+        <mat-select [(ngModel)]="saveAccount.category_id" required name="categoryDetails" (selectionChange)="onChangeCategory()">
           <mat-option>None</mat-option>
           <mat-option *ngFor="let item of categories" value="{{item.category_id}}">{{item.category_name}}</mat-option>
         </mat-select>

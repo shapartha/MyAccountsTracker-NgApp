@@ -21,6 +21,7 @@ export class HomeComponent implements OnInit {
   contextMenu!: MatMenuTrigger;
   refreshTransactions: boolean = false;
   refreshMfTransactions: boolean = false;
+  refreshEqTransactions: boolean = false;
   refreshPendSchTrans = false;
   refreshPendRecTrans = false;
   categories: Category[] = [];

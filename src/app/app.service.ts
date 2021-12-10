@@ -46,10 +46,14 @@ export class AppService {
     API_GET_TODAY_SCHEDULE_TRANS: string = "getScheduledTransToday";
     API_GET_TODAY_RECUR_TRANS: string = "getPendingRecTrans";
     API_COMPLETE_RECUR_TRANS: string = "completeRecurringTransactionProcess";
+    API_GET_EQ_MAPPING_BY_ACC: string = "getStockMappingByAccount";
+    API_GET_EQ_MAPPING_BY_ACC_SYM: string = "getStockMappingByAccountSymbol";
+    API_UPDATE_STOCK: string = "updateStock";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
     API_FETCH_MF_NAV: string = "https://api.mfapi.in/mf/";
+    API_FETCH_STOCK_CMP: string = "https://priceapi.moneycontrol.com/pricefeed/bse/equitycash/";
 
     constructor(private http: HttpClient, private snackBar: MatSnackBar, private router: Router) {
         if (this.getAppToken == "") {
@@ -173,6 +177,16 @@ export class AppService {
             });
         });
         return promise;       
+    }
+    
+    getEqMappingByAccount(apiFuncParams: any) {
+        this.apiFuncName = this.API_GET_EQ_MAPPING_BY_ACC;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+    }
+    
+    getEqMappingByAccountSymbol(apiFuncParams: any) {
+        this.apiFuncName = this.API_GET_EQ_MAPPING_BY_ACC_SYM;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
     }
     
     getAllAccounts(apiFuncParams: any) {
@@ -560,6 +574,21 @@ export class AppService {
         });
         return promise; 
     }
+
+    fetchStockCMP(stockSymbol: any) {
+        const headers = { 
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.get(this.API_FETCH_STOCK_CMP + stockSymbol, {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise; 
+    }
     
     getMfTransByAccSchemeAsc(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_MF_TRANS_BY_ACC_SCHEME_ASC;
@@ -574,6 +603,24 @@ export class AppService {
     getMfTransByAcc(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_MF_TRANS_BY_ACC;
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+    }
+    
+    updateStockMaster(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_UPDATE_STOCK;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
     }
 
     showLoader() {
@@ -686,6 +733,21 @@ export class AppService {
             month = d.getMonth() + 1;
         }
         return [this.padLeadingZero(day), this.padLeadingZero(month), d.getFullYear()].join('-');
+    }
+    
+    calculateDateDiff(date1: string | Date, date2?: string | Date){
+        let currentDate = new Date();
+        if (date2 !== undefined) {
+            if (typeof date2 === 'string') {
+                date2 = new Date(date2);
+            }
+            currentDate = date2;
+        }
+        if (typeof date1 === 'string') {
+            date1 = new Date(date1);
+        }
+    
+        return Math.floor((Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()) - Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate()) ) /(1000 * 60 * 60 * 24));
     }
 }
 

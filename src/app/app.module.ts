@@ -36,6 +36,7 @@ import { MfDashboardComponent } from './mf-dashboard/mf-dashboard.component';
 import { DeleteDialogRecurringTrans, RecurringTransComponent, UpdateDialogRecurringTrans } from './recurring-trans/recurring-trans.component';
 import { HomeScheduledSectionComponent } from './home-scheduled-section/home-scheduled-section.component';
 import { HomeRecurringSectionComponent } from './home-recurring-section/home-recurring-section.component';
+import { EqDashboardComponent } from './eq-dashboard/eq-dashboard.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,7 @@ import { HomeRecurringSectionComponent } from './home-recurring-section/home-rec
     AddTransComponent,
     AddCategoryComponent, HomeRecurringSectionComponent,
     AddAccountComponent, UpdateDialogRecurringTrans, DeleteDialogRecurringTrans,
-    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent
+    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent
   ],
   imports: [
     BrowserModule,    HttpClientModule,    FormsModule,    AppRoutingModule,    BrowserAnimationsModule,

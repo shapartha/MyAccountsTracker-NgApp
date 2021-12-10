@@ -20,3 +20,14 @@ export class MfTransHeaderTabs {
         ];
     }
 };
+
+export class EqTransHeaderTabs {
+    public header: any[];
+
+    constructor() {
+        this.header = [
+            { name: 'Dashboard', path: 'eq-dashboard' },
+            { name: 'Transactions', path: 'transactions' }
+        ];
+    }
+};

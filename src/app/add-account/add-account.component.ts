@@ -32,6 +32,15 @@ export class AddAccountComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  onChangeCategory() {
+    let category = this.categories.filter(_cat => _cat.category_id === this.saveAccount.category_id)[0];
+    if (category.category_name.toUpperCase().indexOf("MUTUAL FUND") !== -1) {
+      this.saveAccount.is_mf = "1";
+    } else if (category.category_name.toUpperCase().indexOf("STOCK") !== -1 || category.category_name.toUpperCase().indexOf("EQUIT") !== -1) {
+      this.saveAccount.is_equity = "1";
+    }
+  }
+
   saveAccountDetails() {
     if (this.saveAccount.account_name == undefined || this.saveAccount.account_name?.length! < 3) {
       this.appService.showAlert("Account name must be atleast 3 characters", "Close");

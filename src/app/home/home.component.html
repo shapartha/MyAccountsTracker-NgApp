@@ -35,7 +35,8 @@
       </ng-container>
       <ng-container *ngIf="selectedAccount != '' && selectedAccountObject.is_equity == '1'">
         <div id="transactions-header">Showing Equity Dashboard & Transactions for "{{selectedAccount}}" : <span id="clear-account" *ngIf="selectedAccount != '' && selectedAccount != 'ALL'" (click)="clearAccount()">Clear Account</span></div>
-        <!-- TODO -->
+        <app-eq-dashboard [selectedAccount]=selectedAccount [(selectedAccountObject)]=selectedAccountObject [(refreshTransactions)]="refreshEqTransactions"
+        (onContextMenuEvent)="onContextMenuEvent($event)" (selectedAccountObjectChange)="onMfAccRefresh($event)"></app-eq-dashboard>
       </ng-container>
     </div>
 </div>
@@ -45,11 +46,12 @@
 </div>
 <mat-menu #contextMenu="matMenu">
 	<ng-template matMenuContent let-item="item">
-    <div *ngIf="item.menuType !== 'MF Dashboard' && item.menuType !== 'Today Scheduled Transaction' && item.menuType !== 'Today Recurring Transaction'">
+    <div *ngIf="item.menuType !== 'MF Dashboard' && item.menuType !== 'EQ Dashboard' && item.menuType !== 'Today Scheduled Transaction' 
+    && item.menuType !== 'Today Recurring Transaction'">
       <button mat-menu-item (click)="updateItem(item)">Update</button>
       <button mat-menu-item (click)="deleteItem(item)">Delete</button>
     </div>
-    <div *ngIf="item.menuType === 'MF Dashboard'">
+    <div *ngIf="item.menuType === 'MF Dashboard' && item.menuType === 'EQ Dashboard'">
       <button mat-menu-item (click)="redeemAll(item)">Redeem All</button>
       <button mat-menu-item (click)="redeemPartial(item)">Redeem Partial</button>
     </div>

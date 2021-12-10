@@ -1,0 +1,42 @@
+<div id="app-eq-dashboard">
+    <div id="app-eq-trans-header">
+        <div *ngFor="let item of headerTabs.header; let i = index;">
+            <div class="header-tab" (click)="handleTabChange(item)">
+            <span id="header_{{i}}">{{item.name}}</span>
+            </div>
+        </div>
+    </div>
+    <div id="refreshEqBtn" *ngIf="selectedAccount !== '' && eqMappings !== undefined && eqMappings.length !== 0">
+        <span (click)="refreshEqData()">Refresh</span>
+    </div>
+</div>
+<app-transactions *ngIf="selectedTab === 'transactions' && selectedAccount != '' && selectedAccountObject.is_equity == true"
+[selectedAccount]="selectedAccount" [selectedAccountObject]=selectedAccountObject [(refreshTransactions)]="refreshTransactions"
+(onContextMenuEvent)="onContextMenu($event)"></app-transactions>
+<div *ngIf="selectedTab === 'eq-dashboard' && selectedAccount != '' && selectedAccountObject.is_equity == true">
+    <div *ngIf="selectedAccount !== '' && (eqMappings === undefined || eqMappings.length === 0)" class="no-eq-mapping-header">
+        No Stocks available for the selected account.
+    </div>
+    <div class="eq-mapping-item"*ngFor="let item of eqMappings; let i = index;" (click)="onContextMenuEq($event, item, 'EQ Dashboard')">
+        <div id="eq_details_{{i}}">
+            <div class="bold-val">{{item.stock_name}}</div>
+            <div style="display: flex;">
+                <div id="eq_code_{{i}}">Stock Code: <span class="purple-val">{{item.stock_symbol}}</span></div>
+                <div id="eq_nav_amt_{{i}}">CMP: <span class="purple-val">{{item.current_market_price}}</span></div>
+            </div>
+            <div style="display: flex;">
+                <div id="eq_inv_amt_{{i}}">Inv Amount: <span class="purple-val">{{item.inv_amt}}</span></div>
+                <div id="eq_units_{{i}}">No. of Shares: <span class="purple-val">{{item.no_of_shares}}</span></div>
+            </div>
+            <div style="display: flex;">
+                <div id="eq_nav_date_{{i}}">Last Purchase Date: <span class="purple-val">{{item.purchase_date}}</span></div>
+                <div id="eq_avg_nav_{{i}}">Avg Price: <span class="purple-val">{{item.avg_price}}</span></div>
+            </div>
+        </div>
+        <div id="eq_curr_val_{{i}}" class="right-align-val">
+            <div class="money-val positive-val bold-val">{{item.curr_amt}}</div>
+            <div class="font12-val purple-val bold-val">Annual Return : {{appService.roundUpAmount(item.ann_return)}}%</div>
+            <div class="font12-val purple-val bold-val">Abs. Return : {{item.abs_return}}%</div>
+        </div>
+    </div>
+</div>
