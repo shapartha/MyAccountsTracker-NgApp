@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
+import { interval, Subscription } from 'rxjs';
 import { AppService, XIRR } from '../app.service';
 import { MfTransHeaderTabs } from '../constant/header-tabs';
 import { Account } from '../model/account';
@@ -9,7 +10,7 @@ import { Account } from '../model/account';
   templateUrl: './mf-dashboard.component.html',
   styleUrls: ['./mf-dashboard.component.scss']
 })
-export class MfDashboardComponent implements OnInit, OnChanges {
+export class MfDashboardComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() selectedAccountObject: Account = {};
   @Output() selectedAccountObjectChange = new EventEmitter();
@@ -25,6 +26,8 @@ export class MfDashboardComponent implements OnInit, OnChanges {
   investmentChange: number = 0;
   overallXirr: number = 0.00;
   apiRespData: any | any[];
+  indices: any[] = [];
+  subs: Subscription | undefined;
 
   constructor(public router: Router, public appService: AppService, public xirrService: XIRR) { }
 
@@ -37,6 +40,41 @@ export class MfDashboardComponent implements OnInit, OnChanges {
       this.refreshTransactions = false;
       this.refreshTransactionsChange.emit(this.refreshTransactions);
     }
+  }
+
+  invokeStockLiveApi(val: any) {
+    this.appService.fetchStockLiveData(val).then((resp: any) => {
+      let _respData = {
+        pricecurrent: resp.data.pricecurrent,
+        percentchange: resp.data.pricepercentchange,
+        lastupd: resp.data.lastupd,
+        symbolname: resp.data.company
+      };
+      this.indices.push(_respData);
+    });
+  }
+
+  fetchStockIndicesVal() {
+    this.indices = [];
+    this.invokeStockLiveApi(AppService.STOCK_INDICES.SENSEX);
+    this.invokeStockLiveApi(AppService.STOCK_INDICES.NIFTY);
+    var obs = interval(10000);
+    this.subs = obs.subscribe(_x => {
+      this.indices = [];
+      this.invokeStockLiveApi(AppService.STOCK_INDICES.SENSEX);
+      this.invokeStockLiveApi(AppService.STOCK_INDICES.NIFTY);
+    });
+  }
+
+  ngOnDestroy() {
+    this.subs?.unsubscribe();
+  }
+
+  validateClass(val: number) {
+    if (val < 0) {
+      return 'negative-val';
+    }
+    return 'positive-val';
   }
 
   populateDashboard() {
@@ -159,6 +197,7 @@ export class MfDashboardComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.populateDashboard();
+    this.fetchStockIndicesVal();
   }
 
   handleTabChange(uri: any) {

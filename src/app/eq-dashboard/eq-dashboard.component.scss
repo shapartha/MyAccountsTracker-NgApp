@@ -28,6 +28,17 @@
     display: flex;
     width: 80%;
 }
+#indicesView {
+    display: flex;
+    width: 40%;
+}
+.market-indice {
+    border-radius: 5px;
+    width: 50%;
+    padding: 10px 20px;
+    background: linear-gradient(340deg, #e1eec6 0%, #de4eab 81%, #e61c41 100%);
+    border: 1px solid #1000ff2e;
+}
 .no-eq-mapping-header {
     padding: 10px;
     text-align: center;
@@ -53,4 +64,16 @@ div[id^="eq_curr_val_"] {
 div[id^="eq_code_"], div[id^="eq_nav_amt_"], div[id^="eq_inv_amt_"], div[id^="eq_units_"], div[id^="eq_nav_date_"], div[id^="eq_avg_nav_"] {
     width: 50%;
     font-size: 12px;
+}
+
+@media (min-width: 600px) and (max-width: 1000px) {
+    #indicesView {
+        width: 75%;
+    }
+}
+
+@media (max-width: 600px) {
+    #indicesView {
+        width: 100%;
+    }
 }

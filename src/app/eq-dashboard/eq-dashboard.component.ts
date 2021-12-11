@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { interval, Subscription } from 'rxjs';
 import { AppService } from '../app.service';
 import { EqTransHeaderTabs } from '../constant/header-tabs';
 import { Account } from '../model/account';
@@ -8,7 +9,7 @@ import { Account } from '../model/account';
   templateUrl: './eq-dashboard.component.html',
   styleUrls: ['./eq-dashboard.component.scss']
 })
-export class EqDashboardComponent implements OnInit, OnChanges {
+export class EqDashboardComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() selectedAccountObject: Account = {};
   @Output() selectedAccountObjectChange = new EventEmitter();
@@ -20,11 +21,18 @@ export class EqDashboardComponent implements OnInit, OnChanges {
   selectedTab = "eq-dashboard";
   currentTab = "Dashboard";
   eqMappings: any[] = [];
+  indices: any[] = [];
+  subs: Subscription | undefined;
 
   constructor(public appService: AppService) { }
 
+  ngOnDestroy() {
+    this.subs?.unsubscribe();
+  }
+
   ngOnInit(): void {
     this.populateDashboard();
+    this.fetchStockIndicesVal();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -36,6 +44,37 @@ export class EqDashboardComponent implements OnInit, OnChanges {
       this.refreshTransactions = false;
       this.refreshTransactionsChange.emit(this.refreshTransactions);
     }
+  }
+
+  invokeStockLiveApi(val: any) {
+    this.appService.fetchStockLiveData(val).then((resp: any) => {
+      let _respData = {
+        pricecurrent: resp.data.pricecurrent,
+        percentchange: resp.data.pricepercentchange,
+        lastupd: resp.data.lastupd,
+        symbolname: resp.data.company
+      };
+      this.indices.push(_respData);
+    });
+  }
+
+  fetchStockIndicesVal() {
+    this.indices = [];
+    this.invokeStockLiveApi(AppService.STOCK_INDICES.SENSEX);
+    this.invokeStockLiveApi(AppService.STOCK_INDICES.NIFTY);
+    var obs = interval(10000);
+    this.subs = obs.subscribe(_x => {
+      this.indices = [];
+      this.invokeStockLiveApi(AppService.STOCK_INDICES.SENSEX);
+      this.invokeStockLiveApi(AppService.STOCK_INDICES.NIFTY);
+    });
+  }
+
+  validateClass(val: number) {
+    if (val < 0) {
+      return 'negative-val';
+    }
+    return 'positive-val';
   }
 
   async populateDashboard() {

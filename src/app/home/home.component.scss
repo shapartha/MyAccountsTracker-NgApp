@@ -8,6 +8,12 @@
     background: linear-gradient( 90deg, #bbfaea 0%, #76c7e3 81%, #00d4ff 100%);
 }
 
+@media (max-width: 400px) {
+    .category-item-vertical {
+        width: 110px;
+    }
+}
+
 .account-item-vertical {
     border-radius: 5px;
     padding: 5px 15px;

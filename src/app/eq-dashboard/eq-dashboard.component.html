@@ -1,3 +1,16 @@
+<div id="indicesView">
+    <div class="market-indice" *ngFor="let idx of indices; let i = index;">
+        <div class="flex-div">
+            <div class="width50 bold-val">{{idx.symbolname}}</div>
+            <div class="width50 right-align-val purple-val">{{appService.formatAmountWithComma(idx.pricecurrent)}}</div>
+        </div>
+        <div class="right-align-val" [ngClass]="validateClass(idx.percentchange)">{{appService.roundUpAmount(idx.percentchange)}}%</div>
+        <div class="flex-div">
+            <div class="width50">Last Updated On:</div>
+            <div class="width50 right-align-val purple-val">{{idx.lastupd}}</div>
+        </div>
+    </div>
+</div>
 <div id="app-eq-dashboard">
     <div id="app-eq-trans-header">
         <div *ngFor="let item of headerTabs.header; let i = index;">

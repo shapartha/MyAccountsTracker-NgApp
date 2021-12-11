@@ -54,6 +54,11 @@ export class AppService {
     appUserId: number = 0;
     API_FETCH_MF_NAV: string = "https://api.mfapi.in/mf/";
     API_FETCH_STOCK_CMP: string = "https://priceapi.moneycontrol.com/pricefeed/bse/equitycash/";
+    API_FETCH_STOCK_LIVE_DATA: string = "https://priceapi.moneycontrol.com/pricefeed/notapplicable/inidicesindia/";
+    static STOCK_INDICES = {
+        SENSEX: 'in%3BSEN',
+        NIFTY: 'in%3BNSX'
+    };
 
     constructor(private http: HttpClient, private snackBar: MatSnackBar, private router: Router) {
         if (this.getAppToken == "") {
@@ -581,6 +586,21 @@ export class AppService {
         };
         let promise = new Promise((resolve, reject) => {
             this.http.get(this.API_FETCH_STOCK_CMP + stockSymbol, {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise; 
+    }
+
+    fetchStockLiveData(stockSymbol: any) {
+        const headers = { 
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.get(this.API_FETCH_STOCK_LIVE_DATA + stockSymbol, {'headers': headers}).toPromise()
             .then(resp => {
                 resolve(resp);
             }, err => {

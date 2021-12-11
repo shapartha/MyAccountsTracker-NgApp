@@ -51,7 +51,7 @@
       <button mat-menu-item (click)="updateItem(item)">Update</button>
       <button mat-menu-item (click)="deleteItem(item)">Delete</button>
     </div>
-    <div *ngIf="item.menuType === 'MF Dashboard' && item.menuType === 'EQ Dashboard'">
+    <div *ngIf="item.menuType === 'MF Dashboard' || item.menuType === 'EQ Dashboard'">
       <button mat-menu-item (click)="redeemAll(item)">Redeem All</button>
       <button mat-menu-item (click)="redeemPartial(item)">Redeem Partial</button>
     </div>
