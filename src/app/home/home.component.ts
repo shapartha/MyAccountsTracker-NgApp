@@ -316,12 +316,17 @@ export class HomeComponent implements OnInit {
     this.openDeleteDialog(item);
   }
 
-  openRedeemDialog(item: any) {
+  async openRedeemDialog(item: any) {
     if (item.menuType === 'MF Dashboard') {
       item.rdmAmt = this.appService.formatStringValueToAmount(item.curr_amt);
       item.rdmUnits = item.units;
       item.rdmNav = item.nav_amt;
       item.rdmDte = new Date(item.nav_date);
+    } else if (item.menuType === 'EQ Dashboard') {
+      item.rdmNoOfShares = item.no_of_shares;
+      item.rdmCMP = this.appService.formatStringValueToAmount(item.current_market_price);
+      item.rdmAmt = this.appService.roundUpAmt(item.rdmNoOfShares * item.rdmCMP);
+      item.rdmDte = new Date();
     }
     const dialogRef = this.dialog.open(DialogRedeemContent, {
       data: item,
@@ -332,7 +337,14 @@ export class HomeComponent implements OnInit {
       if (result !== undefined && item.menuType === 'MF Dashboard') {
         this.refreshMfTransactions = true;
         let _cat = this.categories.filter(_b => _b.id === this.selectedAccountObject.category_id)[0];
-        let _accnt = this.accounts.filter((_a: any) => _a.id === this.selectedAccountObject.id)[0]
+        let _accnt = this.accounts.filter((_a: any) => _a.id === this.selectedAccountObject.id)[0];
+        _cat.amount = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_cat.amount) - 
+                      (this.appService.formatStringValueToAmount(_accnt.balance) - result.data.newAccBalance));
+        _accnt.balance = this.appService.formatAmountWithComma(this.appService.roundUpAmt(result.data.newAccBalance));
+      } else if (result !== undefined && item.menuType === 'EQ Dashboard') {
+        this.refreshEqTransactions = true;
+        let _cat = this.categories.filter(_b => _b.id === this.selectedAccountObject.category_id)[0];
+        let _accnt = this.accounts.filter((_a: any) => _a.id === this.selectedAccountObject.id)[0];
         _cat.amount = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_cat.amount) - 
                       (this.appService.formatStringValueToAmount(_accnt.balance) - result.data.newAccBalance));
         _accnt.balance = this.appService.formatAmountWithComma(this.appService.roundUpAmt(result.data.newAccBalance));
@@ -544,6 +556,21 @@ export class DialogRedeemContent {
   async onRedeemDialog(data: any) {
     this.appService.showLoader();
     if (data.menuType === 'MF Dashboard') {
+      if (data.rdmNav == undefined || data.rdmNav == 0) {
+        this.appService.showAlert("NAV is invalid or blank");
+        this.appService.hideLoader();
+        return;
+      }
+      if (data.rdmDte == undefined || data.rdmDte == null) {
+        this.appService.showAlert("Date is invalid or blank.", "Close");
+        this.appService.hideLoader();
+        return;
+      }
+      if (data.rdmAmt == undefined || data.rdmAmt == 0) {
+        this.appService.showAlert("Amount is invalid or blank");
+        this.appService.hideLoader();
+        return;
+      }
       let _transObj_ = {
         trans_desc : "Redeemed " + this.appService.formatAmountWithComma(data.rdmAmt.toFixed(2)) + " from " + data.scheme_name,
         trans_date : this.appService.convertDate(data.rdmDte),
@@ -648,13 +675,79 @@ export class DialogRedeemContent {
       } else {
         this.appService.showAlert(transResp[0]);
       }
+    } else if (data.menuType === 'EQ Dashboard') {
+      if (data.rdmNoOfShares <= 0 || data.rdmNoOfShares > data.no_of_shares) {
+        this.appService.showAlert("No. of shares cannot be less than 0 or greater than available units");
+        this.appService.hideLoader();
+        return;
+      }
+      if (data.rdmDte == undefined || data.rdmDte == null) {
+        this.appService.showAlert("Date is invalid or blank.", "Close");
+        this.appService.hideLoader();
+        return;
+      }
+      if (data.rdmCMP == undefined || data.rdmCMP == 0) {
+        this.appService.showAlert("Unit Price is invalid or blank");
+        this.appService.hideLoader();
+        return;
+      }
+      let _transObj_ = {
+        trans_desc : "Redeemed " + this.appService.formatAmountWithComma(data.rdmAmt.toFixed(2)) + " from " + data.stock_name + " (" + data.stock_symbol + ")",
+        trans_date : this.appService.convertDate(data.rdmDte),
+        trans_amount : data.rdmAmt.toFixed(2),
+        trans_type : "DEBIT",
+        account_id : data.account_id,
+        user_id : this.appService.getAppUserId.toString()
+      };
+      const transResp = await this.appService.saveTransactionOnly([_transObj_]);
+      if (transResp[0].success !== true) {
+        this.appService.showAlert(transResp[0]);
+        this.close(data);
+        this.appService.hideLoader();
+        return;
+      }
+      let _accObj_ = {
+        account_id: data.account_id,
+        account_name: data.account_data.name,
+        category_id: data.account_data.category_id,
+        user_id: this.appService.getAppUserId,
+        balance: this.appService.formatStringValueToAmount(data.account_data.balance) - data.rdmAmt
+      };
+      const accResp = await this.appService.updateAccount([_accObj_]);
+      if (accResp[0].success !== true) {
+        this.appService.showAlert(accResp[0]);
+        this.close(data);
+        this.appService.hideLoader();
+        return;
+      }
+      let _eqObj_ = {
+        stock_symbol: data.stock_symbol,
+        no_of_shares: data.rdmNoOfShares
+      };
+      const eqMapUpdResp = await this.appService.updateEqMapping(_eqObj_);
+      if (eqMapUpdResp.success !== true) {
+        this.appService.showAlert(eqMapUpdResp);
+        this.close(data);
+        this.appService.hideLoader();
+        return;
+      }
+      data.newAccBalance = _accObj_.balance;
+      if (data.redeemType === 'Partially') {
+        this.appService.showAlert("Partial Redemption Successful");
+      } else if (data.redeemType === 'Fully') {
+        this.appService.showAlert("Full Redemption Successful");
+      }
     }
     this.close(data);
     this.appService.hideLoader();
   }
 
-  onChangeRedeemAmount(data: any) {
-    data.rdmUnits = this.appService.formatStringValueToAmount(this.appService.formatAmountWithComma((data.rdmAmt / data.rdmNav).toString()));
+  onChangeRedeemVal(data: any) {
+    if (data.menuType === 'EQ Dashboard') {
+      data.rdmAmt = this.appService.roundUpAmt(data.rdmNoOfShares * data.rdmCMP);
+    } else if (data.menuType === 'MF Dashboard') {
+      data.rdmUnits = this.appService.formatStringValueToAmount(this.appService.formatAmountWithComma((data.rdmAmt / data.rdmNav).toString()));
+    }
   }
 
   close(data: any) {

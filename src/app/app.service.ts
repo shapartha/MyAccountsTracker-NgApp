@@ -19,6 +19,7 @@ export class AppService {
     API_GET_ALL_ACCOUNTS: string = "getAccountsByUser";
     API_GET_MF_SCHEMES_BY_ACCOUNT: string = "getMfMappingByAccount";
     API_UPDATE_MF_MAPPING: string = "updateMfMapping";
+    API_UPDATE_EQ_MAPPING: string = "updateStockMapping";
     API_SAVE_TRANSACTION: string = "addTransactionProcess";
     API_SAVE_TRANSACTION_ONLY: string = "storeTrans";
     API_UPLOAD_RECEIPT: string = "storeReceipt";
@@ -192,6 +193,24 @@ export class AppService {
     getEqMappingByAccountSymbol(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_EQ_MAPPING_BY_ACC_SYM;
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+    }
+    
+    updateEqMapping(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_UPDATE_EQ_MAPPING;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
     }
     
     getAllAccounts(apiFuncParams: any) {

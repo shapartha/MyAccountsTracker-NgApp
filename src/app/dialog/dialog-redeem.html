@@ -24,7 +24,7 @@
             <mat-form-field appearance="fill">
                 <mat-label>Amount</mat-label>
                 <input type="number" matInput placeholder="Enter Amount to Redeem" name="rdmAmt" [disabled]="data.redeemType === 'Fully'"
-                (keyup)="onChangeRedeemAmount(data)" [(ngModel)]="data.rdmAmt">
+                (keyup)="onChangeRedeemVal(data)" [(ngModel)]="data.rdmAmt">
             </mat-form-field>
             <mat-form-field appearance="fill">
                 <mat-label>Units</mat-label>
@@ -39,6 +39,29 @@
             <mat-form-field appearance="fill">
                 <mat-label>NAV Amount</mat-label>
                 <input type="number" matInput placeholder="Enter NAV" name="rdmNav" [(ngModel)]="data.rdmNav">
+            </mat-form-field>
+        </form>
+    </div>
+    <div *ngIf="data.menuType === 'EQ Dashboard'">
+        <form>
+            <mat-form-field appearance="fill">
+                <mat-label>Amount</mat-label>
+                <input type="number" matInput placeholder="Enter Amount to Redeem" name="rdmAmt" disabled [(ngModel)]="data.rdmAmt">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>No. of Shares</mat-label>
+                <input type="number" matInput placeholder="Enter No of Shares" name="rdmShares" [(ngModel)]="data.rdmNoOfShares" [disabled]="data.redeemType === 'Fully'"
+                (keyup)="onChangeRedeemVal(data)">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Redemption Date</mat-label>
+                <input matInput [matDatepicker]="picker" name="rdmDate" [(ngModel)]="data.rdmDte">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Redemption Unit Price</mat-label>
+                <input type="number" matInput placeholder="Enter Unit Price" name="rdmCMP" [(ngModel)]="data.rdmCMP" (keyup)="onChangeRedeemVal(data)">
             </mat-form-field>
         </form>
     </div>
