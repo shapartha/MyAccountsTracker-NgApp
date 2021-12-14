@@ -91,3 +91,6 @@ mat-dialog-container .mat-select-value {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+.mat-input-element:disabled {
+    color: gray;
+}

@@ -263,7 +263,7 @@ export class MfDashboardComponent implements OnInit, OnChanges, OnDestroy {
             this.selectedAccountObject.balance = this.appService.formatAmountWithComma(_acc.balance.toFixed(2));
             this.selectedAccountObjectChange.emit(this.selectedAccountObject);
             let _inpData = {
-              trans_amount : this.investmentChange.toString(),
+              trans_amount : Math.abs(this.investmentChange).toString(),
               account_id : this.selectedAccountObject.id,
               trans_date : this.appService.convertDate(),
               trans_desc : "Periodic Profit/Loss",

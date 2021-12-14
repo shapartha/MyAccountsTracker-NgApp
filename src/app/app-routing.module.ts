@@ -11,6 +11,7 @@ import { AddAccountComponent } from './add-account/add-account.component';
 import { ScheduledTransComponent } from './scheduled-trans/scheduled-trans.component';
 import { MfDashboardComponent } from './mf-dashboard/mf-dashboard.component';
 import { RecurringTransComponent } from './recurring-trans/recurring-trans.component';
+import { MapMfComponent } from './map-mf/map-mf.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -21,6 +22,7 @@ const routes: Routes = [
   { path: 'add-trans', component: AddTransComponent, canActivate : [AuthService]  },
   { path: 'add-account', component: AddAccountComponent, canActivate : [AuthService]  },
   { path: 'add-category', component: AddCategoryComponent, canActivate : [AuthService] },
+  { path: 'map-mf', component: MapMfComponent, canActivate : [AuthService]  },
   { path: 'logout', component: LogoutComponent, canActivate : [AuthService] },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', component: ErrorComponent }

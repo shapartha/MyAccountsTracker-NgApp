@@ -597,6 +597,7 @@ export class DialogRedeemContent {
             units: data.rdmUnits,
             nav: data.rdmNav,
             amount: data.rdmAmt,
+            trans_type: 'DEBIT',
             balance_units: 0.00
           };
           const mfTrans = await this.appService.saveMfTrans([_mfTransObj_]);

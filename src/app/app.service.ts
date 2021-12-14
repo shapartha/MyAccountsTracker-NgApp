@@ -18,7 +18,9 @@ export class AppService {
     API_USER_LOGIN: string = "getUserDataEmailPassword";
     API_GET_ALL_ACCOUNTS: string = "getAccountsByUser";
     API_GET_MF_SCHEMES_BY_ACCOUNT: string = "getMfMappingByAccount";
+    API_GET_MF_SCHEMES_BY_ACCOUNT_SCHEME: string = "getMfMappingByAccountScheme";
     API_UPDATE_MF_MAPPING: string = "updateMfMapping";
+    API_SAVE_MF_MAPPING: string = "storeMfMapping";
     API_UPDATE_EQ_MAPPING: string = "updateStockMapping";
     API_SAVE_TRANSACTION: string = "addTransactionProcess";
     API_SAVE_TRANSACTION_ONLY: string = "storeTrans";
@@ -50,6 +52,7 @@ export class AppService {
     API_GET_EQ_MAPPING_BY_ACC: string = "getStockMappingByAccount";
     API_GET_EQ_MAPPING_BY_ACC_SYM: string = "getStockMappingByAccountSymbol";
     API_UPDATE_STOCK: string = "updateStock";
+    API_GET_ALL_MF: string = "getAllMf";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -165,6 +168,42 @@ export class AppService {
     getMfSchemesByAccount(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_MF_SCHEMES_BY_ACCOUNT;
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+    }
+    
+    getMfSchemesByAccountScheme(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_GET_MF_SCHEMES_BY_ACCOUNT_SCHEME;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        })
+        return promise;
+    }
+    
+    saveMfMapping(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_SAVE_MF_MAPPING;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
     }
     
     updateMfMapping(apiFuncParams: any) : Promise<any> {
@@ -660,6 +699,41 @@ export class AppService {
             });
         });
         return promise;       
+    }
+
+    getAllMutualFunds(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_GET_ALL_MF;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise; 
+    }
+
+    calculateMfInvestedAmount(transAmt: number, transDate: string | Date) {
+        try {
+            if (typeof transDate === 'string') {
+                transDate = new Date(transDate);
+            }
+            let cutOffDt: Date = new Date('2020-07-01');
+            if (transDate >= cutOffDt) {
+                return 0.99995 * transAmt;
+            } else {
+                return transAmt;
+            }
+        } catch (e: any) {
+            this.showAlert(e);
+            return transAmt;
+        }
     }
 
     showLoader() {

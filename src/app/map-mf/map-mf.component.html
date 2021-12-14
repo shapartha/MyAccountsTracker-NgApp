@@ -1,0 +1,62 @@
+<mat-label id="mapMfHeader">Map Mutual Fund to Account</mat-label>
+<br><br>
+<form>
+    <mat-form-field appearance="fill">
+        <mat-label>Account </mat-label>
+        <mat-select [(ngModel)]="mf.accountId" required name="accountId">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let item of accounts" value="{{item.account_id}}">{{item.account_name}}</mat-option>
+        </mat-select>
+        <mat-error>
+            Valid account required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Amount Invested</mat-label>
+        <input type="number" min="0" matInput placeholder="Invested Amount" name="invAmount" (keyup)="onChangeAmountUnits(mf)" required [(ngModel)]="mf.invAmount">
+        <mat-error *ngIf="mf.invAmount == null || mf.invAmount == undefined">
+            Valid amount required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Units</mat-label>
+        <input type="number" min="0" matInput placeholder="Units" name="units" (keyup)="onChangeAmountUnits(mf)" required [(ngModel)]="mf.units">
+        <mat-error *ngIf="mf.units == null || mf.units == undefined">
+            Valid units required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Purchase Date</mat-label>
+        <input matInput [matDatepicker]="picker" required name="purchaseDate" [(ngModel)]="mf.purchaseDate">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error>
+           Valid date required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Mutual Fund Scheme </mat-label>
+        <mat-select [(ngModel)]="mf.schemeCode" required name="schemeCode" (selectionChange)="onChangeMF($event)">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let item of mutualFunds" value="{{item.scheme_code}}">{{item.scheme_name}}</mat-option>
+        </mat-select>
+        <mat-error>
+            Valid mutual fund required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>NAV</mat-label>
+        <input type="number" min="0" matInput placeholder="NAV" name="nav" disabled [(ngModel)]="mf.nav">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>NAV Date</mat-label>
+        <input type="text" matInput placeholder="NAV Date" name="navDate" disabled [(ngModel)]="mf.navDate">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Avg NAV</mat-label>
+        <input type="number" min="0" matInput placeholder="Avg NAV" name="avgNav" disabled [(ngModel)]="mf.avgNav">
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="mapMutualFund(mf)">Save</button>
+    <button mat-raised-button color="warn" (click)="appService.handleTabChange({ path: 'home' })">Cancel</button>
+</form>

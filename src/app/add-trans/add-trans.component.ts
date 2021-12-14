@@ -92,6 +92,7 @@ export class AddTransComponent implements OnInit {
     for (var i = 1; i <= 28; i++) {
       this.monthDays.push(i);
     }
+    this.trans.date = this.appService.getDate();
     this.appService.getAllAccounts('{"user_id": ' + this.appService.getAppUserId + '}').then(data => {
       console.log("FETCH ALL ACCOUNTS Success");
       data.dataArray.forEach((element: any) => {
