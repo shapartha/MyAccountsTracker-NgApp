@@ -24,6 +24,7 @@ export class AppMenuItems {
             { name : "Add Account", path: "add-account" },
             { name : "Add Category", path: "add-category" },
             { name : "Map Mutual Fund", path: "map-mf" },
+            { name : "Map Stocks", path: "map-eq" },
             { name : "Logout", path: "logout" }
         ];
     }

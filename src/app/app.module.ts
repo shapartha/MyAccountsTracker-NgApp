@@ -38,6 +38,7 @@ import { HomeScheduledSectionComponent } from './home-scheduled-section/home-sch
 import { HomeRecurringSectionComponent } from './home-recurring-section/home-recurring-section.component';
 import { EqDashboardComponent } from './eq-dashboard/eq-dashboard.component';
 import { MapMfComponent } from './map-mf/map-mf.component';
+import { MapEqComponent } from './map-eq/map-eq.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,7 @@ import { MapMfComponent } from './map-mf/map-mf.component';
     AddTransComponent,
     AddCategoryComponent, HomeRecurringSectionComponent,
     AddAccountComponent, UpdateDialogRecurringTrans, DeleteDialogRecurringTrans,
-    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent, MapMfComponent
+    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent, MapMfComponent, MapEqComponent
   ],
   imports: [
     BrowserModule,    HttpClientModule,    FormsModule,    AppRoutingModule,    BrowserAnimationsModule,

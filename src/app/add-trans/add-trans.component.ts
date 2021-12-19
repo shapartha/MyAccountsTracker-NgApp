@@ -134,6 +134,8 @@ export class AddTransComponent implements OnInit {
 
   onChangeTransferTrans(data: any) {
     if (!data.checked) {
+      this.fromAcc = this.mainAccList.map(obj => ({ ...obj }));
+      this.toAcc = this.mainAccList.map(obj => ({ ...obj }));
       this.toAccDetails = "";
     }
   }

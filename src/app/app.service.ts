@@ -53,6 +53,8 @@ export class AppService {
     API_GET_EQ_MAPPING_BY_ACC_SYM: string = "getStockMappingByAccountSymbol";
     API_UPDATE_STOCK: string = "updateStock";
     API_GET_ALL_MF: string = "getAllMf";
+    API_GET_ALL_STOCKS: string = "getAllStocks";
+    API_SAVE_STOCK_MAPPING: string = "storeStockMapping";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -734,6 +736,42 @@ export class AppService {
             this.showAlert(e);
             return transAmt;
         }
+    }
+
+    getAllStocks(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_GET_ALL_STOCKS;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise; 
+    }
+    
+    saveStockMapping(apiFuncParams: any) : Promise<any> {
+        this.apiFuncName = this.API_SAVE_STOCK_MAPPING;
+        const headers = { 
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+            {'headers': headers}).toPromise()
+            .then(resp => {
+                resolve(resp);
+            }, err => {
+                reject(err)
+            });
+        });
+        return promise;       
     }
 
     showLoader() {

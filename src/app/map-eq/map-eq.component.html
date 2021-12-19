@@ -1,0 +1,62 @@
+<mat-label id="mapEqHeader">Map Stocks to Account</mat-label>
+<br><br>
+<form>
+    <mat-form-field appearance="fill">
+        <mat-label>Account </mat-label>
+        <mat-select [(ngModel)]="eq.accountId" required name="accountId">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let item of accounts" value="{{item.account_id}}">{{item.account_name}}</mat-option>
+        </mat-select>
+        <mat-error>
+            Valid account required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>No. Of Shares</mat-label>
+        <input type="number" min="0" matInput placeholder="No. Of Shares" name="noOfShares" (keyup)="onChangePriceNumber(eq)" required [(ngModel)]="eq.noOfShares">
+        <mat-error *ngIf="eq.noOfShares == null || eq.noOfShares == undefined || eq.noOfShares == 0">
+            Valid number of shares required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Purchase Price</mat-label>
+        <input type="number" min="0" matInput placeholder="Purchase Price" name="purchasePrice" (keyup)="onChangePriceNumber(eq)" required [(ngModel)]="eq.purchasePrice">
+        <mat-error *ngIf="eq.purchasePrice == null || eq.purchasePrice == undefined || eq.purchasePrice == 0">
+            Valid per share price required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Purchase Date</mat-label>
+        <input matInput [matDatepicker]="picker" required name="purchaseDate" [(ngModel)]="eq.purchaseDate">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error>
+           Valid date required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Select Stock </mat-label>
+        <mat-select [(ngModel)]="eq.stockSymbol" required name="stockName" (selectionChange)="onChangeEQ($event)">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let item of equities" value="{{item.stock_symbol}}">{{item.stock_name}}</mat-option>
+        </mat-select>
+        <mat-error>
+            Valid company stock required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Amount Invested</mat-label>
+        <input type="number" matInput placeholder="Amount Invested" name="invAmount" disabled [(ngModel)]="eq.invAmount">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Current Market Price</mat-label>
+        <input type="number" matInput placeholder="CMP" name="cmp" disabled [(ngModel)]="eq.cmp">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Last Traded On</mat-label>
+        <input type="text" matInput placeholder="Last Traded On" name="lastMarketDate" disabled [(ngModel)]="eq.lastMarketDate">
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="mapStock(eq)">Save</button>
+    <button mat-raised-button color="warn" (click)="appService.handleTabChange({ path: 'home' })">Cancel</button>
+</form>
