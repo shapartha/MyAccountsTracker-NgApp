@@ -1,0 +1,69 @@
+<div>
+    <div id="app-header">
+      <div *ngFor="let item of headerTabs.header; let i = index;">
+        <div class="header-tab" (click)="appService.handleTabChange(item)">
+          <span id="header_{{i}}">{{item.name}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="w-33 margin-auto padding-5H">
+        <mat-accordion>
+            <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+                <mat-expansion-panel-header>
+                    <mat-panel-description>
+                        <button mat-raised-button color="primary" *ngIf="!panelOpenState">Add Stocks</button>
+                        <button mat-raised-button color="accent" *ngIf="panelOpenState">Close</button>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <form>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Stock Symbol</mat-label>
+                        <input type="text" matInput placeholder="Enter Stock Symbol" name="stockSymbol" (change)="onChangeStockSymbol()" required [(ngModel)]="newStock.stock_symbol">
+                        <mat-error>
+                            Stock symbol required.
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Stock Name</mat-label>
+                        <input type="text" matInput placeholder="Enter Stock Name" name="stockName" required [(ngModel)]="newStock.stock_name">
+                        <mat-error>
+                            Stock name required.
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Current Market Price</mat-label>
+                        <input type="text" matInput placeholder="Current Market Price" name="current_market_price" disabled [(ngModel)]="newStock.current_market_price">
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Last Update On</mat-label>
+                        <input type="text" matInput placeholder="Last Updated" name="last_market_date" disabled [(ngModel)]="newStock.last_market_date">
+                    </mat-form-field>
+                    <button mat-raised-button color="primary" (click)="saveStock()">Save</button>
+                </form>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+    <div id="app-main">
+      <div *ngIf="stocks === undefined || stocks === null || stocks.length === 0" class="no-stocks-header">
+        No stocks available !!
+      </div>
+      <div class="stocks-item" *ngFor="let item of stocks; let i = index;" (click)="onContextMenu($event, item)">
+          <span id="stocks_name_{{i}}" class="purple-val">{{item.stock_name}}</span>
+          <div class="flex-div">
+              <div id="stocks_symbol_{{i}}">Symbol: <span class="bold-val">{{item.stock_symbol}}</span></div>
+              <div id="stocks_lastupd_{{i}}">Last Update: <span class="darkgreen-val">{{ appService.formatDate(item.last_market_date) }}</span></div>
+              <div id="stocks_cmp_{{i}}">Current Price: <span class="bold-val">{{ appService.formatAmountWithComma(item.current_market_price) }}</span></div>
+          </div>
+      </div>
+    </div>
+</div>
+
+
+<div style="visibility: hidden; position: fixed" [style.left]="menuTopLeftPosition.x" [style.top]="menuTopLeftPosition.y" [matMenuTriggerFor]="contextMenu">
+</div>
+<mat-menu #contextMenu="matMenu">
+	<ng-template matMenuContent let-item="item">
+		<button mat-menu-item (click)="deleteItem(item)">Delete</button>
+        <button mat-menu-item (click)="refreshStocks()">Refresh</button>
+	</ng-template>
+</mat-menu>

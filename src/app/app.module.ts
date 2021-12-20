@@ -29,6 +29,7 @@ import { AddCategoryComponent } from './add-category/add-category.component';
 import { AppInterceptor } from './app.interceptor';
 import { AuthService } from './auth.service';
 import { AddAccountComponent } from './add-account/add-account.component';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { DeleteDialogScheduleTrans, ScheduledTransComponent, UpdateDialogScheduleTrans} from './scheduled-trans/scheduled-trans.component';
@@ -39,6 +40,7 @@ import { HomeRecurringSectionComponent } from './home-recurring-section/home-rec
 import { EqDashboardComponent } from './eq-dashboard/eq-dashboard.component';
 import { MapMfComponent } from './map-mf/map-mf.component';
 import { MapEqComponent } from './map-eq/map-eq.component';
+import { DeleteDialogStocks, ManageEqComponent } from './manage-eq/manage-eq.component';
 
 @NgModule({
   declarations: [
@@ -49,15 +51,15 @@ import { MapEqComponent } from './map-eq/map-eq.component';
     LogoutComponent,
     TransactionsComponent,
     AddTransComponent,
-    AddCategoryComponent, HomeRecurringSectionComponent,
+    AddCategoryComponent, HomeRecurringSectionComponent, DeleteDialogStocks,
     AddAccountComponent, UpdateDialogRecurringTrans, DeleteDialogRecurringTrans,
-    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent, MapMfComponent, MapEqComponent
+    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent, MapMfComponent, MapEqComponent, ManageEqComponent
   ],
   imports: [
     BrowserModule,    HttpClientModule,    FormsModule,    AppRoutingModule,    BrowserAnimationsModule,
     MatDatepickerModule,    MatFormFieldModule,    MatNativeDateModule,    MatInputModule,    MatSlideToggleModule,
     MatRadioModule,    MatSelectModule,    MatButtonModule,    MatSnackBarModule,    MatFileUploadModule,    MatToolbarModule,
-    NoopAnimationsModule,    MatMenuModule,    MatDialogModule, MatTooltipModule
+    NoopAnimationsModule,    MatMenuModule,    MatDialogModule, MatTooltipModule, MatExpansionModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AppInterceptor, multi: true },

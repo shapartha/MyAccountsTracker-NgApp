@@ -5,7 +5,10 @@ export class HeaderTabs {
         this.header = [
             { name: 'Home', path: 'home' },
             { name: 'Scheduled Transactions', path: 'scheduled-trans' },
-            { name: 'Recurring Transactions', path: 'recurring-trans' }
+            { name: 'Recurring Transactions', path: 'recurring-trans' },
+            { name: 'Manage Mutual Funds', path: 'manage-mf' },
+            { name: 'Manage Equity Shares', path: 'manage-eq' },
+            { name: 'SMS Condition Mappings', path: 'manage-sms-map' }
         ];
     }
 };
