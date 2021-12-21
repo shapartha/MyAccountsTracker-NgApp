@@ -1,0 +1,58 @@
+<div>
+    <div id="app-header">
+      <div *ngFor="let item of headerTabs.header; let i = index;">
+        <div class="header-tab" (click)="appService.handleTabChange(item)">
+          <span id="header_{{i}}">{{item.name}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="w-33 margin-auto padding-5H">
+        <mat-accordion>
+            <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+                <mat-expansion-panel-header>
+                    <mat-panel-description>
+                        <button mat-raised-button color="primary" *ngIf="!panelOpenState">Add Mutual Fund</button>
+                        <button mat-raised-button color="accent" *ngIf="panelOpenState">Close</button>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+                <form>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Scheme Code</mat-label>
+                        <input type="text" matInput placeholder="Enter Scheme Code" name="schemeCode" (change)="onChangeSchemeCode()" required [(ngModel)]="newMf.scheme_code">
+                        <mat-error>
+                            Scheme code required.
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Scheme Name</mat-label>
+                        <input type="text" matInput placeholder="Enter Scheme Name" name="schemeName" required [(ngModel)]="newMf.scheme_name">
+                        <mat-error>
+                            Scheme name required.
+                        </mat-error>
+                    </mat-form-field>
+                    <button mat-raised-button color="primary" (click)="saveMutualFund()">Save</button>
+                </form>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+    <div id="app-main">
+      <div *ngIf="mutualFunds === undefined || mutualFunds === null || mutualFunds.length === 0" class="no-mf-header">
+        No mutual funds available !!
+      </div>
+      <div class="mf-item" *ngFor="let item of mutualFunds; let i = index;" (click)="onContextMenu($event, item)">
+          <div class="flex-div">
+              <div class="w-25">Scheme Code: <span class="purple-val">{{item.scheme_code}}</span></div>
+              <div class="w-75 darkgreen-val bold-val">{{ item.scheme_name }}</div>
+          </div>
+      </div>
+    </div>
+</div>
+
+
+<div style="visibility: hidden; position: fixed" [style.left]="menuTopLeftPosition.x" [style.top]="menuTopLeftPosition.y" [matMenuTriggerFor]="contextMenu">
+</div>
+<mat-menu #contextMenu="matMenu">
+	<ng-template matMenuContent let-item="item">
+		<button mat-menu-item (click)="deleteItem(item)">Delete</button>
+	</ng-template>
+</mat-menu>

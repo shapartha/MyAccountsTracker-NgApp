@@ -2,7 +2,6 @@ import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { AppService } from '../app.service';
-import { AppConstant } from '../constant/app-const';
 import { HeaderTabs } from '../constant/header-tabs';
 
 @Component({

@@ -14,6 +14,7 @@ import { RecurringTransComponent } from './recurring-trans/recurring-trans.compo
 import { MapMfComponent } from './map-mf/map-mf.component';
 import { MapEqComponent } from './map-eq/map-eq.component';
 import { ManageEqComponent } from './manage-eq/manage-eq.component';
+import { ManageMfComponent } from './manage-mf/manage-mf.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -27,6 +28,7 @@ const routes: Routes = [
   { path: 'map-mf', component: MapMfComponent, canActivate : [AuthService]  },
   { path: 'map-eq', component: MapEqComponent, canActivate : [AuthService]  },
   { path: 'manage-eq', component: ManageEqComponent, canActivate : [AuthService]  },
+  { path: 'manage-mf', component: ManageMfComponent, canActivate : [AuthService]  },
   { path: 'logout', component: LogoutComponent, canActivate : [AuthService] },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', component: ErrorComponent }

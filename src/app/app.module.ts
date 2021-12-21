@@ -41,6 +41,7 @@ import { EqDashboardComponent } from './eq-dashboard/eq-dashboard.component';
 import { MapMfComponent } from './map-mf/map-mf.component';
 import { MapEqComponent } from './map-eq/map-eq.component';
 import { DeleteDialogStocks, ManageEqComponent } from './manage-eq/manage-eq.component';
+import { DeleteDialogMutualFunds, ManageMfComponent } from './manage-mf/manage-mf.component';
 
 @NgModule({
   declarations: [
@@ -51,9 +52,9 @@ import { DeleteDialogStocks, ManageEqComponent } from './manage-eq/manage-eq.com
     LogoutComponent,
     TransactionsComponent,
     AddTransComponent,
-    AddCategoryComponent, HomeRecurringSectionComponent, DeleteDialogStocks,
+    AddCategoryComponent, HomeRecurringSectionComponent, DeleteDialogStocks, DeleteDialogMutualFunds,
     AddAccountComponent, UpdateDialogRecurringTrans, DeleteDialogRecurringTrans,
-    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent, MapMfComponent, MapEqComponent, ManageEqComponent
+    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent, MapMfComponent, MapEqComponent, ManageEqComponent, ManageMfComponent
   ],
   imports: [
     BrowserModule,    HttpClientModule,    FormsModule,    AppRoutingModule,    BrowserAnimationsModule,
