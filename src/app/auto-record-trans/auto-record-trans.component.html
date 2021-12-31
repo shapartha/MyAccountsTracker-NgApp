@@ -1,0 +1,33 @@
+<div>
+    <div id="app-header">
+        <div *ngFor="let item of headerTabs.header; let i = index;">
+            <div class="header-tab" (click)="appService.handleTabChange(item)">
+                <span id="header_{{i}}">{{item.name}}</span>
+            </div>
+        </div>
+    </div>
+    <div id="app-main">
+        <div *ngFor="let filterItem of mailDataJson; let j = index;">
+            <div class="mail-filter-label">{{filterItem.filter}}</div>
+            <div class="mail-item" *ngFor="let item of filterItem.data; let i = index;">
+                <span id="mail_trans_desc_{{i}}">{{item.trans_desc}}</span>
+                <div style="display: flex;">
+                    <div id="mail_trans_acc_{{i}}">{{item.acc_name}}</div>
+                    <div id="mail_trans_date_{{i}}">{{item.trans_date}}</div>
+                    <div id="mail_trans_amount_{{i}}" class="money-val"
+                        [ngClass]="appService.getClassVal(item.trans_type)">{{item.trans_amt}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div style="visibility: hidden; position: fixed" [style.left]="menuTopLeftPosition.x"
+    [style.top]="menuTopLeftPosition.y" [matMenuTriggerFor]="contextMenu">
+</div>
+<mat-menu #contextMenu="matMenu">
+    <ng-template matMenuContent let-item="item">
+        <button mat-menu-item>Delete</button>
+    </ng-template>
+</mat-menu>

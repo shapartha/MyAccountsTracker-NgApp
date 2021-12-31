@@ -8,7 +8,7 @@ export class HeaderTabs {
             { name: 'Recurring Transactions', path: 'recurring-trans' },
             { name: 'Manage Mutual Funds', path: 'manage-mf' },
             { name: 'Manage Equity Shares', path: 'manage-eq' },
-            { name: 'SMS Condition Mappings', path: 'manage-sms-map' }
+            { name: 'SMS Condition Mappings', path: 'auto-trans' }
         ];
     }
 };

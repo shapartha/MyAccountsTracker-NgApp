@@ -65,7 +65,7 @@ export class ManageEqComponent implements OnInit {
           last_market_date: this.appService.convertDate(resp.data.lastupd)
         }
         const updStkResp = await this.appService.updateStockMaster([ inpObj ]);
-        if (updStkResp.success === true) {
+        if (updStkResp[0].success === true) {
           let _updObj_ = this.stocks.filter((stk: any) => stk.stock_symbol === inpObj.stock_symbol)[0];
           _updObj_.current_market_price = inpObj.current_market_price;
           _updObj_.last_market_date = inpObj.last_market_date;
