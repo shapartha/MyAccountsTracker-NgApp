@@ -14,3 +14,49 @@
     text-align: center;
     background: linear-gradient(317deg, #d5b469 0%, #f3ddd0 50%, #f79c87 100%);
 }
+.mail-item {
+    background: #fafad2;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+.no-mail-header {
+    padding: 10px;
+    text-align: center;
+}
+
+div[id^="mail_trans_desc_"] {
+    width: 33%;
+    color: purple;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+div[id^="mail_trans_acc_"] {
+    padding: 5px 10px;
+    font-size: large;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+div[id^="mail_trans_date_"] {
+    width: 33%;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    text-align: center;
+    overflow: hidden;
+}
+
+div[id^="mail_trans_amount_"] {
+    width: 33%;
+    text-align: right;
+    font-weight: bolder;
+}
+
+#app-footer {
+    text-align: center;
+}

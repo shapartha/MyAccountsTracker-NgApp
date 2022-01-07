@@ -15,6 +15,13 @@ export class AppComponent {
 
   constructor(private appService: AppService) {
     this.menuItems = this.menu.menuItem!;
+    this.initGoogleApi();
+  }
+
+  async initGoogleApi() {
+    if (this.appService.getCookie('gapi_apikey') == "" || this.appService.getCookie('gapi_clientid') == "") {
+      await this.appService.getGApiDetails();
+    }
   }
 
   checkLoginState(): boolean {

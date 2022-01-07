@@ -7,21 +7,27 @@
         </div>
     </div>
     <div id="app-main">
+        <div *ngIf="mailDataJson === undefined || mailDataJson === null || mailDataJson.length === 0"
+            class="no-mail-header">
+            No mail transactions available !!
+        </div>
         <div *ngFor="let filterItem of mailDataJson; let j = index;">
-            <div class="mail-filter-label">{{filterItem.filter}}</div>
+            <div id="mail_trans_acc_{{j}}">{{filterItem.acc_name}}</div>
             <div class="mail-item" *ngFor="let item of filterItem.data; let i = index;">
-                <span id="mail_trans_desc_{{i}}">{{item.trans_desc}}</span>
                 <div style="display: flex;">
-                    <div id="mail_trans_acc_{{i}}">{{item.acc_name}}</div>
-                    <div id="mail_trans_date_{{i}}">{{item.trans_date}}</div>
+                    <div id="mail_trans_desc_{{i}}">{{item.trans_desc}}</div>
+                    <div id="mail_trans_date_{{i}}">{{ appService.convertEmailDate(item.trans_date) }}</div>
                     <div id="mail_trans_amount_{{i}}" class="money-val"
-                        [ngClass]="appService.getClassVal(item.trans_type)">{{item.trans_amt}}</div>
+                        [ngClass]="appService.getClassVal(item.trans_type)">{{ appService.formatAmountWithComma(item.trans_amt.replaceAll(',','')) }}</div>
                 </div>
             </div>
         </div>
     </div>
+    <div id="app-footer">
+        <button *ngIf="!isSignedIn" mat-raised-button color="primary" (click)="googleSignIn()">Sign In</button>
+        <button *ngIf="isSignedIn" mat-raised-button color="warn" (click)="googleSignOut()">Sign Out</button>
+    </div>
 </div>
-
 
 <div style="visibility: hidden; position: fixed" [style.left]="menuTopLeftPosition.x"
     [style.top]="menuTopLeftPosition.y" [matMenuTriggerFor]="contextMenu">

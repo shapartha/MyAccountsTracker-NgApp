@@ -1,5 +1,5 @@
-var __clientId = '867357415290-nvnqon5rtl2975v235sdk1lm11s984u1.apps.googleusercontent.com';
-var __apiKey = 'AIzaSyCh0lFtIar1JkI9yUw3QkG1uaO270tbuA0';
+var __clientId = getCookie('gapi_clientid');
+var __apiKey = getCookie('gapi_apikey');
 
 var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"];
 var SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
@@ -20,6 +20,14 @@ function handleClientLoad() {
     });
 }
 
+function checkSignInStatus() {
+    let respVal = false;
+    try {
+        respVal = gapi.auth2.getAuthInstance().isSignedIn.get();
+    } catch (e) { }
+    return respVal;
+}
+
 async function updateSigninStatus(isSignedIn) {
     if (isSignedIn) {
         var mailData = await fetchAndProcessMails();
@@ -29,11 +37,11 @@ async function updateSigninStatus(isSignedIn) {
     }
 }
 
-function handleAuthClick(event) {
+function handleAuthClick() {
     gapi.auth2.getAuthInstance().signIn();
 }
 
-function handleSignoutClick(event) {
+function handleSignoutClick() {
     gapi.auth2.getAuthInstance().signOut();
 }
 
@@ -146,10 +154,10 @@ function searchForIciciAmazonCC(messageText) {
 function getCookie(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
+    for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
     }
     return "";
 }
@@ -161,7 +169,7 @@ function setCookie(name, value, milliseconds) {
         date.setTime(date.getTime() + milliseconds);
         expires = "; expires=" + date.toUTCString();
     }
-    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
 
 function nthIndexOf(str, search_str, offset, n) {
