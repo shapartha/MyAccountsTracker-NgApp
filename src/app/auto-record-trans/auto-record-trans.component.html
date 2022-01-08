@@ -13,7 +13,7 @@
         </div>
         <div *ngFor="let filterItem of mailDataJson; let j = index;">
             <div id="mail_trans_acc_{{j}}">{{filterItem.acc_name}}</div>
-            <div class="mail-item" *ngFor="let item of filterItem.data; let i = index;">
+            <div class="mail-item" *ngFor="let item of filterItem.data; let i = index;" (click)="onContextMenu($event, item)">
                 <div style="display: flex;">
                     <div id="mail_trans_desc_{{i}}">{{item.trans_desc}}</div>
                     <div id="mail_trans_date_{{i}}">{{ appService.convertEmailDate(item.trans_date) }}</div>
@@ -34,6 +34,7 @@
 </div>
 <mat-menu #contextMenu="matMenu">
     <ng-template matMenuContent let-item="item">
-        <button mat-menu-item>Delete</button>
+        <button mat-menu-item (click)="acceptMessage(item)">Accept</button>
+        <button mat-menu-item (click)="markMsgProcessed(item)">Reject</button>
     </ng-template>
 </mat-menu>

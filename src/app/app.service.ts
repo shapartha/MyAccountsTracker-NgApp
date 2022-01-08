@@ -61,6 +61,7 @@ export class AppService {
     API_SAVE_STOCK: string = "storeStock";
     API_SAVE_MF: string = "storeMf";
     API_DELETE_MF: string = "deleteMf";
+    API_GET_ALL_MAIL_FILTER_MAPPING: string = "getAllMailFilterMappings";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -842,6 +843,24 @@ export class AppService {
         };
         let promise = new Promise((resolve, reject) => {
             this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+                { 'headers': headers }).toPromise()
+                .then(resp => {
+                    resolve(resp);
+                }, err => {
+                    reject(err)
+                });
+        });
+        return promise;
+    }
+
+    getAllMailFilterMappings(): Promise<any> {
+        this.apiFuncName = this.API_GET_ALL_MAIL_FILTER_MAPPING;
+        const headers = {
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams={}" + this.appendMandatoryParams(),
                 { 'headers': headers }).toPromise()
                 .then(resp => {
                     resolve(resp);

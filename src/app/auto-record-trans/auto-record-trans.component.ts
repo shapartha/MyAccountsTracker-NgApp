@@ -34,11 +34,10 @@ export class AutoRecordTransComponent implements OnInit {
   }
 
   async getAllFilterAccMappings() {
-    //TODO: move this to DB & fetch these from api
-    this.accFilterMappings.push({
-      filter: 'from:credit_cards@icicibank.com',
-      acc_id: 90398162
-    });
+    let apiCallData = await this.appService.getAllMailFilterMappings();
+    if (apiCallData.success == true && apiCallData.response == '200') {
+      this.accFilterMappings = apiCallData.dataArray;
+    }
   }
 
   initLoadData() {
@@ -54,7 +53,7 @@ export class AutoRecordTransComponent implements OnInit {
         this.isSignedIn = true;
       }
       this.appService.hideLoader();
-    }, 10000);
+    }, 15000);
   }
 
   ngOnInit(): void {
@@ -84,7 +83,29 @@ export class AutoRecordTransComponent implements OnInit {
     setTimeout(() => {
       this.isSignedIn = this.isGoogleSignedIn();
       this.initLoadData();
-    }, 10000);
+    }, 15000);
+  }
+  
+  onContextMenu(event: MouseEvent, item: any) {
+    event.preventDefault();
+    this.menuTopLeftPosition.x = event.clientX + 'px';
+    this.menuTopLeftPosition.y = event.clientY + 'px';
+    item.menuType = "Gmail Tracking";
+    item.description = item.trans_desc;
+    this.contextMenu.menuData = { 'item': item };
+    this.contextMenu.menu.focusFirstItem('mouse');
+    this.contextMenu.openMenu();
+  }
+
+  markMsgProcessed(item: any) {
+    console.log(item);
+    //TODO: update/insert last_msg_id in table
+    // let apiCallResp = await this.appS
+  }
+
+  acceptMessage(item: any) {
+    //TODO: save transaction api
+    this.markMsgProcessed(item);
   }
 
 }
