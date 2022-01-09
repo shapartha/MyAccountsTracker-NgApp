@@ -23,6 +23,7 @@ export class AppMenuItems {
             { name : "Add Transaction", path: "add-trans" },
             { name : "Add Account", path: "add-account" },
             { name : "Add Category", path: "add-category" },
+            { name : "Add Mail Filter Mapping", path: "add-mail-filter-mapping" },
             { name : "Map Mutual Fund", path: "map-mf" },
             { name : "Map Stocks", path: "map-eq" },
             { name : "Logout", path: "logout" }
