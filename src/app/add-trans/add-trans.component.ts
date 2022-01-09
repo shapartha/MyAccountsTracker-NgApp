@@ -75,7 +75,6 @@ export class AddTransComponent implements OnInit {
       created_at: this.appService.getDate()
     }
     this.appService.uploadReceiptImage(JSON.stringify(_inpObj)).subscribe(data => {
-      console.log("Data -> " + JSON.stringify(data));
       this.saveTransaction.image_path = data.dataArray[0].receipt_id;
       if (this.isTransferTrans) {
         this.saveTransactionTrans.image_path = data.dataArray[0].receipt_id;
@@ -94,7 +93,6 @@ export class AddTransComponent implements OnInit {
     }
     this.trans.date = this.appService.getDate();
     this.appService.getAllAccounts('{"user_id": ' + this.appService.getAppUserId + '}').then(data => {
-      console.log("FETCH ALL ACCOUNTS Success");
       data.dataArray.forEach((element: any) => {
         if (element.is_equity == false) {
           let _acc = new Account();

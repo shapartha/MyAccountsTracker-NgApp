@@ -3,7 +3,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 import { AppService } from '../app.service';
 import { HeaderTabs } from '../constant/header-tabs';
 
-declare function handleClientLoad(): any;
+declare function handleClientLoad(arrayObj: any[]): any;
 declare function checkSignInStatus(): any;
 declare function handleSignoutClick(): any;
 declare function handleAuthClick(): any;
@@ -40,8 +40,10 @@ export class AutoRecordTransComponent implements OnInit {
     }
   }
 
-  initLoadData() {
-    handleClientLoad();
+  async initLoadData() {
+    await this.getAllAccounts();
+    await this.getAllFilterAccMappings();
+    handleClientLoad(this.accFilterMappings);
     setTimeout(() => {
       var mailData = this.appService.getCookie('gapi_gmail_data');
       if (mailData != undefined && mailData != null && mailData !== '') {
@@ -58,8 +60,6 @@ export class AutoRecordTransComponent implements OnInit {
 
   ngOnInit(): void {
     this.appService.showLoader();
-    this.getAllAccounts();
-    this.getAllFilterAccMappings();
     this.initLoadData();
   }
 
@@ -97,15 +97,62 @@ export class AutoRecordTransComponent implements OnInit {
     this.contextMenu.openMenu();
   }
 
-  markMsgProcessed(item: any) {
-    console.log(item);
-    //TODO: update/insert last_msg_id in table
-    // let apiCallResp = await this.appS
+  async markMsgProcessed(item: any) {
+    this.appService.showLoader();
+    let _inpObj = {
+      filter: item.google_filter
+    };
+    let apiCallData = await this.appService.getMailFilterMappingByFilter(_inpObj);
+    if (apiCallData.success == true) {
+      if (apiCallData.response == '200') {
+        let lastMsgId = apiCallData.dataArray[0].last_msg_id;
+        if (lastMsgId == null || lastMsgId == undefined || lastMsgId == '') {
+          lastMsgId = item.google_msg_id;
+        } else {
+          lastMsgId += "," + item.google_msg_id;
+        }
+        let _updObj = {
+          mapping_id: apiCallData.dataArray[0].mapping_id,
+          last_msg_id: lastMsgId
+        };
+        let apiCallUpdate = await this.appService.updateMailFilterMapping([_updObj]);
+        if (apiCallUpdate[0].success == true) {
+          this.appService.showAlert("Message Processed Successfully");
+          let _parentObj = this.mailDataJson.filter((pObj: any) => pObj.filter == _inpObj.filter)[0];
+          let _childObj = _parentObj.data.findIndex((cObj: any) => _updObj.last_msg_id.indexOf(cObj.google_msg_id) != -1);
+          _parentObj.data.splice(_childObj, 1);
+        } else {
+          this.appService.showAlert("An error occurred processing the message in DB");
+        }
+      } else {
+        this.appService.showAlert(apiCallData);
+      }
+    } else {
+      this.appService.showAlert(apiCallData);
+    }
+    this.appService.hideLoader();
   }
 
   acceptMessage(item: any) {
-    //TODO: save transaction api
-    this.markMsgProcessed(item);
+    let _accId = this.accFilterMappings.filter((accFilterMap: any) => accFilterMap.filter == item.google_filter)[0].acc_id;
+    let _inpObj = {
+      amount : item.trans_amt.replace(",", ""),
+      date : item.trans_date.split(" ")[0],
+      desc : item.trans_desc.replace("\\",""),
+      type : item.trans_type,
+      acc_id : _accId,
+      user_id : this.appService.getAppUserId
+    };
+    this.appService.showLoader();
+    this.appService.saveTransaction(JSON.stringify(_inpObj)).then(resp => {
+      if (resp.success === true) {
+        this.appService.showAlert("Saved Successfully");
+        this.markMsgProcessed(item);
+      } else {
+        this.appService.showAlert(resp);
+      }
+      this.appService.hideLoader();
+    });
   }
 
 }

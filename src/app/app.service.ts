@@ -62,6 +62,9 @@ export class AppService {
     API_SAVE_MF: string = "storeMf";
     API_DELETE_MF: string = "deleteMf";
     API_GET_ALL_MAIL_FILTER_MAPPING: string = "getAllMailFilterMappings";
+    API_GET_MAIL_FILTER_MAPPING_BY_FILTER: string = "getMailFilterMappingByFilter";
+    API_GET_MAIL_FILTER_MAPPING_BY_ACC: string = "getMailFilterMappingByAccId";
+    API_UPDATE_MAIL_FILTER_MAPPING: string = "updateMailFilterMapping";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -861,6 +864,60 @@ export class AppService {
         };
         let promise = new Promise((resolve, reject) => {
             this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams={}" + this.appendMandatoryParams(),
+                { 'headers': headers }).toPromise()
+                .then(resp => {
+                    resolve(resp);
+                }, err => {
+                    reject(err)
+                });
+        });
+        return promise;
+    }
+
+    getMailFilterMappingByFilter(apiFuncParams: any): Promise<any> {
+        this.apiFuncName = this.API_GET_MAIL_FILTER_MAPPING_BY_FILTER;
+        const headers = {
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+                { 'headers': headers }).toPromise()
+                .then(resp => {
+                    resolve(resp);
+                }, err => {
+                    reject(err)
+                });
+        });
+        return promise;
+    }
+
+    getMailFilterMappingByAccId(apiFuncParams: any): Promise<any> {
+        this.apiFuncName = this.API_GET_MAIL_FILTER_MAPPING_BY_ACC;
+        const headers = {
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+                { 'headers': headers }).toPromise()
+                .then(resp => {
+                    resolve(resp);
+                }, err => {
+                    reject(err)
+                });
+        });
+        return promise;
+    }
+
+    updateMailFilterMapping(apiFuncParams: any): Promise<any> {
+        this.apiFuncName = this.API_UPDATE_MAIL_FILTER_MAPPING;
+        const headers = {
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
                 { 'headers': headers }).toPromise()
                 .then(resp => {
                     resolve(resp);

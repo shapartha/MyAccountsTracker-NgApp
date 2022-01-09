@@ -1,10 +1,14 @@
 var __clientId = getCookie('gapi_clientid');
 var __apiKey = getCookie('gapi_apikey');
+var __restApiUrl = "https://shapartha-android-zone.000webhostapp.com/accounts-tracker/api/";
 
 var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"];
 var SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
 
-function handleClientLoad() {
+var allFilterMappings = [];
+
+function handleClientLoad(filterMappings) {
+    allFilterMappings = filterMappings;
     gapi.load('client:auth2', async function () {
         await gapi.client.init({
             apiKey: __apiKey,
@@ -67,14 +71,17 @@ async function fetchAndProcessMails() {
             if (msgs && msgs.length > 0) {
                 for (i = 0; i < msgs.length; i++) {
                     msgId = msgs[i].id;
-                    //TODO: if msgId == lastProcessedId, then skip
+                    var _currFilterMapObj = allFilterMappings.filter(val => val.filter == filter)[0];
+                    if (_currFilterMapObj.last_msg_id.indexOf(msgId) != -1) {
+                        continue;
+                    }
                     const dataResp = await gapi.client.gmail.users.messages.get({
                         'userId': 'me',
                         'id': msgId,
                         'format': 'full'
                     });
                     var emailMsgText = atob(dataResp.result.payload.parts[0].body.data.replace(/-/g, '+').replace(/_/g, '/'));
-                    apiInnerResponse.push(searchForIciciAmazonCC(emailMsgText, msgId));
+                    apiInnerResponse.push(searchForIciciAmazonCC(emailMsgText, msgId, filter));
                 }
                 var outerJsonObj = {
                     "filter": filter,
@@ -94,7 +101,7 @@ async function fetchAndProcessMails() {
     return apiResponse;
 }
 
-function searchForIciciAmazonCC(messageText, msgId) {
+function searchForIciciAmazonCC(messageText, msgId, filter) {
     var debitConditions = [
         "Your ICICI Bank Credit Card XX0005 has been used for a transaction of INR "
     ];
@@ -115,7 +122,8 @@ function searchForIciciAmazonCC(messageText, msgId) {
                 "trans_date": trans_date,
                 "trans_type": trans_type,
                 "trans_desc": trans_desc,
-                "google_msg_id": msgId
+                "google_msg_id": msgId,
+                "google_filter": filter
             };
         }
     });
@@ -142,7 +150,9 @@ function searchForIciciAmazonCC(messageText, msgId) {
                 "trans_amt": trans_amt,
                 "trans_date": trans_date,
                 "trans_type": trans_type,
-                "trans_desc": trans_desc
+                "trans_desc": trans_desc,
+                "google_msg_id": msgId,
+                "google_filter": filter
             };
         }
     });

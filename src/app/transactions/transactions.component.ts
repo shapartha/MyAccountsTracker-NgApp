@@ -93,7 +93,6 @@ export class TransactionsComponent implements OnInit, OnChanges {
           _trans.receiptImgId = item.trans_receipt_image_id;
           this.transactions.push(_trans);
         });
-        console.log("Fetch Transactions API Success");
         this.currentTransRecordCount = (this.transactions.length >= 30) ? 30 : this.transactions.length;
         this.filterDisplayTrans();
         this.appService.hideLoader();

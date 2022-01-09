@@ -41,7 +41,6 @@ export class HomeComponent implements OnInit {
   getAllCategories() {
     this.appService.showLoader();
     this.appService.getCategory('{"user_id":' + this.appService.getAppUserId + '}').subscribe(data => {
-      console.log("Fetch Category API Success");
       if (data.success) {
         for (var i = 0; i < data.dataArray.length; i++) {
           let categoryAmt = 0;
@@ -50,7 +49,6 @@ export class HomeComponent implements OnInit {
           _category.id = data.dataArray[i].category_id;
           this.appService.getAccountsByCategory('{"category_id":' + _category.id + ',"user_id":' + this.appService.getAppUserId + '}').then(
             val => {
-              console.log("Fetch Accounts API Success");
               if (val.success) {
                 _category.accounts = [];
                 for (var j = 0; j < val.dataArray.length; j++) {
@@ -925,7 +923,6 @@ export class DialogUpdateContent {
       created_at: this.appService.getDate()
     }
     this.appService.uploadReceiptImage(JSON.stringify(_inpObj)).subscribe(data => {
-      console.log("Data -> " + JSON.stringify(data));
       let _updTrans = {
         trans_desc: _obj_.newTransDesc,
         trans_id: _obj_.id,
