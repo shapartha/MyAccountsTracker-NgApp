@@ -51,19 +51,25 @@ function handleSignoutClick() {
 
 async function fetchAndProcessMails() {
     var filter_date_interval = -40;
-    var gmail_filters = [
-        "from:credit_cards@icicibank.com"
-    ];
+    const filterArray = allFilterMappings.map((item) => {
+        return {
+            filterValue: item.filter
+        };
+    });
+    var gmail_filters = filterArray;
     var apiResponse = [];
-    const workAction = await new Promise((res, err) => {
+    const workAction = await new Promise(async (res, err) => {
         var cntr = 0;
-        gmail_filters.forEach(async filter => {
+        for (var x = 0; x < gmail_filters.length; x++) {
+            let filter = gmail_filters[x];
+            var _currFilterMapObj = allFilterMappings.filter(val => val.filter == filter.filterValue)[0];
+            var __function__ = _currFilterMapObj.filter_function;
             cntr++;
-            var response = await gapi.client.gmail.users.messages.list({
+            const response = await gapi.client.gmail.users.messages.list({
                 'userId': 'me',
                 'maxResults': 20,
                 'labelIds': 'INBOX',
-                'q': filter + ' after:' + convertDate(datePlusMinus(filter_date_interval), "yyyy-MM-dd")
+                'q': filter.filterValue + ' after:' + convertDate(datePlusMinus(filter_date_interval), "yyyy-MM-dd")
             });
             var msgs = response.result.messages;
             var msgId = undefined;
@@ -71,8 +77,7 @@ async function fetchAndProcessMails() {
             if (msgs && msgs.length > 0) {
                 for (i = 0; i < msgs.length; i++) {
                     msgId = msgs[i].id;
-                    var _currFilterMapObj = allFilterMappings.filter(val => val.filter == filter)[0];
-                    if (_currFilterMapObj.last_msg_id.indexOf(msgId) != -1) {
+                    if (_currFilterMapObj.last_msg_id != null && _currFilterMapObj.last_msg_id.indexOf(msgId) != -1) {
                         continue;
                     }
                     const dataResp = await gapi.client.gmail.users.messages.get({
@@ -80,12 +85,23 @@ async function fetchAndProcessMails() {
                         'id': msgId,
                         'format': 'full'
                     });
-                    var emailMsgText = atob(dataResp.result.payload.parts[0].body.data.replace(/-/g, '+').replace(/_/g, '/'));
-                    apiInnerResponse.push(searchForIciciAmazonCC(emailMsgText, msgId, filter));
+                    var emailMsgText = dataResp.result.snippet;
+                    let __processingResult__ = undefined;
+                    if (__function__ == 'searchForIciciAmazonCC') {
+                        __processingResult__ = searchForIciciAmazonCC(emailMsgText, msgId, filter.filterValue);
+                    } else if (__function__ == 'searchForPayzapp') {
+                        __processingResult__ = searchForPayzapp(emailMsgText, msgId, filter.filterValue, dataResp.result.internalDate);
+                    } else if (__function__ == 'searchForTorrentPower') {
+                        __processingResult__ = searchForTorrentPower(dataResp.result, msgId, filter.filterValue);
+                    }
+                    if (__processingResult__ != undefined && __processingResult__ != null) {
+                        apiInnerResponse.push(__processingResult__);
+                    }
                 }
                 var outerJsonObj = {
-                    "filter": filter,
-                    "data": apiInnerResponse
+                    "filter": filter.filterValue,
+                    "data": apiInnerResponse,
+                    "menuLevel": "TOP"
                 }
                 apiResponse.push(outerJsonObj);
             } else {
@@ -96,9 +112,94 @@ async function fetchAndProcessMails() {
             if (cntr == gmail_filters.length) {
                 res();
             }
-        });
+        };
     });
     return apiResponse;
+}
+
+function searchForTorrentPower(messageObj, msgId, filter) {
+    json_object = {};
+
+    var debitConditions = [
+        "Your Torrent Power bill summary is as below"
+    ];
+    var messageText = messageObj.payload.body;
+    var messageBody = messageObj.payload;
+    let c_counter = 0;
+    while (messageText.size == 0 && c_counter < 10) {
+        messageBody = messageBody.parts[0];
+        messageText = messageBody.body;
+        c_counter++;
+    }
+    try {
+        messageText = atob(messageText.data);
+    } catch (e) {
+        console.error(e);
+        messageText = undefined;
+    }
+    if (messageText != undefined) {
+        messageText = messageText.replace(/\r?\n|\r/g, " ");
+        debitConditions.forEach(item => {
+            var conditionIdx = messageText.indexOf(item);
+            if (conditionIdx != -1) {
+                var dateIdx = messageText.indexOf("Bill Date");
+                dateIdx = messageText.indexOf("-", dateIdx);
+                var trans_date = messageText.substr(dateIdx - 2, 8);
+                var amtIdx = messageText.indexOf("Amount Upto Due Date");
+                var amtValx = messageText.indexOf("  ", amtIdx + "Amount Upto Due Date".length + 3);
+                var amtDueValx = messageText.indexOf("  ", amtValx);
+                var amtVal = messageText.substring(amtDueValx, messageText.indexOf("  ", amtDueValx + 3)).trim();
+                var trans_amt = amtVal;
+                var trans_type = "DEBIT";
+                var descIdx = messageText.indexOf("Bill Month");
+                var descValx = messageText.indexOf("  ", descIdx + "Bill Month".length + 5);
+                var descVal = messageText.substring(descIdx + "Bill Month".length, descValx).trim();
+                var trans_desc = "Bill - " + descVal;
+                json_object = {
+                    "trans_amt": trans_amt,
+                    "trans_date": trans_date,
+                    "trans_type": trans_type,
+                    "trans_desc": trans_desc.replace("\\", ""),
+                    "google_msg_id": msgId,
+                    "google_filter": filter,
+                    "menuLevel": "MAIN"
+                };
+            }
+        });
+    }
+    if (!isEmpty(json_object)) {
+        return json_object;
+    }
+}
+
+function searchForPayzapp(messageText, msgId, filter, rcvdDateInMilis) {
+    let mailDate = convertDate(parseInt(rcvdDateInMilis));
+    json_object = {};
+    var creditConditions = [
+        "Your wallet card ending with 6598 has been credited with Rs."
+    ];
+    creditConditions.forEach(item => {
+        var conditionIdx = messageText.indexOf(item);
+        if (conditionIdx != -1) {
+            conditionIdx += item.length;
+            var amtSeparatorIdx = messageText.indexOf(". ", conditionIdx) - 2;
+            var trans_amt = messageText.substr(conditionIdx, amtSeparatorIdx - conditionIdx + 2);
+            var trans_type = "CREDIT";
+            var trans_desc = "Refund / Payment";
+            json_object = {
+                "trans_amt": trans_amt,
+                "trans_date": mailDate,
+                "trans_type": trans_type,
+                "trans_desc": trans_desc.replace("\\", ""),
+                "google_msg_id": msgId,
+                "google_filter": filter,
+                "menuLevel": "MAIN"
+            };
+        }
+    });
+    if (!isEmpty(json_object)) {
+        return json_object;
+    }
 }
 
 function searchForIciciAmazonCC(messageText, msgId, filter) {
@@ -121,9 +222,10 @@ function searchForIciciAmazonCC(messageText, msgId, filter) {
                 "trans_amt": trans_amt,
                 "trans_date": trans_date,
                 "trans_type": trans_type,
-                "trans_desc": trans_desc,
+                "trans_desc": trans_desc.replace("\\", ""),
                 "google_msg_id": msgId,
-                "google_filter": filter
+                "google_filter": filter,
+                "menuLevel": "MAIN"
             };
         }
     });
@@ -150,9 +252,10 @@ function searchForIciciAmazonCC(messageText, msgId, filter) {
                 "trans_amt": trans_amt,
                 "trans_date": trans_date,
                 "trans_type": trans_type,
-                "trans_desc": trans_desc,
+                "trans_desc": trans_desc.replace("\\", ""),
                 "google_msg_id": msgId,
-                "google_filter": filter
+                "google_filter": filter,
+                "menuLevel": "MAIN"
             };
         }
     });

@@ -42,7 +42,7 @@ import { MapMfComponent } from './map-mf/map-mf.component';
 import { MapEqComponent } from './map-eq/map-eq.component';
 import { DeleteDialogStocks, ManageEqComponent } from './manage-eq/manage-eq.component';
 import { DeleteDialogMutualFunds, ManageMfComponent } from './manage-mf/manage-mf.component';
-import { AutoRecordTransComponent } from './auto-record-trans/auto-record-trans.component';
+import { AutoRecordTransComponent, DialogGenericConfirmation } from './auto-record-trans/auto-record-trans.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +52,7 @@ import { AutoRecordTransComponent } from './auto-record-trans/auto-record-trans.
     LoginComponent,
     LogoutComponent,
     TransactionsComponent,
-    AddTransComponent,
+    AddTransComponent, DialogGenericConfirmation,
     AddCategoryComponent, HomeRecurringSectionComponent, DeleteDialogStocks, DeleteDialogMutualFunds,
     AddAccountComponent, UpdateDialogRecurringTrans, DeleteDialogRecurringTrans,
     ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent, MapMfComponent, MapEqComponent, ManageEqComponent, ManageMfComponent, AutoRecordTransComponent

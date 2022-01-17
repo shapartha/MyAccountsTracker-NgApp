@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AppConstant } from './constant/app-const';
 import { Observable } from 'rxjs';
@@ -65,6 +65,7 @@ export class AppService {
     API_GET_MAIL_FILTER_MAPPING_BY_FILTER: string = "getMailFilterMappingByFilter";
     API_GET_MAIL_FILTER_MAPPING_BY_ACC: string = "getMailFilterMappingByAccId";
     API_UPDATE_MAIL_FILTER_MAPPING: string = "updateMailFilterMapping";
+    API_DELETE_MAIL_FILTER_MAPPING: string = "deleteMailFilterMapping";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -928,6 +929,24 @@ export class AppService {
         return promise;
     }
 
+    deleteMailFilterMapping(apiFuncParams: any): Promise<any> {
+        this.apiFuncName = this.API_DELETE_MAIL_FILTER_MAPPING;
+        const headers = {
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+                { 'headers': headers }).toPromise()
+                .then(resp => {
+                    resolve(resp);
+                }, err => {
+                    reject(err)
+                });
+        });
+        return promise;
+    }
+
     async getGApiDetails(): Promise<boolean> {
         let status = false;
         try {
@@ -1016,7 +1035,11 @@ export class AppService {
         let _time = __parts[1];
         let _date = __parts[0];
         let __date_parts = _date.split("-");
-        return [__date_parts[0], this.getMonthName(parseInt(__date_parts[1]).toString()), __date_parts[2]].join('-') + ' ' + _time;
+        if (_time != undefined) {
+            return [__date_parts[0], this.getMonthName(parseInt(__date_parts[1]).toString()), __date_parts[2]].join('-') + ' ' + _time;
+        } else {
+            return [__date_parts[0], this.getMonthName(parseInt(__date_parts[1]).toString()), __date_parts[2]].join('-')
+        }
     }
 
     convertDate(_date?: any) {

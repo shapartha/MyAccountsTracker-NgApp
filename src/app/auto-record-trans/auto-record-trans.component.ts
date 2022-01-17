@@ -1,7 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { AppService } from '../app.service';
 import { HeaderTabs } from '../constant/header-tabs';
+import { DeleteDialogRecurringTrans } from '../recurring-trans/recurring-trans.component';
 
 declare function handleClientLoad(arrayObj: any[]): any;
 declare function checkSignInStatus(): any;
@@ -24,7 +26,7 @@ export class AutoRecordTransComponent implements OnInit {
   allAccounts: any = [];
   isSignedIn = false;
 
-  constructor(public appService: AppService) { }
+  constructor(public appService: AppService, public dialog: MatDialog) { }
 
   async getAllAccounts() {
     let apiCallData = await this.appService.getAllAccounts(JSON.stringify({ user_id: this.appService.getAppUserId }));
@@ -85,13 +87,19 @@ export class AutoRecordTransComponent implements OnInit {
       this.initLoadData();
     }, 15000);
   }
-  
+
   onContextMenu(event: MouseEvent, item: any) {
     event.preventDefault();
     this.menuTopLeftPosition.x = event.clientX + 'px';
     this.menuTopLeftPosition.y = event.clientY + 'px';
-    item.menuType = "Gmail Tracking";
-    item.description = item.trans_desc;
+    if (item.menuLevel == 'MAIN') {
+      item.menuType = "Gmail Tracking Message";
+      item.description = item.trans_desc;
+    }
+    if (item.menuLevel == 'TOP') {
+      item.menuType = "Mail Condition";
+      item.description = item.filter;
+    }
     this.contextMenu.menuData = { 'item': item };
     this.contextMenu.menu.focusFirstItem('mouse');
     this.contextMenu.openMenu();
@@ -136,12 +144,12 @@ export class AutoRecordTransComponent implements OnInit {
   acceptMessage(item: any) {
     let _accId = this.accFilterMappings.filter((accFilterMap: any) => accFilterMap.filter == item.google_filter)[0].acc_id;
     let _inpObj = {
-      amount : item.trans_amt.replace(",", ""),
-      date : item.trans_date.split(" ")[0],
-      desc : item.trans_desc.replace("\\",""),
-      type : item.trans_type,
-      acc_id : _accId,
-      user_id : this.appService.getAppUserId
+      amount: item.trans_amt.replace(",", ""),
+      date: item.trans_date.split(" ")[0],
+      desc: item.trans_desc,
+      type: item.trans_type,
+      acc_id: _accId,
+      user_id: this.appService.getAppUserId
     };
     this.appService.showLoader();
     this.appService.saveTransaction(JSON.stringify(_inpObj)).then(resp => {
@@ -155,4 +163,81 @@ export class AutoRecordTransComponent implements OnInit {
     });
   }
 
+  async deleteMailFilterMapping(item: any) {
+    this.appService.showLoader();
+    let _inpObj = {
+      filter: item.google_filter
+    };
+    let apiCallData = await this.appService.getMailFilterMappingByFilter(_inpObj);
+    let _inpObj_ = {
+      mapping_id: apiCallData.dataArray[0].mapping_id
+    }
+    apiCallData = await this.appService.deleteMailFilterMapping(_inpObj_);
+    if (apiCallData.success == true) {
+      this.appService.showAlert("Mail Filter Deleted Successfully");
+    } else {
+      this.appService.showAlert(apiCallData);
+    }
+    this.appService.hideLoader();
+  }
+
+  rejectItem(item: any) {
+    const dialogRef = this.dialog.open(DeleteDialogRecurringTrans, {
+      data: item
+    });
+    dialogRef.disableClose = true;
+    dialogRef.afterClosed().subscribe(async result => {
+      if (result !== true) {
+        if (item.menuType === 'Gmail Tracking Message') {
+          this.markMsgProcessed(item);
+        }
+      }
+    });
+  }
+
+  acceptItem(item: any) {
+    item["dialogTitle"] = "Accept this transaction - " + item.description + " ?";
+    item["dialogBody"] = "Are you sure you want to accept this transaction ?";
+    item["dialogBtnText"] = "Accept";
+    const dialogRef = this.dialog.open(DialogGenericConfirmation, {
+      data: item
+    });
+    dialogRef.disableClose = true;
+    dialogRef.afterClosed().subscribe(async result => {
+      if (result !== true) {
+        if (item.menuType === 'Gmail Tracking Message') {
+          this.acceptMessage(item);
+        }
+      }
+    });
+  }
+
+  deleteItem(item: any) { 
+    item["dialogTitle"] = "Delete this mail condition - " + item.description + " ?";
+    item["dialogBody"] = "Are you sure you want to delete this mail condition ?";
+    item["dialogBtnText"] = "Delete";
+    const dialogRef = this.dialog.open(DialogGenericConfirmation, {
+      data: item
+    });
+    dialogRef.disableClose = true;
+    dialogRef.afterClosed().subscribe(async result => {
+      if (result !== true) {
+        if (item.menuType === 'Mail Condition') {
+          this.deleteMailFilterMapping(item);
+        }
+      }
+    });
+  }
+
+}
+
+
+
+
+@Component({
+  selector: 'dialog-generic-confirm',
+  templateUrl: '../dialog/dialog-generic-confirmation.html',
+})
+export class DialogGenericConfirmation {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) { }
 }

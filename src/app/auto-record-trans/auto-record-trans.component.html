@@ -9,23 +9,30 @@
     <div id="app-main">
         <div *ngIf="mailDataJson === undefined || mailDataJson === null || mailDataJson.length === 0"
             class="no-mail-header">
-            No mail transactions available !!
+            No mail filters available !!
         </div>
         <div *ngFor="let filterItem of mailDataJson; let j = index;">
-            <div id="mail_trans_acc_{{j}}">{{filterItem.acc_name}}</div>
-            <div class="mail-item" *ngFor="let item of filterItem.data; let i = index;" (click)="onContextMenu($event, item)">
+            <div id="mail_trans_acc_{{j}}" (click)="onContextMenu($event, filterItem)">{{filterItem.acc_name}}</div>
+            <div *ngIf="filterItem.data === undefined || filterItem.data === null || filterItem.data.length === 0"
+                class="no-mail-header default-bgval">
+                No mail transactions available for this filter !!
+            </div>
+            <div class="mail-item" *ngFor="let item of filterItem.data; let i = index;"
+                (click)="onContextMenu($event, item)">
                 <div style="display: flex;">
                     <div id="mail_trans_desc_{{i}}">{{item.trans_desc}}</div>
                     <div id="mail_trans_date_{{i}}">{{ appService.convertEmailDate(item.trans_date) }}</div>
                     <div id="mail_trans_amount_{{i}}" class="money-val"
-                        [ngClass]="appService.getClassVal(item.trans_type)">{{ appService.formatAmountWithComma(item.trans_amt.replaceAll(',','')) }}</div>
+                        [ngClass]="appService.getClassVal(item.trans_type)">{{
+                        appService.formatAmountWithComma(item.trans_amt.replaceAll(',','')) }}</div>
                 </div>
             </div>
         </div>
     </div>
     <div id="app-footer">
         <button *ngIf="!isSignedIn" mat-raised-button color="primary" (click)="googleSignIn()">Google Sign In</button>
-        <button *ngIf="isSignedIn" mat-raised-button color="warn" (click)="googleSignOut()">Sign Out from Google</button>
+        <button *ngIf="isSignedIn" mat-raised-button color="warn" (click)="googleSignOut()">Sign Out from
+            Google</button>
     </div>
 </div>
 
@@ -34,7 +41,8 @@
 </div>
 <mat-menu #contextMenu="matMenu">
     <ng-template matMenuContent let-item="item">
-        <button mat-menu-item (click)="acceptMessage(item)">Accept</button>
-        <button mat-menu-item (click)="markMsgProcessed(item)">Reject</button>
+        <button mat-menu-item *ngIf="item.menuLevel=='MAIN'" (click)="acceptItem(item)">Accept</button>
+        <button mat-menu-item *ngIf="item.menuLevel=='MAIN'" (click)="rejectItem(item)">Reject</button>
+        <button mat-menu-item *ngIf="item.menuLevel=='TOP'" (click)="deleteItem(item)">Delete</button>
     </ng-template>
 </mat-menu>
