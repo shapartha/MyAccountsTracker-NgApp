@@ -1023,7 +1023,7 @@ export class AppService {
         } else {
             _cDate = new Date(_currDate);
         }
-        return _cDate.getFullYear() + "-" + (_cDate.getMonth() + 1) + "-" + _cDate.getDate();
+        return _cDate.getFullYear() + "-" + this.padLeadingZero(_cDate.getMonth() + 1) + "-" + _cDate.getDate();
     }
 
     padLeadingZero(s: any) {

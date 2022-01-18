@@ -30,6 +30,7 @@
         </div>
     </div>
     <div id="app-footer">
+        <button mat-raised-button color="accent" (click)="cleanUp()">Clean Up</button>
         <button *ngIf="!isSignedIn" mat-raised-button color="primary" (click)="googleSignIn()">Google Sign In</button>
         <button *ngIf="isSignedIn" mat-raised-button color="warn" (click)="googleSignOut()">Sign Out from
             Google</button>

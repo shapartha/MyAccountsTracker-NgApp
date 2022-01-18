@@ -212,7 +212,57 @@ export class AutoRecordTransComponent implements OnInit {
     });
   }
 
-  deleteItem(item: any) { 
+  cleanUp() {
+    let item = {
+      dialogTitle: "Clean Up Old Records ?",
+      dialogBody: "This will clean up all old processed messages from each filters. Some already processed messages may re-appear. In such cases, reject the repeat items. Are you sure to continue ?",
+      dialogBtnText: "Continue"
+    };
+    const dialogRef = this.dialog.open(DialogGenericConfirmation, {
+      data: item
+    });
+    dialogRef.disableClose = true;
+    dialogRef.afterClosed().subscribe(async result => {
+      if (result !== true) {
+        let alertMessages = [];
+        let _updObjs = [];
+        for (var i = 0; i < this.accFilterMappings.length; i++) {
+          let __filter = this.accFilterMappings[i];
+          let lastMsgIds = __filter.last_msg_id;
+          let lastMsgIdArr = lastMsgIds.split(",");
+          if (lastMsgIdArr.length > 100) {
+            let newMsgIdArr = lastMsgIdArr.slice(100);
+            let newMsgIds = newMsgIdArr.join(",");
+            let _updObj = {
+              mapping_id: __filter.mapping_id,
+              filter: __filter.filter,
+              last_msg_id: newMsgIds
+            };
+            _updObjs.push(_updObj);
+          } else {
+            alertMessages.push("Nothing to clean-up for filter - " + __filter.filter);
+          }
+        }
+        if (_updObjs.length > 0) {
+          this.appService.showLoader();
+          let apiCallUpdate = await this.appService.updateMailFilterMapping(_updObjs);
+          this.appService.hideLoader();
+          for (var x = 0; x < apiCallUpdate.length; x++) {
+            if (apiCallUpdate[x].success == true) {
+              alertMessages.push("Messages Cleaned-Up Successfully for filter - " + _updObjs[x].filter);
+            } else {
+              alertMessages.push("An error occurred cleaning-up the messages in DB for filter - " + _updObjs[x].filter);
+            }
+          }
+        }
+        if (alertMessages.length > 0) {
+          this.appService.showAlert(alertMessages.join(" , "));
+        }
+      }
+    });
+  }
+
+  deleteItem(item: any) {
     item["dialogTitle"] = "Delete this mail condition - " + item.description + " ?";
     item["dialogBody"] = "Are you sure you want to delete this mail condition ?";
     item["dialogBtnText"] = "Delete";

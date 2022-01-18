@@ -27,7 +27,9 @@ export class AddTransComponent implements OnInit {
   toAcc: Account[] = [];
   monthDays: number[] = [];
   fromAccDetails: string = "";
+  fromAccBalance: string = "";
   toAccDetails: string = "";
+  toAccBalance: string = "";
   reccDate: string = "";
   mfSchemeCode: string = "";
   mfSchemes: any[] = [];
@@ -135,6 +137,7 @@ export class AddTransComponent implements OnInit {
       this.fromAcc = this.mainAccList.map(obj => ({ ...obj }));
       this.toAcc = this.mainAccList.map(obj => ({ ...obj }));
       this.toAccDetails = "";
+      this.toAccBalance = "";
     }
   }
 
@@ -182,17 +185,33 @@ export class AddTransComponent implements OnInit {
   }
 
   uploadWithoutImage() {
-    this.invokeSaveTransactionApi(this.saveTransaction);
     if (this.isTransferTrans) {
+      this.invokeSaveTransactionApi(this.saveTransaction, true);
       this.invokeSaveTransactionApi(this.saveTransactionTrans);
+    } else {
+      this.invokeSaveTransactionApi(this.saveTransaction);
     }
   }
 
-  invokeSaveTransactionApi(_inpData: any) {
+  invokeSaveTransactionApi(_inpData: any, isTrans: boolean = false) {
     this.appService.showLoader();
     this.appService.saveTransaction(JSON.stringify(_inpData)).then(resp => {
       if (resp.success === true) {
-        this.trans.amount = undefined;
+        if (_inpData.type == "CREDIT") {
+          if (this.isTransferTrans) {
+            let newBalance = this.appService.formatStringValueToAmount(this.toAccBalance) + parseFloat(this.trans.amount!);
+            this.toAccBalance = this.appService.formatAmountWithComma(newBalance);
+          } else {
+            let newBalance = this.appService.formatStringValueToAmount(this.fromAccBalance) + parseFloat(this.trans.amount!);
+            this.fromAccBalance = this.appService.formatAmountWithComma(newBalance);
+          }
+        } else {
+          let newBalance = this.appService.formatStringValueToAmount(this.fromAccBalance) - parseFloat(this.trans.amount!);
+          this.fromAccBalance = this.appService.formatAmountWithComma(newBalance);
+        }
+        if (!isTrans) {
+          this.trans.amount = undefined;
+        }
         this.appService.showAlert("Saved Successfully", "Close");
       } else {
         this.appService.showAlert("Some error occurred while saving. Please try again.", "Close");
@@ -242,7 +261,7 @@ export class AddTransComponent implements OnInit {
   populateMfSchemes(_accId: any) {
     this.mfSchemes = [];
     this.appService.showLoader();
-    this.appService.getMfSchemesByAccount({"account_id": _accId }).then(data => {
+    this.appService.getMfSchemesByAccount({ "account_id": _accId }).then(data => {
       data.dataArray.forEach((element: any) => {
         this.mfSchemes.push(element);
       });
@@ -280,6 +299,8 @@ export class AddTransComponent implements OnInit {
       let _spliceIdx = this.toAcc.findIndex(_acc => _acc.id === _frmAcc.id);
       this.toAcc.splice(_spliceIdx, 1);
     }
+    let selectedAcc = this.mainAccList.filter((_acc: any) => _acc.id === this.fromAccDetails)[0];
+    this.fromAccBalance = this.appService.formatAmountWithComma(selectedAcc.balance!);
   }
 
   onChangeToAccount(_data: any) {
@@ -304,6 +325,8 @@ export class AddTransComponent implements OnInit {
       let _spliceIdx = this.fromAcc.findIndex(_acc => _acc.id === _toAcc.id);
       this.fromAcc.splice(_spliceIdx, 1);
     }
+    let selectedAcc = this.mainAccList.filter((_acc: any) => _acc.id === this.toAccDetails)[0];
+    this.toAccBalance = this.appService.formatAmountWithComma(selectedAcc.balance!);
   }
 
   checkMfByAccId(_accId: string): any {

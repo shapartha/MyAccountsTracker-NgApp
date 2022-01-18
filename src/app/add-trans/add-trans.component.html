@@ -44,6 +44,7 @@
           <mat-option>None</mat-option>
           <mat-option *ngFor="let item of fromAcc" value="{{item.id}}">{{item.name}}</mat-option>
         </mat-select>
+        <mat-label *ngIf="fromAccBalance != ''">(Balance: {{fromAccBalance}})</mat-label>
         <mat-error>
             Valid from account required.
         </mat-error>
@@ -54,6 +55,7 @@
           <mat-option>None</mat-option>
           <mat-option *ngFor="let item of toAcc" value="{{item.id}}">{{item.name}}</mat-option>
         </mat-select>
+        <mat-label *ngIf="toAccBalance != ''">(Balance: {{toAccBalance}})</mat-label>
         <mat-error>
             Valid to account required.
         </mat-error>

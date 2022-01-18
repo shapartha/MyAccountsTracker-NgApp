@@ -145,6 +145,8 @@ function searchForTorrentPower(messageObj, msgId, filter) {
                 var dateIdx = messageText.indexOf("Bill Date");
                 dateIdx = messageText.indexOf("-", dateIdx);
                 var trans_date = messageText.substr(dateIdx - 2, 8);
+                var transDateArr = trans_date.split("-");
+                trans_date = [transDateArr[0], transDateArr[1], "20" + transDateArr[2]].join("-");
                 var amtIdx = messageText.indexOf("Amount Upto Due Date");
                 var amtValx = messageText.indexOf("  ", amtIdx + "Amount Upto Due Date".length + 3);
                 var amtDueValx = messageText.indexOf("  ", amtValx);
@@ -185,7 +187,7 @@ function searchForPayzapp(messageText, msgId, filter, rcvdDateInMilis) {
             var amtSeparatorIdx = messageText.indexOf(". ", conditionIdx) - 2;
             var trans_amt = messageText.substr(conditionIdx, amtSeparatorIdx - conditionIdx + 2);
             var trans_type = "CREDIT";
-            var trans_desc = "Refund / Payment";
+            var trans_desc = "Cashback";
             json_object = {
                 "trans_amt": trans_amt,
                 "trans_date": mailDate,
