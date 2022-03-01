@@ -93,6 +93,8 @@ async function fetchAndProcessMails() {
                         __processingResult__ = searchForPayzapp(emailMsgText, msgId, filter.filterValue, dataResp.result.internalDate);
                     } else if (__function__ == 'searchForTorrentPower') {
                         __processingResult__ = searchForTorrentPower(dataResp.result, msgId, filter.filterValue);
+                    } else if (__function__ == 'searchForKotakTrans') {
+                        __processingResult__ = searchForKotakTrans(dataResp.result, msgId, filter.filterValue);
                     }
                     if (__processingResult__ != undefined && __processingResult__ != null) {
                         apiInnerResponse.push(__processingResult__);
@@ -105,9 +107,7 @@ async function fetchAndProcessMails() {
                 }
                 apiResponse.push(outerJsonObj);
             } else {
-                return {
-                    "error": 'No Messages found.'
-                }
+                console.error("No messages found for filter: " + filter.filterValue);
             }
             if (cntr == gmail_filters.length) {
                 res();
@@ -115,6 +115,147 @@ async function fetchAndProcessMails() {
         };
     });
     return apiResponse;
+}
+
+function searchForKotakTrans(messageObj, msgId, filter) {
+    json_object = {};
+
+    var messageText = messageObj.payload.body;
+    var messageBody = messageObj.payload;
+    let c_counter = 0;
+    while (messageText.size == 0 && c_counter < 10) {
+        messageBody = messageBody.parts[0];
+        messageText = messageBody.body;
+        c_counter++;
+    }
+    try {
+        messageText = atob(messageText.data.replace(/-/g, '+').replace(/_/g, '/'));
+    } catch (e) {
+        console.error(e);
+        messageText = undefined;
+    }
+
+    var debitConditions = [
+        "We wish to inform you that your account xx9871 is debited for Rs. ",
+        " has been debited from your Account No. XX9871 on "
+    ];
+    if (messageText != undefined) {
+        messageText = messageText.replace(/\r?\n|\r/g, " ");
+        debitConditions.forEach(item => {
+            if (item == debitConditions[0]) {
+                var conditionIdx = messageText.indexOf(item);
+                if (conditionIdx != -1) {
+                    var amtIdx = messageText.indexOf(item) + item.length;
+                    var amtValx = messageText.indexOf(" ", amtIdx);
+                    var amtVal = messageText.substring(amtIdx, amtValx);
+                    var dateIdx = messageText.substring(amtValx + " on ".length);
+                    var dateVal = dateIdx.substring(0, dateIdx.indexOf(' '));
+                    var transDateArr = dateVal.split("-");
+                    var trans_date = [transDateArr[0], transDateArr[1], "20" + transDateArr[2]].join("-");
+                    var trans_amt = amtVal;
+                    var trans_type = "DEBIT";
+                    var descIdx = messageText.substring(messageText.indexOf('Remarks:</b>') + 'Remarks:</b>'.length);
+                    var descVal = descIdx.substring(0, descIdx.indexOf('<br>')).trim();
+                    json_object = {
+                        "trans_amt": trans_amt,
+                        "trans_date": trans_date,
+                        "trans_type": trans_type,
+                        "trans_desc": descVal.replace("\\", ""),
+                        "google_msg_id": msgId,
+                        "google_filter": filter,
+                        "menuLevel": "MAIN"
+                    };
+                }
+            } else if (item == debitConditions[1]) {
+                let s_messageText = messageText.replace( /(<([^>]+)>)/ig, '');
+                var conditionIdx = s_messageText.indexOf(item);
+                if (conditionIdx != -1) {
+                    var amtIdx = s_messageText.indexOf(item);
+                    var amtValx = s_messageText.indexOf("Rs. ");
+                    var amtVal = s_messageText.substring(amtValx + "Rs. ".length, amtIdx);
+                    var dateIdx = s_messageText.substring(amtIdx + item.length);
+                    var dateVal = dateIdx.substring(0, dateIdx.indexOf(' '));
+                    var transDateArr = dateVal.split("-");
+                    var trans_date = new Date([transDateArr[0], transDateArr[1], "20" + transDateArr[2]].join("-"));
+                    trans_date = convertDate(trans_date);
+                    var trans_amt = amtVal.replace(',', '');
+                    var trans_type = "DEBIT";
+                    var descVal = "Payment Gateway Transaction";
+                    json_object = {
+                        "trans_amt": trans_amt,
+                        "trans_date": trans_date,
+                        "trans_type": trans_type,
+                        "trans_desc": descVal.replace("\\", ""),
+                        "google_msg_id": msgId,
+                        "google_filter": filter,
+                        "menuLevel": "MAIN"
+                    };
+                }
+            }
+        });
+    }
+
+    var creditConditions = [
+        "We wish to inform you that your account xx9871 is credited by Rs. ",
+        " has been credited to your account XX9871 on "
+    ];
+    if (messageText != undefined) {
+        messageText = messageText.replace(/\r?\n|\r/g, " ");
+        creditConditions.forEach(item => {
+            if (item == creditConditions[0]) {
+                var conditionIdx = messageText.indexOf(item);
+                if (conditionIdx != -1) {
+                    var amtIdx = messageText.indexOf(item) + item.length;
+                    var amtValx = messageText.indexOf(" ", amtIdx);
+                    var amtVal = messageText.substring(amtIdx, amtValx);
+                    var dateIdx = messageText.substring(amtValx + " on ".length);
+                    var dateVal = dateIdx.substring(0, dateIdx.indexOf(' '));
+                    var transDateArr = dateVal.split("-");
+                    var trans_date = [transDateArr[0], transDateArr[1], "20" + transDateArr[2]].join("-");
+                    var trans_amt = amtVal;
+                    var trans_type = "CREDIT";
+                    var descVal = "Payment Received";
+                    json_object = {
+                        "trans_amt": trans_amt,
+                        "trans_date": trans_date,
+                        "trans_type": trans_type,
+                        "trans_desc": descVal.replace("\\", ""),
+                        "google_msg_id": msgId,
+                        "google_filter": filter,
+                        "menuLevel": "MAIN"
+                    };
+                }
+            } else if (item == creditConditions[1]) {
+                let s_messageText = messageText.replace( /(<([^>]+)>)/ig, '');
+                var conditionIdx = s_messageText.indexOf(item);
+                if (conditionIdx != -1) {
+                    var amtIdx = s_messageText.indexOf(item);
+                    var amtValx = s_messageText.indexOf("Rs. ");
+                    var amtVal = s_messageText.substring(amtValx + "Rs. ".length, amtIdx);
+                    var dateIdx = s_messageText.substring(amtIdx + item.length);
+                    var dateVal = dateIdx.substring(0, dateIdx.indexOf(' '));
+                    var transDateArr = dateVal.split("-");
+                    var trans_date = new Date([transDateArr[0], transDateArr[1], "20" + transDateArr[2]].join("-"));
+                    trans_date = convertDate(trans_date);
+                    var trans_amt = amtVal.replace(',', '');
+                    var trans_type = "CREDIT";
+                    var descVal = "Payment Received";
+                    json_object = {
+                        "trans_amt": trans_amt,
+                        "trans_date": trans_date,
+                        "trans_type": trans_type,
+                        "trans_desc": descVal.replace("\\", ""),
+                        "google_msg_id": msgId,
+                        "google_filter": filter,
+                        "menuLevel": "MAIN"
+                    };
+                }
+            }
+        });
+    }
+    if (!isEmpty(json_object)) {
+        return json_object;
+    }
 }
 
 function searchForTorrentPower(messageObj, msgId, filter) {
