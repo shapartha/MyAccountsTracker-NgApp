@@ -210,8 +210,8 @@ function searchForKotakTrans(messageObj, msgId, filter) {
                     var amtVal = messageText.substring(amtIdx, amtValx);
                     var dateIdx = messageText.substring(amtValx + " on ".length);
                     var dateVal = dateIdx.substring(0, dateIdx.indexOf(' '));
-                    var transDateArr = dateVal.split("-");
-                    var trans_date = [transDateArr[0], transDateArr[1], "20" + transDateArr[2]].join("-");
+                    var trans_date = new Date(dateVal);
+                    trans_date = convertDate(trans_date);
                     var trans_amt = amtVal;
                     var trans_type = "CREDIT";
                     var descVal = "Payment Received";
