@@ -64,6 +64,14 @@ export class RecurringTransComponent implements OnInit {
     this.appService.hideLoader();
   }
 
+  dynaClass(val: string) {
+    if (val == "1") {
+      return "r-transaction-item r-transaction-executed-item";
+    } else {
+      return "r-transaction-item";
+    }
+  }
+
   handleTabChange(uri: any) {
     this.appService.handleTabChange(uri);
   }
