@@ -1,7 +1,9 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, Output, EventEmitter, Inject } from '@angular/core';
 import { AppService } from '../app.service';
 import { Transaction } from '../model/transaction';
 import { Account } from '../model/account';
+import { DomSanitizer } from '@angular/platform-browser';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-transactions',
@@ -19,7 +21,7 @@ export class TransactionsComponent implements OnInit, OnChanges {
   @Input() refreshTransactions: boolean = false;
   @Output() refreshTransactionsChange = new EventEmitter();
 
-  constructor(private appService: AppService) { 
+  constructor(private appService: AppService, public dialog: MatDialog, private domSanitizer: DomSanitizer) { 
   }
 
   populateTransactions() {
@@ -158,4 +160,33 @@ export class TransactionsComponent implements OnInit, OnChanges {
     this.onContextMenuEvent.emit(_emitObj);
   }
 
+  viewReceipt(item: any, evt: any) {
+    evt.stopPropagation();
+    this.appService.showLoader();
+    this.appService.getReceiptImage({ "receipt_uid": item.receiptImgId }).then(resp => {
+      let _bitmap_data = resp.dataArray[0].bitmap_data;
+      item.previewUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(_bitmap_data);
+      this.appService.hideLoader();
+    }, err => {
+      this.appService.showAlert("Error retrieving receipt image : " + JSON.stringify(err), "Close");
+      this.appService.hideLoader();
+    });
+    const dialogRef = this.dialog.open(DialogImageViewContent, {
+      data: item,
+      id: 'dialog-image-elements',
+      width: '600px'
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      item.previewUrl = null;
+    });
+  }
+}
+
+@Component({
+  selector: 'dialog-image-view',
+  templateUrl: '../dialog/dialog-image-view.html',
+  styleUrls: ['./transactions.component.scss']
+})
+export class DialogImageViewContent {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) { }
 }

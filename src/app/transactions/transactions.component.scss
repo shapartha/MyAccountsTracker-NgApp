@@ -39,6 +39,11 @@ span[id^="trans_desc_"] {
     font-weight: bold;
 }
 
+span[id^="trans_desc_"] span {
+    cursor: pointer;
+    vertical-align: middle;
+}
+
 .negative-val {
     color: #911e1e;
 }

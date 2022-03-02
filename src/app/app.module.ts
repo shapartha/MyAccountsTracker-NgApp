@@ -12,7 +12,7 @@ import { HomeComponent, DialogDeleteContent, DialogUpdateContent, DialogRedeemCo
 import { ErrorComponent } from './error/error.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
-import { TransactionsComponent } from './transactions/transactions.component';
+import { DialogImageViewContent, TransactionsComponent } from './transactions/transactions.component';
 import { AddTransComponent } from './add-trans/add-trans.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatInputModule } from '@angular/material/input';
@@ -51,7 +51,7 @@ import { AutoRecordTransComponent, DialogGenericConfirmation } from './auto-reco
     ErrorComponent,
     LoginComponent,
     LogoutComponent,
-    TransactionsComponent,
+    TransactionsComponent, DialogImageViewContent,
     AddTransComponent, DialogGenericConfirmation,
     AddCategoryComponent, HomeRecurringSectionComponent, DeleteDialogStocks, DeleteDialogMutualFunds,
     AddAccountComponent, UpdateDialogRecurringTrans, DeleteDialogRecurringTrans,
