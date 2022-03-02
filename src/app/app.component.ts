@@ -11,7 +11,6 @@ export class AppComponent {
   title = 'My Accounts Tracker';
   menu: AppMenuItems = new AppMenuItems();;
   menuItems: any[];
-  isShown: boolean = false;
 
   constructor(private appService: AppService) {
     this.menuItems = this.menu.menuItem!;
@@ -32,13 +31,13 @@ export class AppComponent {
     return false;
   }
 
-  showDropdown() {
-    if (!this.isShown) {
+  showDropdown(evt: any) {
+    evt.stopPropagation();
+    let isShown = document.getElementById("dropdown-list")!.style.display;
+    if (isShown == 'none' || isShown == '') {
       document.getElementById("dropdown-list")!.style.display = 'block';
-      this.isShown = true;
     } else {
       document.getElementById("dropdown-list")!.style.display = 'none';
-      this.isShown = false;
     }
   }
 }
