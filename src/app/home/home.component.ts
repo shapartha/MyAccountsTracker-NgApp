@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { Router } from "@angular/router"
+import { NavigationExtras, Router } from "@angular/router"
 import { Category } from '../model/category';
 import { HeaderTabs } from '../constant/header-tabs';
 import { AppService } from '../app.service';
@@ -16,7 +16,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class HomeComponent implements OnInit {
 
-  menuTopLeftPosition =  {x: '0', y: '0'} ;
+  menuTopLeftPosition = { x: '0', y: '0' };
   @ViewChild(MatMenuTrigger)
   contextMenu!: MatMenuTrigger;
   refreshTransactions: boolean = false;
@@ -73,17 +73,17 @@ export class HomeComponent implements OnInit {
             },
             err => {
               console.error(err);
-              this.handleTabChange({path: 'error'});
+              this.handleTabChange({ path: 'error' });
               this.appService.hideLoader();
             }
           ).catch(fault => {
             console.error("Fault -> " + fault);
-            this.handleTabChange({path: 'error'});
+            this.handleTabChange({ path: 'error' });
             this.appService.hideLoader();
           });
         }
       } else {
-        this.handleTabChange({path: 'error'});
+        this.handleTabChange({ path: 'error' });
       }
     });
   }
@@ -140,7 +140,7 @@ export class HomeComponent implements OnInit {
   onContextMenuEvent(emitObj: any) {
     this.onContextMenu(emitObj.evt, emitObj.itm, emitObj.typ);
   }
-  
+
   onContextMenu(event: MouseEvent, item: any, type: string) {
     event.preventDefault();
     this.menuTopLeftPosition.x = event.clientX + 'px';
@@ -187,7 +187,7 @@ export class HomeComponent implements OnInit {
     if (completeRecTransResp.success === true) {
       this.refreshPendRecTrans = true;
       this.refreshTransactions = true;
-      
+
       let _updCat = this.categories.filter(_cat => _cat.id === item.category_id)[0];
       let _updAct = _updCat.accounts!.filter(_acc => _acc.id === item.account_id)[0];
       let _trnAmt = Number(item.rec_trans_amount);
@@ -229,7 +229,8 @@ export class HomeComponent implements OnInit {
     } else {
       this.appService.showAlert(updRecTransResp[0]);
     }
-    this.appService.hideLoader();}
+    this.appService.hideLoader();
+  }
 
   async processSchTransNow(item: any) {
     this.appService.showLoader();
@@ -241,7 +242,7 @@ export class HomeComponent implements OnInit {
     if (procResp.success === true) {
       this.refreshPendSchTrans = true;
       this.refreshTransactions = true;
-      
+
       let _updCat = this.categories.filter(_cat => _cat.id === item.category_id)[0];
       let _updAct = _updCat.accounts!.filter(_acc => _acc.id === item.account_id)[0];
       let _trnAmt = Number(item.trans_amount);
@@ -314,6 +315,19 @@ export class HomeComponent implements OnInit {
     this.openDeleteDialog(item);
   }
 
+  copyItem(item: any) {
+    if (item.is_mf == true || item.is_equity == true) {
+      this.appService.showAlert("Mutual Funds/Stocks " + (item.menuType == 'Account' ? "account" : "transaction") + " can't be copied as a new transaction.", "Close");
+      return;
+    }
+    let objToSend: NavigationExtras = {
+      queryParams: item,
+      skipLocationChange: false,
+      fragment: 'top'
+    };
+    this.router.navigate(['add-trans'], { state: objToSend });
+  }
+
   async openRedeemDialog(item: any) {
     if (item.menuType === 'MF Dashboard') {
       item.rdmAmt = this.appService.formatStringValueToAmount(item.curr_amt);
@@ -336,15 +350,15 @@ export class HomeComponent implements OnInit {
         this.refreshMfTransactions = true;
         let _cat = this.categories.filter(_b => _b.id === this.selectedAccountObject.category_id)[0];
         let _accnt = this.accounts.filter((_a: any) => _a.id === this.selectedAccountObject.id)[0];
-        _cat.amount = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_cat.amount) - 
-                      (this.appService.formatStringValueToAmount(_accnt.balance) - result.data.newAccBalance));
+        _cat.amount = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_cat.amount) -
+          (this.appService.formatStringValueToAmount(_accnt.balance) - result.data.newAccBalance));
         _accnt.balance = this.appService.formatAmountWithComma(this.appService.roundUpAmt(result.data.newAccBalance));
       } else if (result !== undefined && item.menuType === 'EQ Dashboard') {
         this.refreshEqTransactions = true;
         let _cat = this.categories.filter(_b => _b.id === this.selectedAccountObject.category_id)[0];
         let _accnt = this.accounts.filter((_a: any) => _a.id === this.selectedAccountObject.id)[0];
-        _cat.amount = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_cat.amount) - 
-                      (this.appService.formatStringValueToAmount(_accnt.balance) - result.data.newAccBalance));
+        _cat.amount = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_cat.amount) -
+          (this.appService.formatStringValueToAmount(_accnt.balance) - result.data.newAccBalance));
         _accnt.balance = this.appService.formatAmountWithComma(this.appService.roundUpAmt(result.data.newAccBalance));
       }
     });
@@ -364,10 +378,10 @@ export class HomeComponent implements OnInit {
       if (item.receiptImgId != null && item.receiptImgId != undefined && item.receiptImgId != 0) {
         item.imageId = item.receiptImgId;
         this.appService.showLoader();
-        this.appService.getReceiptImage({"receipt_uid": item.imageId}).then(resp => {
+        this.appService.getReceiptImage({ "receipt_uid": item.imageId }).then(resp => {
           let _bitmap_data = resp.dataArray[0].bitmap_data;
           item.previewUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(_bitmap_data);
-          this.appService.hideLoader();  
+          this.appService.hideLoader();
         }, err => {
           this.appService.showAlert("Error retrieving receipt image : " + JSON.stringify(err), "Close");
           this.appService.hideLoader();
@@ -447,7 +461,7 @@ export class HomeComponent implements OnInit {
       if (result !== true) {
         if (item.menuType === 'Account') {
           this.appService.showLoader();
-          this.appService.deleteAccount([{ account_id : item.id}]).then(data => {
+          this.appService.deleteAccount([{ account_id: item.id }]).then(data => {
             if (data[0].success === true) {
               if (this.selectedAccount == this.accounts.filter(acc => acc.id === item.id)[0].name) {
                 this.selectedAccount = "";
@@ -462,7 +476,7 @@ export class HomeComponent implements OnInit {
           });
         } else if (item.menuType === 'Category') {
           this.appService.showLoader();
-          this.appService.deleteCategory([{ category_id : item.id}]).then(data => {
+          this.appService.deleteCategory([{ category_id: item.id }]).then(data => {
             if (data[0].success === true) {
               if (this.selectedCategory == this.categories.filter(cat => cat.id === item.id)[0].name) {
                 this.selectedCategory = "";
@@ -487,7 +501,7 @@ export class HomeComponent implements OnInit {
             return;
           }
           this.appService.showLoader();
-          this.appService.deleteTransaction([{ trans_id : item.id}]).then(data => {
+          this.appService.deleteTransaction([{ trans_id: item.id }]).then(data => {
             if (data[0].success === true) {
               if (item.transType.toUpperCase() == "DEBIT") {
                 item.acc_balance = parseFloat(item.acc_balance) + this.appService.formatStringValueToAmount(item.amount);
@@ -535,7 +549,7 @@ export class HomeComponent implements OnInit {
   templateUrl: '../dialog/dialog-delete.html',
 })
 export class DialogDeleteContent {
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) { }
 }
 
 @Component({
@@ -544,7 +558,7 @@ export class DialogDeleteContent {
   styleUrls: ['./home.component.scss']
 })
 export class DialogRedeemContent {
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialog: MatDialog, public appService: AppService) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialog: MatDialog, public appService: AppService) { }
 
   onCloseDialog() {
     const dialogRef = this.dialog.getDialogById('dialog-redeem-elements');
@@ -570,12 +584,12 @@ export class DialogRedeemContent {
         return;
       }
       let _transObj_ = {
-        trans_desc : "Redeemed " + this.appService.formatAmountWithComma(data.rdmAmt.toFixed(2)) + " from " + data.scheme_name,
-        trans_date : this.appService.convertDate(data.rdmDte),
-        trans_amount : data.rdmAmt.toFixed(2),
-        trans_type : "DEBIT",
-        account_id : data.account_id,
-        user_id : this.appService.getAppUserId.toString()
+        trans_desc: "Redeemed " + this.appService.formatAmountWithComma(data.rdmAmt.toFixed(2)) + " from " + data.scheme_name,
+        trans_date: this.appService.convertDate(data.rdmDte),
+        trans_amount: data.rdmAmt.toFixed(2),
+        trans_type: "DEBIT",
+        account_id: data.account_id,
+        user_id: this.appService.getAppUserId.toString()
       };
       const transResp = await this.appService.saveTransactionOnly([_transObj_]);
       if (transResp[0].success === true) {
@@ -607,7 +621,7 @@ export class DialogRedeemContent {
           let _balUnits = 0.0, _invAmt = 0.0;
           const getMfTransResp = await this.appService.getMfTransByAccScheme(_inpObj_);
           let _redeemedUnits = _mfTransObj_.units;
-          let _toUpdateMfTrans : any[] = [];
+          let _toUpdateMfTrans: any[] = [];
           for (var x = 0; x < getMfTransResp.dataArray.length; x++) {
             let _b = getMfTransResp.dataArray[x];
             let _avlBalanceUnits = _b.balance_units;
@@ -691,12 +705,12 @@ export class DialogRedeemContent {
         return;
       }
       let _transObj_ = {
-        trans_desc : "Redeemed " + this.appService.formatAmountWithComma(data.rdmAmt.toFixed(2)) + " from " + data.stock_name + " (" + data.stock_symbol + ")",
-        trans_date : this.appService.convertDate(data.rdmDte),
-        trans_amount : data.rdmAmt.toFixed(2),
-        trans_type : "DEBIT",
-        account_id : data.account_id,
-        user_id : this.appService.getAppUserId.toString()
+        trans_desc: "Redeemed " + this.appService.formatAmountWithComma(data.rdmAmt.toFixed(2)) + " from " + data.stock_name + " (" + data.stock_symbol + ")",
+        trans_date: this.appService.convertDate(data.rdmDte),
+        trans_amount: data.rdmAmt.toFixed(2),
+        trans_type: "DEBIT",
+        account_id: data.account_id,
+        user_id: this.appService.getAppUserId.toString()
       };
       const transResp = await this.appService.saveTransactionOnly([_transObj_]);
       if (transResp[0].success !== true) {
@@ -752,7 +766,7 @@ export class DialogRedeemContent {
   close(data: any) {
     const dialogRef = this.dialog.getDialogById('dialog-redeem-elements');
     if (dialogRef != undefined && dialogRef != null) {
-      dialogRef.close({ data : data });
+      dialogRef.close({ data: data });
     }
   }
 }
@@ -771,7 +785,7 @@ export class DialogUpdateContent {
   fileBitmap: any;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialog: MatDialog, public appService: AppService,
-    public domSanitizer: DomSanitizer) {}
+    public domSanitizer: DomSanitizer) { }
 
   onCloseDialog() {
     const dialogRef = this.dialog.getDialogById('dialog-update-elements');
@@ -870,7 +884,7 @@ export class DialogUpdateContent {
   close(data: any) {
     const dialogRef = this.dialog.getDialogById('dialog-update-elements');
     if (dialogRef != undefined && dialogRef != null) {
-      dialogRef.close({ data : data });
+      dialogRef.close({ data: data });
       this.appService.showAlert(data.menuType + " updated successfully", "Close");
     }
   }
@@ -900,7 +914,7 @@ export class DialogUpdateContent {
     var binaryString = readerEvt.target.result;
     this.fileBitmap = "data:" + this.fileType + ";base64," + btoa(binaryString);
   }
-  
+
   updateTrans(_obj_: any, _data_: any) {
     this.appService.updateTransaction([_obj_]).then(resp => {
       if (resp[0].success === true) {

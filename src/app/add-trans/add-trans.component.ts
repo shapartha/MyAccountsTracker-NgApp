@@ -43,6 +43,18 @@ export class AddTransComponent implements OnInit {
 
   constructor(private appService: AppService, private router: Router, private domSanitizer: DomSanitizer) {
     this.appService.showLoader();
+    if (this.router.getCurrentNavigation() != null) {
+      let objQueryParams = this.router.getCurrentNavigation()!.extras.state;
+      if (objQueryParams != undefined) {
+        objQueryParams.queryParams.amount = this.appService.formatStringValueToAmount(objQueryParams.queryParams.amount);
+        this.trans = objQueryParams.queryParams;
+        this.trans.date = this.appService.getDate(this.trans.date);
+        this.fromAccDetails = this.trans.acc_id!;
+      }
+    }
+    if (this.trans.date == undefined) {
+      this.trans.date = this.appService.getDate();
+    }
   }
 
   //#region File Upload
@@ -93,7 +105,6 @@ export class AddTransComponent implements OnInit {
     for (var i = 1; i <= 28; i++) {
       this.monthDays.push(i);
     }
-    this.trans.date = this.appService.getDate();
     this.appService.getAllAccounts('{"user_id": ' + this.appService.getAppUserId + '}').then(data => {
       data.dataArray.forEach((element: any) => {
         if (element.is_equity == false) {

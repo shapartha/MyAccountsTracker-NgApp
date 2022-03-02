@@ -50,6 +50,7 @@
     && item.menuType !== 'Today Recurring Transaction'">
       <button mat-menu-item (click)="updateItem(item)">Update</button>
       <button mat-menu-item (click)="deleteItem(item)">Delete</button>
+      <button mat-menu-item (click)="copyItem(item)">Copy to New Transaction</button>
     </div>
     <div *ngIf="item.menuType === 'MF Dashboard' || item.menuType === 'EQ Dashboard'">
       <button mat-menu-item (click)="redeemAll(item)">Redeem All</button>
