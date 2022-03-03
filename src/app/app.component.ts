@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AppService } from './app.service';
 import { AppMenuItems } from './constant/app-const';
+import { RoutineService } from './routine.service';
 
 @Component({
   selector: 'app-root',
@@ -12,15 +13,20 @@ export class AppComponent {
   menu: AppMenuItems = new AppMenuItems();;
   menuItems: any[];
 
-  constructor(private appService: AppService) {
+  constructor(private appService: AppService, private routineService: RoutineService) {
     this.menuItems = this.menu.menuItem!;
     this.initGoogleApi();
+    this.initRoutineProcess();
   }
 
   async initGoogleApi() {
     if (this.appService.getCookie('gapi_apikey') == "" || this.appService.getCookie('gapi_clientid') == "") {
       await this.appService.getGApiDetails();
     }
+  }
+
+  initRoutineProcess() {
+    this.routineService.executeAllProcesses();
   }
 
   checkLoginState(): boolean {
