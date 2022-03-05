@@ -153,8 +153,8 @@ export class HomeComponent implements OnInit {
 
   invokeSaveTransactionApi(_inpData: any) {
     this.appService.showLoader();
-    this.appService.saveTransaction(JSON.stringify(_inpData)).then(resp => {
-      if (resp.response !== "200") {
+    this.appService.saveTransactionOnly([_inpData]).then(resp => {
+      if (resp[0].response !== "200") {
         this.appService.showAlert("Some error occurred while saving transaction. Please contact admin.", "Close");
       }
       this.refreshTransactions = true;
@@ -420,14 +420,15 @@ export class HomeComponent implements OnInit {
 
         if (this.appService.formatStringValueToAmount(_account.balance) !== result.data.newAccBalance) {
           let _diffAmt = result.data.newAccBalance - this.appService.formatStringValueToAmount(_account.balance);
-          let _trans = new SaveTransaction();
-          _trans.amount = Math.abs(_diffAmt).toString();
-          _trans.date = this.appService.convertDate(null);
-          _trans.desc = "Adjustments";
-          _trans.type = (_diffAmt < 0 ? "DEBIT" : "CREDIT");
-          _trans.acc_id = _account.id;
-          _trans.user_id = this.appService.getAppUserId.toString();
-          this.invokeSaveTransactionApi(_trans);
+          let _inpData = {
+            trans_amount : Math.abs(_diffAmt).toString(),
+            account_id : _account.id,
+            trans_date : this.appService.convertDate(),
+            trans_desc : "Adjustments",
+            trans_type : (_diffAmt < 0 ? "DEBIT" : "CREDIT"),
+            user_id : this.appService.getAppUserId.toString()
+          }
+          this.invokeSaveTransactionApi(_inpData);
           if (_account.category_id == result.data.newAccCategory) {
             let _currCat = this.categories.filter(cat => cat.id === _account.category_id)[0];
             _currCat.amount = this.appService.formatAmountWithComma((this.appService.formatStringValueToAmount(_currCat.amount) + _diffAmt).toString());

@@ -40,6 +40,10 @@ export class RoutineService {
           _updTransArr.push(_updTrans);
         }
       });
+      if (_updTransArr.length == 0) {
+        console.log("No transactions to update in recurring monthly routine.")
+        return;
+      }
       this.appService.showLoader();
       const updRecTransResp = await this.appService.updateRecTrans(_updTransArr);
       if (updRecTransResp[0].success === true) {
