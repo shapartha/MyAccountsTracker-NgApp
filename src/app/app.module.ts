@@ -43,6 +43,7 @@ import { MapEqComponent } from './map-eq/map-eq.component';
 import { DeleteDialogStocks, ManageEqComponent } from './manage-eq/manage-eq.component';
 import { DeleteDialogMutualFunds, ManageMfComponent } from './manage-mf/manage-mf.component';
 import { AutoRecordTransComponent, DialogGenericConfirmation } from './auto-record-trans/auto-record-trans.component';
+import { AddMailFilterMappingComponent } from './add-mail-filter-mapping/add-mail-filter-mapping.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,7 @@ import { AutoRecordTransComponent, DialogGenericConfirmation } from './auto-reco
     AddTransComponent, DialogGenericConfirmation,
     AddCategoryComponent, HomeRecurringSectionComponent, DeleteDialogStocks, DeleteDialogMutualFunds,
     AddAccountComponent, UpdateDialogRecurringTrans, DeleteDialogRecurringTrans,
-    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent, MapMfComponent, MapEqComponent, ManageEqComponent, ManageMfComponent, AutoRecordTransComponent
+    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent, MapMfComponent, MapEqComponent, ManageEqComponent, ManageMfComponent, AutoRecordTransComponent, AddMailFilterMappingComponent
   ],
   imports: [
     BrowserModule,    HttpClientModule,    FormsModule,    AppRoutingModule,    BrowserAnimationsModule,

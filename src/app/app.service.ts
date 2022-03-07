@@ -66,6 +66,7 @@ export class AppService {
     API_GET_MAIL_FILTER_MAPPING_BY_ACC: string = "getMailFilterMappingByAccId";
     API_UPDATE_MAIL_FILTER_MAPPING: string = "updateMailFilterMapping";
     API_DELETE_MAIL_FILTER_MAPPING: string = "deleteMailFilterMapping";
+    API_SAVE_MAIL_FILTER_MAPPING: string = "storeMailFilterMapping";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -895,6 +896,24 @@ export class AppService {
 
     getMailFilterMappingByAccId(apiFuncParams: any): Promise<any> {
         this.apiFuncName = this.API_GET_MAIL_FILTER_MAPPING_BY_ACC;
+        const headers = {
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+                { 'headers': headers }).toPromise()
+                .then(resp => {
+                    resolve(resp);
+                }, err => {
+                    reject(err)
+                });
+        });
+        return promise;
+    }
+
+    saveMailFilterMapping(apiFuncParams: any): Promise<any> {
+        this.apiFuncName = this.API_SAVE_MAIL_FILTER_MAPPING;
         const headers = {
             'content-type': 'application/x-www-form-urlencoded',
             'accept': 'application/json'

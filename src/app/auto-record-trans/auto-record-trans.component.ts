@@ -51,8 +51,7 @@ export class AutoRecordTransComponent implements OnInit {
       if (mailData != undefined && mailData != null && mailData !== '') {
         this.mailDataJson = JSON.parse(mailData);
         this.mailDataJson.forEach((mail_data: any) => {
-          let _accId = this.accFilterMappings.filter((accFilterMap: any) => accFilterMap.filter == mail_data.filter)[0].acc_id;
-          mail_data["acc_name"] = this.allAccounts.filter((_acc: any) => _acc.account_id == _accId)[0].account_name;
+          mail_data["acc_name"] = this.allAccounts.filter((_acc: any) => _acc.account_id == mail_data.accId)[0].account_name;
         });
         this.isSignedIn = true;
       }
@@ -166,14 +165,14 @@ export class AutoRecordTransComponent implements OnInit {
   async deleteMailFilterMapping(item: any) {
     this.appService.showLoader();
     let _inpObj = {
-      filter: item.google_filter
+      filter: item.filter
     };
     let apiCallData = await this.appService.getMailFilterMappingByFilter(_inpObj);
     let _inpObj_ = {
       mapping_id: apiCallData.dataArray[0].mapping_id
     }
-    apiCallData = await this.appService.deleteMailFilterMapping(_inpObj_);
-    if (apiCallData.success == true) {
+    apiCallData = await this.appService.deleteMailFilterMapping([_inpObj_]);
+    if (apiCallData[0].success == true) {
       this.appService.showAlert("Mail Filter Deleted Successfully");
     } else {
       this.appService.showAlert(apiCallData);

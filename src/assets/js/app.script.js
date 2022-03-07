@@ -6,6 +6,8 @@ var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/gmail/v1/res
 var SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
 
 var allFilterMappings = [];
+var __debitConditions = [];
+var __creditConditions = [];
 
 function handleClientLoad(filterMappings) {
     allFilterMappings = filterMappings;
@@ -53,7 +55,10 @@ async function fetchAndProcessMails() {
     var filter_date_interval = -40;
     const filterArray = allFilterMappings.map((item) => {
         return {
-            filterValue: item.filter
+            filterValue: item.filter,
+            accId: item.acc_id,
+            debitConditions: item.debit_conditions_json,
+            creditConditions: item.credit_conditions_json
         };
     });
     var gmail_filters = filterArray;
@@ -87,6 +92,8 @@ async function fetchAndProcessMails() {
                     });
                     var emailMsgText = dataResp.result.snippet;
                     let __processingResult__ = undefined;
+                    __debitConditions = JSON.parse(filter.debitConditions);
+                    __creditConditions = JSON.parse(filter.creditConditions);
                     if (__function__ == 'searchForIciciAmazonCC') {
                         __processingResult__ = searchForIciciAmazonCC(emailMsgText, msgId, filter.filterValue);
                     } else if (__function__ == 'searchForPayzapp') {
@@ -103,6 +110,7 @@ async function fetchAndProcessMails() {
                 var outerJsonObj = {
                     "filter": filter.filterValue,
                     "data": apiInnerResponse,
+                    "accId": filter.accId,
                     "menuLevel": "TOP"
                 }
                 apiResponse.push(outerJsonObj);
@@ -135,10 +143,7 @@ function searchForKotakTrans(messageObj, msgId, filter) {
         messageText = undefined;
     }
 
-    var debitConditions = [
-        "We wish to inform you that your account xx9871 is debited for Rs. ",
-        " has been debited from your Account No. XX9871 on "
-    ];
+    var debitConditions = __debitConditions;
     if (messageText != undefined) {
         messageText = messageText.replace(/\r?\n|\r/g, " ");
         debitConditions.forEach(item => {
@@ -195,10 +200,7 @@ function searchForKotakTrans(messageObj, msgId, filter) {
         });
     }
 
-    var creditConditions = [
-        "We wish to inform you that your account xx9871 is credited by Rs. ",
-        " has been credited to your account XX9871 on "
-    ];
+    var creditConditions = __creditConditions;
     if (messageText != undefined) {
         messageText = messageText.replace(/\r?\n|\r/g, " ");
         creditConditions.forEach(item => {
@@ -261,9 +263,7 @@ function searchForKotakTrans(messageObj, msgId, filter) {
 function searchForTorrentPower(messageObj, msgId, filter) {
     json_object = {};
 
-    var debitConditions = [
-        "Your Torrent Power bill summary is as below"
-    ];
+    var debitConditions = __debitConditions;
     var messageText = messageObj.payload.body;
     var messageBody = messageObj.payload;
     let c_counter = 0;
@@ -318,9 +318,7 @@ function searchForTorrentPower(messageObj, msgId, filter) {
 function searchForPayzapp(messageText, msgId, filter, rcvdDateInMilis) {
     let mailDate = convertDate(parseInt(rcvdDateInMilis));
     json_object = {};
-    var creditConditions = [
-        "Your wallet card ending with 6598 has been credited with Rs."
-    ];
+    var creditConditions = __creditConditions;
     creditConditions.forEach(item => {
         var conditionIdx = messageText.indexOf(item);
         if (conditionIdx != -1) {
@@ -346,9 +344,7 @@ function searchForPayzapp(messageText, msgId, filter, rcvdDateInMilis) {
 }
 
 function searchForIciciAmazonCC(messageText, msgId, filter) {
-    var debitConditions = [
-        "Your ICICI Bank Credit Card XX0005 has been used for a transaction of INR "
-    ];
+    var debitConditions = __debitConditions;
     json_object = {};
     debitConditions.forEach(item => {
         var conditionIdx = messageText.indexOf(item);
@@ -376,10 +372,7 @@ function searchForIciciAmazonCC(messageText, msgId, filter) {
         return json_object;
     }
 
-    var creditConditions = [
-        "refund on your ICICI Bank Credit Card XX0005 for INR ",
-        "Payment of INR "
-    ];
+    var creditConditions = __creditConditions;
     creditConditions.forEach(item => {
         var conditionIdx = messageText.indexOf(item);
         messageText = messageText.replace("merchant credit refund on ", "merchant credit refund in ");

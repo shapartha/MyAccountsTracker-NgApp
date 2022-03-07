@@ -16,6 +16,7 @@ import { MapEqComponent } from './map-eq/map-eq.component';
 import { ManageEqComponent } from './manage-eq/manage-eq.component';
 import { ManageMfComponent } from './manage-mf/manage-mf.component';
 import { AutoRecordTransComponent } from './auto-record-trans/auto-record-trans.component';
+import { AddMailFilterMappingComponent } from './add-mail-filter-mapping/add-mail-filter-mapping.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -28,6 +29,7 @@ const routes: Routes = [
   { path: 'add-category', component: AddCategoryComponent, canActivate : [AuthService] },
   { path: 'map-mf', component: MapMfComponent, canActivate : [AuthService]  },
   { path: 'map-eq', component: MapEqComponent, canActivate : [AuthService]  },
+  { path: 'add-mail-filter-mapping', component: AddMailFilterMappingComponent, canActivate : [AuthService]  },
   { path: 'manage-eq', component: ManageEqComponent, canActivate : [AuthService]  },
   { path: 'manage-mf', component: ManageMfComponent, canActivate : [AuthService]  },
   { path: 'auto-trans', component: AutoRecordTransComponent, canActivate : [AuthService]  },

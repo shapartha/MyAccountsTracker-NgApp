@@ -1,0 +1,38 @@
+<mat-label id="addFilterMappingHeader">Add New Mail Filter Mapping</mat-label>
+<br><br>
+<form>
+    <mat-form-field appearance="fill">
+        <mat-label>Filter Text</mat-label>
+        <input type="text" matInput placeholder="Enter Filter Text" name="filterName" required [(ngModel)]="obj.filterName">
+        <mat-error>
+            Valid Filter Text required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Account</mat-label>
+        <mat-select [(ngModel)]="obj.account_id" required name="accDetails">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let item of accounts" value="{{item.id}}">{{item.name}}</mat-option>
+        </mat-select>
+        <mat-error>
+            Valid account required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Function Name</mat-label>
+        <input type="text" matInput placeholder="Enter Function Name" name="functionName" required [(ngModel)]="obj.functionName">
+        <mat-error>
+            Valid function name required.
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Debit Conditions</mat-label>
+        <input type="text" matInput placeholder="Enter Debit Conditions" name="debitConditions" [(ngModel)]="obj.debitConditions">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+        <mat-label>Credit Conditions</mat-label>
+        <input type="text" matInput placeholder="Enter Credit Conditions" name="creditConditions" [(ngModel)]="obj.creditConditions">
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="saveMapping()">Save</button>
+    <button mat-raised-button color="warn" (click)="appService.handleTabChange({ path: 'home' })">Cancel</button>
+</form>
