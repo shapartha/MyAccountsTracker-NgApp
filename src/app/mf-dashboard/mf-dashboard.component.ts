@@ -304,4 +304,16 @@ export class MfDashboardComponent implements OnInit, OnChanges, OnDestroy {
     this.onContextMenuEvent.emit(_emitObj_);
   }
 
+  getColorCode(item: any) {
+    let currAmt = this.appService.formatStringValueToAmount(item.curr_amt);
+    let invAmt = item.inv_amt;
+    if (invAmt > currAmt) {
+      return "negative-val";
+    } else if (invAmt < currAmt) {
+      return "positive-val";
+    } else {
+      return "";
+    }
+  }
+
 }

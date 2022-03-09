@@ -48,7 +48,7 @@
             </div>
         </div>
         <div id="mf_curr_val_{{i}}" class="right-align-val">
-            <div class="money-val positive-val bold-val">{{item.curr_amt}}</div>
+            <div class="money-val bold-val" [ngClass]="getColorCode(item)">{{item.curr_amt}}</div>
             <div class="font12-val purple-val bold-val">XIRR : {{item.xirr_val}}%</div>
             <div class="font12-val purple-val bold-val">Abs. Return : {{item.abs_return}}%</div>
         </div>

@@ -12,9 +12,12 @@
   <script src="https://apis.google.com/js/api.js"></script>
   <script type="text/javascript">
       window.onclick = function (e) {
-        let isShown = document.getElementById("dropdown-list").style.display;
-        if (isShown == 'block') {
-          document.getElementById("dropdown-list").style.display = 'none';
+        let dropdownElem = document.getElementById("dropdown-list");
+        if (dropdownElem != undefined) {
+          let isShown = dropdownElem.style.display;
+          if (isShown == 'block') {
+            dropdownElem.style.display = 'none';
+          }
         }
       }
   </script>
