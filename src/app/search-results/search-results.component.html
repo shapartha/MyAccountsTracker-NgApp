@@ -1,0 +1,24 @@
+<div *ngIf="noSearchItems" id="no-search-text">
+    You have not entered any search text. 
+    <div id="app-trans-search-noitems">
+        <span>Search: </span> <input type="search" (keyup)="search($event)" [(ngModel)]="searchText" />
+    </div>
+</div>
+<div *ngIf="!noSearchItems" id="search-box">
+    <div id="nav-search-header">
+        <div class="w-50"><h1>Search Results</h1></div>
+        <div id="app-trans-search" class="w-25">
+            <span>Search: </span> <input type="search" (keyup)="search($event)" [(ngModel)]="searchText" />
+        </div>
+        <div class="w-25" id="backlink"><a href="home">&lt;&lt;Back</a></div>
+    </div>
+    <div id="searchedText">
+        <span>You've searched for <b>{{ transactionSearchText }}</b></span>
+    </div>
+    <ng-container *ngIf="transactionSearchText != undefined && transactionSearchText != ''">
+        <div id="searchResultCount">
+            <h2>{{ rowCount }} records found !!</h2>
+        </div>
+        <app-transactions [selectedAccount]=selectedAccount [searchObj]="searchObj" (recordCount)="recordCount($event)" [(refreshTransactions)]="refreshTransactions"></app-transactions>
+    </ng-container>
+</div>

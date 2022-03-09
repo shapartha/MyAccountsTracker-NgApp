@@ -1,4 +1,4 @@
-<div *ngIf="selectedAccount !== '' && (displayTrans === undefined || displayTrans.length === 0)" class="no-trans-header">
+<div *ngIf="selectedAccount !== '' && selectedAccount !== 'SEARCH' && (displayTrans === undefined || displayTrans.length === 0)" class="no-trans-header">
     No transactions available for the selected filter. Please change the selection filter to view transactions.
 </div>
 <div class="transaction-item"*ngFor="let item of displayTrans; let i = index;" (click)="onContextMenu($event, item, 'Transaction')">

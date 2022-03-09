@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { AppConstant } from './constant/app-const';
 import { Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AppService {
@@ -67,6 +67,7 @@ export class AppService {
     API_UPDATE_MAIL_FILTER_MAPPING: string = "updateMailFilterMapping";
     API_DELETE_MAIL_FILTER_MAPPING: string = "deleteMailFilterMapping";
     API_SAVE_MAIL_FILTER_MAPPING: string = "storeMailFilterMapping";
+    API_SEARCH_TRANSACTION: string = "searchTransactions";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -177,6 +178,11 @@ export class AppService {
     getTransByAccount(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_TRANS_BY_ACCOUNT;
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams) + this.appendMandatoryParams()).toPromise();
+    }
+
+    searchTransactions(apiFuncParams: any) {
+        this.apiFuncName = this.API_SEARCH_TRANSACTION;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
     }
 
     getMfSchemesByAccount(apiFuncParams: any) {
@@ -1093,8 +1099,30 @@ export class AppService {
         return parseFloat((amt.split(AppConstant.RUPEE_SYMBOL)[1]).replace(/,/g, ""));
     }
 
-    handleTabChange(uri: any) {
-        this.router.navigate([uri.path]);
+    handleTabChange(uri: any, qParams?: any) {
+        if (qParams != undefined) {
+            let objToSend: NavigationExtras = {
+                queryParams: qParams,
+                skipLocationChange: false,
+                fragment: 'top'
+            };
+            this.router.navigate([uri.path], { state: objToSend });
+        } else {
+            this.router.navigate([uri.path]);
+        }
+    }
+
+    searchRecords(searchText: any) {
+        if (searchText == undefined || searchText.trim() == "") {
+            this.showAlert("Enter something to search");
+            return;
+        } else {
+            if (window.location.pathname.indexOf('search-redirect') == -1) {
+                this.handleTabChange({ path: 'search-redirect' }, { "transactionSearch": searchText });
+            } else {
+                this.handleTabChange({ path: 'search-results' }, { "transactionSearch": searchText });
+            }
+        }
     }
 
     getClassVal(value: any) {

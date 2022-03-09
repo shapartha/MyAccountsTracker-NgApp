@@ -13,7 +13,9 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 export class TransactionsComponent implements OnInit, OnChanges {
   @Input() selectedAccount: string = "ALL";
   @Input() selectedAccountObject: Account = {};
+  @Input() searchObj: any;
   @Output() onContextMenuEvent = new EventEmitter();
+  @Output() recordCount = new EventEmitter();
   transactions: Transaction[] = [];
   displayTrans: Transaction[] = [];
   currentTransRecordCount: number = 0;
@@ -66,6 +68,45 @@ export class TransactionsComponent implements OnInit, OnChanges {
       });
     } else if (this.selectedAccount == "") {
       this.displayTrans = [];
+    } else if (this.selectedAccount == "SEARCH") {
+      var user_id = this.appService.getAppUserId;
+      this.appService.showLoader();
+      this.appService.searchTransactions(this.searchObj)
+      .then(data => {
+        if (data.dataArray === undefined) {
+          this.displayTrans = [];
+          this.appService.hideLoader();
+          return;
+        }
+        this.recordCount.emit({ rowCount: data.dataArray.length });
+        data.dataArray.forEach((item: any) => {
+          let _trans = new Transaction();
+          _trans.id = item.trans_id;
+          _trans.description = item.trans_desc;
+          _trans.transType = item.trans_type;
+          _trans.amount = this.appService.formatAmountWithComma((Math.round(item.trans_amount! * 100) / 100).toFixed(2));
+          _trans.date = this.appService.formatDate(item.trans_date);
+          _trans.acc_name = item.account_name;
+          _trans.is_mf = item.is_mf;
+          _trans.is_equity = item.is_equity;
+          _trans.acc_id = item.account_id;
+          _trans.acc_name = item.account_name;
+          _trans.cat_id = item.category_id;
+          _trans.user_id = item.user_id;
+          _trans.acc_balance = item.balance;
+          _trans.receiptImgId = item.trans_receipt_image_id;
+          this.transactions.push(_trans);
+        });
+        this.currentTransRecordCount = 30;
+        this.filterDisplayTrans();
+        this.appService.hideLoader();
+      }, err => {
+        this.handleRedirect("error?err");
+        this.appService.hideLoader();
+      }).catch(fault => {
+        this.handleRedirect("error?fault");
+        this.appService.hideLoader();
+      });
     } else {
       var user_id = this.appService.getAppUserId;
       var acc_id = this.selectedAccountObject == null ? 0 : this.selectedAccountObject.id;

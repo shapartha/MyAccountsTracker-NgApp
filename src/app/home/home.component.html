@@ -5,6 +5,9 @@
           <span id="header_{{i}}">{{item.name}}</span>
         </div>
       </div>
+      <div id="app-trans-search">
+        <span>Search: </span> <input type="search" (keyup)="search($event)" [(ngModel)]="searchText" />
+      </div>
     </div>
     <div id="app-main">
       <app-home-scheduled-section (onContextMenuEvent)="onContextMenuEvent($event)" [(refreshTrans)]="refreshPendSchTrans"></app-home-scheduled-section>

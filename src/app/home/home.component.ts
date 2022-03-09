@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { NavigationExtras, Router } from "@angular/router"
+import { Router } from "@angular/router"
 import { Category } from '../model/category';
 import { HeaderTabs } from '../constant/header-tabs';
 import { AppService } from '../app.service';
@@ -33,9 +33,16 @@ export class HomeComponent implements OnInit {
   selectedAccountObject: Account = {};
   title = 'My Accounts Tracker';
   fileBitmap: any;
+  searchText: any;
   constructor(private router: Router, private appService: AppService, public dialog: MatDialog, private domSanitizer: DomSanitizer) {
     this.currentTab = "Home";
     this.getAllCategories();
+  }
+
+  search(evt: any) {
+    if (evt.keyCode == 13) {
+      this.appService.searchRecords(this.searchText);
+    }
   }
 
   getAllCategories() {
@@ -320,12 +327,7 @@ export class HomeComponent implements OnInit {
       this.appService.showAlert("Mutual Funds/Stocks " + (item.menuType == 'Account' ? "account" : "transaction") + " can't be copied as a new transaction.", "Close");
       return;
     }
-    let objToSend: NavigationExtras = {
-      queryParams: item,
-      skipLocationChange: false,
-      fragment: 'top'
-    };
-    this.router.navigate(['add-trans'], { state: objToSend });
+    this.appService.handleTabChange({ path: 'add-trans' }, item);
   }
 
   async openRedeemDialog(item: any) {
@@ -421,12 +423,12 @@ export class HomeComponent implements OnInit {
         if (this.appService.formatStringValueToAmount(_account.balance) !== result.data.newAccBalance) {
           let _diffAmt = result.data.newAccBalance - this.appService.formatStringValueToAmount(_account.balance);
           let _inpData = {
-            trans_amount : Math.abs(_diffAmt).toString(),
-            account_id : _account.id,
-            trans_date : this.appService.convertDate(),
-            trans_desc : "Adjustments",
-            trans_type : (_diffAmt < 0 ? "DEBIT" : "CREDIT"),
-            user_id : this.appService.getAppUserId.toString()
+            trans_amount: Math.abs(_diffAmt).toString(),
+            account_id: _account.id,
+            trans_date: this.appService.convertDate(),
+            trans_desc: "Adjustments",
+            trans_type: (_diffAmt < 0 ? "DEBIT" : "CREDIT"),
+            user_id: this.appService.getAppUserId.toString()
           }
           this.invokeSaveTransactionApi(_inpData);
           if (_account.category_id == result.data.newAccCategory) {
