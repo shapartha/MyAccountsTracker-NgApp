@@ -44,6 +44,7 @@ import { DeleteDialogStocks, ManageEqComponent } from './manage-eq/manage-eq.com
 import { DeleteDialogMutualFunds, ManageMfComponent } from './manage-mf/manage-mf.component';
 import { AutoRecordTransComponent, DialogGenericConfirmation } from './auto-record-trans/auto-record-trans.component';
 import { AddMailFilterMappingComponent } from './add-mail-filter-mapping/add-mail-filter-mapping.component';
+import { NgxImageCompressService } from 'ngx-image-compress';
 
 @NgModule({
   declarations: [
@@ -66,7 +67,7 @@ import { AddMailFilterMappingComponent } from './add-mail-filter-mapping/add-mai
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AppInterceptor, multi: true },
-    AuthService
+    AuthService, NgxImageCompressService
   ],
   bootstrap: [AppComponent]
 })

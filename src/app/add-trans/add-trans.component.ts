@@ -4,6 +4,7 @@ import { Router } from "@angular/router"
 import { SaveTransaction, Transaction } from '../model/transaction';
 import { Account } from '../model/account';
 import { DomSanitizer } from '@angular/platform-browser';
+import { NgxImageCompressService } from 'ngx-image-compress';
 
 @Component({
   selector: 'app-add-trans',
@@ -41,7 +42,7 @@ export class AddTransComponent implements OnInit {
   fileType: any;
   isGoBack = false;
 
-  constructor(private appService: AppService, private router: Router, private domSanitizer: DomSanitizer) {
+  constructor(private appService: AppService, private router: Router, private imageCompress: NgxImageCompressService) {
     this.appService.showLoader();
     if (this.router.getCurrentNavigation() != null) {
       let objQueryParams = this.router.getCurrentNavigation()!.extras.state;
@@ -63,10 +64,12 @@ export class AddTransComponent implements OnInit {
       const file: File = event.target.files[0];
       this.currentFile = file;
       this.fileName = this.currentFile.name;
-      this.previewUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(file));
       var reader = new FileReader();
-      reader.onload = this._handleReaderLoaded.bind(this);
-      reader.readAsBinaryString(file);
+      reader.onload = (event: any) => {
+        var binaryString = event.target.result;
+        this.compressFile(binaryString);
+      }
+      reader.readAsDataURL(file);
       this.fileType = file.type;
       this.fileUploadMessage = "File selected for uploading"
     } else {
@@ -78,9 +81,17 @@ export class AddTransComponent implements OnInit {
     }
   }
 
-  _handleReaderLoaded(readerEvt: any) {
-    var binaryString = readerEvt.target.result;
-    this.fileBitmap = "data:" + this.fileType + ";base64," + btoa(binaryString);
+  async compressFile(image: any) {
+    var orientation = -1;
+    var finalImage = image;
+    if (this.imageCompress.byteCount(image) / 1024 > 60) {
+      console.log("Before Size --- " + this.imageCompress.byteCount(image) / 1024);
+      const result = await this.imageCompress.compressFile(image, orientation, 50, 50);
+      console.log("After Size --- " + this.imageCompress.byteCount(result) / 1024);
+      finalImage = result;
+    }
+    this.previewUrl = finalImage;
+    this.fileBitmap = finalImage;
   }
 
   upload() {
@@ -292,7 +303,10 @@ export class AddTransComponent implements OnInit {
     let _frmAcc = this.checkMfByAccId(_data.value);
     let _isThisMf = false;
     let _toAcc = this.checkMfByAccId(this.toAccDetails);
-    this.isMf = ((_toAcc != undefined && _toAcc.is_mf == "1") || _frmAcc.is_mf == "1");
+    this.isMf = ((_toAcc != undefined && _toAcc.is_mf == "1") || (_frmAcc != undefined && _frmAcc.is_mf == "1"));
+    if (_frmAcc == undefined) {
+      return;
+    }
     if (_frmAcc.is_mf == true) {
       _isThisMf = true;
       this.populateMfSchemes(_frmAcc.id);
@@ -319,6 +333,9 @@ export class AddTransComponent implements OnInit {
     let _isThisMf = false;
     let _frmAcc = this.checkMfByAccId(this.fromAccDetails);
     this.isMf = ((_frmAcc != undefined && _frmAcc.is_mf == "1") || _toAcc.is_mf == "1");
+    if (_toAcc == undefined) {
+      return;
+    }
     if (_toAcc.is_mf == true) {
       _isThisMf = true;
       this.populateMfSchemes(_toAcc.id);
