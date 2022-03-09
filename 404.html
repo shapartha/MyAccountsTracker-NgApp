@@ -10,9 +10,12 @@
   <script src="https://apis.google.com/js/api.js"></script>
   <script type="text/javascript">
       window.onclick = function (e) {
-        let isShown = document.getElementById("dropdown-list").style.display;
-        if (isShown == 'block') {
-          document.getElementById("dropdown-list").style.display = 'none';
+        let dropdownElem = document.getElementById("dropdown-list");
+        if (dropdownElem != undefined) {
+          let isShown = dropdownElem.style.display;
+          if (isShown == 'block') {
+            dropdownElem.style.display = 'none';
+          }
         }
       }
   </script>
@@ -22,6 +25,6 @@
       <div class="loader"></div>
   </div>
   <app-root></app-root>
-<script src="runtime-es2017.5038a913de838de9ebe0.js" type="module"></script><script src="runtime-es5.5038a913de838de9ebe0.js" nomodule defer></script><script src="polyfills-es5.aae0ae334e229b86b6d9.js" nomodule defer></script><script src="polyfills-es2017.a910f9af0e564f67ca9a.js" type="module"></script><script src="scripts.6fdc1886e30030b4defb.js" defer></script><script src="main-es2017.287a6c4d8e735b1e1951.js" type="module"></script><script src="main-es5.287a6c4d8e735b1e1951.js" nomodule defer></script>
+<script src="runtime-es2017.5038a913de838de9ebe0.js" type="module"></script><script src="runtime-es5.5038a913de838de9ebe0.js" nomodule defer></script><script src="polyfills-es5.aae0ae334e229b86b6d9.js" nomodule defer></script><script src="polyfills-es2017.a910f9af0e564f67ca9a.js" type="module"></script><script src="scripts.6fdc1886e30030b4defb.js" defer></script><script src="main-es2017.df29e8cb45ddbba022eb.js" type="module"></script><script src="main-es5.df29e8cb45ddbba022eb.js" nomodule defer></script>
 
 </body></html>
