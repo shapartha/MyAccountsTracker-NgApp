@@ -102,6 +102,8 @@ async function fetchAndProcessMails() {
                         __processingResult__ = searchForTorrentPower(dataResp.result, msgId, filter.filterValue);
                     } else if (__function__ == 'searchForKotakTrans') {
                         __processingResult__ = searchForKotakTrans(dataResp.result, msgId, filter.filterValue);
+                    } else if (__function__ == 'searchForHdfcTrans') {
+                        __processingResult__ = searchForHdfcTrans(dataResp.result, msgId, filter.filterValue);
                     }
                     if (__processingResult__ != undefined && __processingResult__ != null) {
                         apiInnerResponse.push(__processingResult__);
@@ -115,7 +117,7 @@ async function fetchAndProcessMails() {
                 }
                 apiResponse.push(outerJsonObj);
             } else {
-                console.error("No messages found for filter: " + filter.filterValue);
+                console.info("No messages found for filter: " + filter.filterValue);
             }
             if (cntr == gmail_filters.length) {
                 res();
@@ -172,7 +174,7 @@ function searchForKotakTrans(messageObj, msgId, filter) {
                     };
                 }
             } else if (item == debitConditions[1]) {
-                let s_messageText = messageText.replace( /(<([^>]+)>)/ig, '');
+                let s_messageText = messageText.replace(/(<([^>]+)>)/ig, '');
                 var conditionIdx = s_messageText.indexOf(item);
                 if (conditionIdx != -1) {
                     var amtIdx = s_messageText.indexOf(item);
@@ -228,7 +230,7 @@ function searchForKotakTrans(messageObj, msgId, filter) {
                     };
                 }
             } else if (item == creditConditions[1]) {
-                let s_messageText = messageText.replace( /(<([^>]+)>)/ig, '');
+                let s_messageText = messageText.replace(/(<([^>]+)>)/ig, '');
                 var conditionIdx = s_messageText.indexOf(item);
                 if (conditionIdx != -1) {
                     var amtIdx = s_messageText.indexOf(item);
@@ -254,6 +256,135 @@ function searchForKotakTrans(messageObj, msgId, filter) {
                 }
             }
         });
+    }
+    if (!isEmpty(json_object)) {
+        return json_object;
+    }
+}
+
+function searchForHdfcTrans(messageObj, msgId, filter) {
+    json_object = {};
+
+    var messageText = messageObj.payload.body;
+    var messageBody = messageObj.payload;
+    let c_counter = 0;
+    while (messageText.size == 0 && c_counter < 10) {
+        messageBody = messageBody.parts[0];
+        messageText = messageBody.body;
+        c_counter++;
+    }
+    try {
+        messageText = atob(messageText.data.replace(/-/g, '+').replace(/_/g, '/'));
+    } catch (e) {
+        console.error(e);
+        messageText = undefined;
+    }
+
+    let msgProcessed = false;
+
+    var debitConditions = __debitConditions;
+    if (messageText != undefined) {
+        messageText = messageText.replace(/\r?\n|\r/g, " ");
+        messageText = messageText.replace(/(<([^>]+)>)/ig, '');
+        let messageTextEndMatch = "Do not share your internet banking username/password or Credit/ Debit Card number/ CVV/ OTP via e-mail or over the phone. HDFC Bank will never ask for it";
+        messageText = messageText.substring(0, messageText.indexOf(messageTextEndMatch));
+        messageText = messageText.replaceAll('on account of', 'onaccountof');
+        debitConditions.forEach(item => {
+            if (messageText.indexOf(item) != -1) {
+                msgProcessed = true;
+                let amtIdx = -1;
+                let lngt = 0;
+                if (messageText.indexOf('Rs. ') != -1) {
+                    amtIdx = messageText.indexOf('Rs. ');
+                    lngt = 4;
+                } else if (messageText.indexOf('Rs.') != -1) {
+                    amtIdx = messageText.indexOf('Rs.');
+                    lngt = 3;
+                } else if (messageText.indexOf('Rs ') != -1) {
+                    amtIdx = messageText.indexOf('Rs ');
+                    lngt = 3;
+                } else if (messageText.indexOf('Rs') != -1) {
+                    amtIdx = messageText.indexOf('Rs');
+                    lngt = 2;
+                } else if (messageText.indexOf('INR ') != -1) {
+                    amtIdx = messageText.indexOf('INR ');
+                    lngt = 4;
+                } else if (messageText.indexOf('INR') != -1) {
+                    amtIdx = messageText.indexOf('INR');
+                    lngt = 3;
+                }
+                var amt = messageText.substring(amtIdx + lngt, messageText.indexOf(' ', amtIdx + lngt));
+                let dateIdx = messageText.indexOf(' on ') + 4;
+                var __date = messageText.substring(dateIdx, messageText.indexOf('.', dateIdx));
+                if (__date.length > 12) {
+                    __date = __date.substring(0, __date.indexOf(' '));
+                }
+                let __dateSplit = __date.split("-");
+                let __yearPart = __dateSplit[2];
+                __yearPart = (__yearPart.length == 2) ? "20" + __yearPart : __yearPart;
+                var dte = convertDate([__yearPart, __dateSplit[1], __dateSplit[0]].join('-'), 'yyyy-MM-dd');
+                json_object = {
+                    "trans_amt": amt.replaceAll(',', ''),
+                    "trans_date": dte,
+                    "trans_type": "DEBIT",
+                    "trans_desc": "Enter transaction description",
+                    "google_msg_id": msgId,
+                    "google_filter": filter,
+                    "menuLevel": "MAIN"
+                };
+            }
+        });
+    }
+    if (msgProcessed != true) {
+        var creditConditions = __creditConditions;
+        if (messageText != undefined) {
+            messageText = messageText.replace(/\r?\n|\r/g, " ");
+            messageText = messageText.replace(/(<([^>]+)>)/ig, '');
+            creditConditions.forEach(item => {
+                if (messageText.indexOf(item) != -1) {
+                    let amtIdx = -1;
+                    let lngt = 0;
+                    if (messageText.indexOf('Rs. ') != -1) {
+                        amtIdx = messageText.indexOf('Rs. ');
+                        lngt = 4;
+                    } else if (messageText.indexOf('Rs.') != -1) {
+                        amtIdx = messageText.indexOf('Rs.');
+                        lngt = 3;
+                    } else if (messageText.indexOf('Rs ') != -1) {
+                        amtIdx = messageText.indexOf('Rs ');
+                        lngt = 3;
+                    } else if (messageText.indexOf('Rs') != -1) {
+                        amtIdx = messageText.indexOf('Rs');
+                        lngt = 2;
+                    } else if (messageText.indexOf('INR ') != -1) {
+                        amtIdx = messageText.indexOf('INR ');
+                        lngt = 4;
+                    } else if (messageText.indexOf('INR') != -1) {
+                        amtIdx = messageText.indexOf('INR');
+                        lngt = 3;
+                    }
+                    var amt = messageText.substring(amtIdx + lngt, messageText.indexOf(' ', amtIdx + lngt));
+                    let dateIdx = messageText.indexOf(' on ') + 4;
+                    var __date = messageText.substring(dateIdx, messageText.indexOf('.', dateIdx));
+                    if (__date.length > 12) {
+                        __date = __date.substring(0, __date.indexOf(' '));
+                    }
+                    let __dateSplit = __date.split("-");
+                    let __yearPart = __dateSplit[2];
+                    __yearPart = (__yearPart.length == 2) ? "20" + __yearPart : __yearPart;
+                    var dte = convertDate([__yearPart, __dateSplit[1], __dateSplit[0]].join('-'), 'yyyy-MM-dd');
+                    json_object = {
+                        "trans_amt": amt.replaceAll(',', ''),
+                        "trans_date": dte,
+                        "trans_type": "CREDIT",
+                        "trans_desc": "Enter transaction description",
+                        "google_msg_id": msgId,
+                        "google_filter": filter,
+                        "menuLevel": "MAIN"
+                    };
+                }
+            });
+        }
     }
     if (!isEmpty(json_object)) {
         return json_object;
