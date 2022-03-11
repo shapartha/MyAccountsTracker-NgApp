@@ -14,14 +14,11 @@ export class RoutineService {
   }
 
   async updateRecurringTransMonthly() {
-    let checkRunStats = this.appService.getCookie(this.COOKIE_UPD_REC_TRNS_MNTHLY);
-    if (checkRunStats != "") {
+    var __x = new Date();
+    let __currMonthIdx = this.appService.padLeadingZero(__x.getMonth() + 1) + "-" + __x.getFullYear();
+    let checkRunStats = await this.appService.getServerCookie(this.COOKIE_UPD_REC_TRNS_MNTHLY);
+    if (checkRunStats != "" && checkRunStats == __currMonthIdx) {
       console.log(this.COOKIE_UPD_REC_TRNS_MNTHLY + " - this routine already processed this month.");
-      return;
-    }
-    let currentDay = new Date().getDate();
-    if (currentDay > 5) {
-      console.log(this.COOKIE_UPD_REC_TRNS_MNTHLY + " - this routine was not processed within prescribed duration this month.");
       return;
     }
     const getAllRecurTransResp = await this.appService.getAllRecurringTrans({ user_id: this.appService.getAppUserId });
@@ -50,7 +47,10 @@ export class RoutineService {
         console.log("Execution Status updated for current month for all Recurring Transactions.")
       }
       this.appService.hideLoader();
-      this.appService.setCookie(this.COOKIE_UPD_REC_TRNS_MNTHLY, 1, 5);
+      __x.setDate(__x.getDate() + 5);
+      let __expTs = __x.getFullYear() + "-" + this.appService.padLeadingZero(__x.getMonth() + 1) + "-" + this.appService.padLeadingZero(__x.getDate()) + " " + 
+                    this.appService.padLeadingZero(__x.getHours()) + ":" + this.appService.padLeadingZero(__x.getMinutes()) + ":" + this.appService.padLeadingZero(__x.getSeconds());
+      this.appService.setServerCookie(this.COOKIE_UPD_REC_TRNS_MNTHLY, __currMonthIdx, __expTs);
     }
   }
 }
