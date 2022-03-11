@@ -3,7 +3,6 @@ import { AppService } from '../app.service';
 import { Router } from "@angular/router"
 import { SaveTransaction, Transaction } from '../model/transaction';
 import { Account } from '../model/account';
-import { DomSanitizer } from '@angular/platform-browser';
 import { NgxImageCompressService } from 'ngx-image-compress';
 
 @Component({
@@ -135,6 +134,10 @@ export class AddTransComponent implements OnInit {
       });
       this.mainAccList = this.fromAcc.map(obj => ({ ...obj }));
       this.toAcc = this.fromAcc.map(obj => ({ ...obj }));
+      if (this.fromAccDetails !== "") {
+        let selectedAcc = this.mainAccList.filter((_acc: any) => _acc.id === this.fromAccDetails)[0];
+        this.fromAccBalance = this.appService.formatAmountWithComma(selectedAcc.balance!);
+      }
       this.appService.hideLoader();
     }, err => {
       this.handleRoute("error?" + err);
