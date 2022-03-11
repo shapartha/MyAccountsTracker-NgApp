@@ -68,6 +68,10 @@ export class AppService {
     API_DELETE_MAIL_FILTER_MAPPING: string = "deleteMailFilterMapping";
     API_SAVE_MAIL_FILTER_MAPPING: string = "storeMailFilterMapping";
     API_SEARCH_TRANSACTION: string = "searchTransactions";
+    API_COOKIE_SAVE: string = "saveCookie";
+    API_COOKIE_UPDATE: string = "updateCookie";
+    API_COOKIE_DELETE: string = "deleteCookie";
+    API_COOKIE_GET: string = "getCookie";
     static API_KEY: string = "tn4mzlCxWb7Ix90";
     appToken: string = "";
     appUserId: number = 0;
@@ -956,6 +960,81 @@ export class AppService {
 
     deleteMailFilterMapping(apiFuncParams: any): Promise<any> {
         this.apiFuncName = this.API_DELETE_MAIL_FILTER_MAPPING;
+        const headers = {
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+                { 'headers': headers }).toPromise()
+                .then(resp => {
+                    resolve(resp);
+                }, err => {
+                    reject(err)
+                });
+        });
+        return promise;
+    }
+
+    async getServerCookie(_name: any) {
+        this.apiFuncName = this.API_COOKIE_GET;
+        let apiFuncParams = {
+            name: _name
+        };
+        var cookieVal = "";
+        const apiResp = await this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams()).toPromise();
+        if (apiResp != undefined && apiResp.success) {
+            var tsVal = new Date(apiResp.dataArray[0].expiry);
+            if (tsVal >= new Date()) {
+                cookieVal = apiResp.dataArray[0].value;
+            }
+        }
+        return cookieVal;
+    }
+
+    setServerCookie(_name: any, _val: any, _exp: any): Promise<any> {
+        this.apiFuncName = this.API_COOKIE_SAVE;
+        let apiFuncParams = {
+            name: _name,
+            value: _val,
+            expiry: _exp
+        };
+        const headers = {
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+                { 'headers': headers }).toPromise()
+                .then(resp => {
+                    resolve(resp);
+                }, err => {
+                    reject(err)
+                });
+        });
+        return promise;
+    }
+
+    updateServerCookie(apiFuncParams: any): Promise<any> {
+        this.apiFuncName = this.API_COOKIE_UPDATE;
+        const headers = {
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+                { 'headers': headers }).toPromise()
+                .then(resp => {
+                    resolve(resp);
+                }, err => {
+                    reject(err)
+                });
+        });
+        return promise;
+    }
+
+    deleteServerCookie(apiFuncParams: any): Promise<any> {
+        this.apiFuncName = this.API_COOKIE_DELETE;
         const headers = {
             'content-type': 'application/x-www-form-urlencoded',
             'accept': 'application/json'
