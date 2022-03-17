@@ -6,8 +6,8 @@ import { AppService } from '../app.service';
 import { Account } from '../model/account';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { SaveTransaction } from '../model/transaction';
 import { DomSanitizer } from '@angular/platform-browser';
+import { AppConstant } from '../constant/app-const';
 
 @Component({
   selector: 'app-home',
@@ -34,8 +34,10 @@ export class HomeComponent implements OnInit {
   title = 'My Accounts Tracker';
   fileBitmap: any;
   searchText: any;
+  appVersionInfo: string = "";
   constructor(private router: Router, private appService: AppService, public dialog: MatDialog, private domSanitizer: DomSanitizer) {
     this.currentTab = "Home";
+    this.appVersionInfo = AppConstant.APP_VERSION;
     this.getAllCategories();
   }
 
