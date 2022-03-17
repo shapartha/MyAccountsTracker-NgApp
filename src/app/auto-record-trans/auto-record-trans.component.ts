@@ -52,6 +52,11 @@ export class AutoRecordTransComponent implements OnInit {
         this.mailDataJson = JSON.parse(mailData);
         this.mailDataJson.forEach((mail_data: any) => {
           mail_data["acc_name"] = this.allAccounts.filter((_acc: any) => _acc.account_id == mail_data.accId)[0].account_name;
+          if (mail_data.data != null && mail_data.data.length > 0) {
+            mail_data.data.forEach((__itm: any) => {
+              __itm["accId"] = mail_data.accId;
+            });
+          }
         });
         this.isSignedIn = true;
       }
@@ -107,9 +112,10 @@ export class AutoRecordTransComponent implements OnInit {
   async markMsgProcessed(item: any) {
     this.appService.showLoader();
     let _inpObj = {
-      filter: item.google_filter
+      filter: item.google_filter,
+      acc_id: item.accId
     };
-    let apiCallData = await this.appService.getMailFilterMappingByFilter(_inpObj);
+    let apiCallData = await this.appService.getMailFilterMappingByAccId(_inpObj);
     if (apiCallData.success == true) {
       if (apiCallData.response == '200') {
         let lastMsgId = apiCallData.dataArray[0].last_msg_id;
@@ -125,7 +131,7 @@ export class AutoRecordTransComponent implements OnInit {
         let apiCallUpdate = await this.appService.updateMailFilterMapping([_updObj]);
         if (apiCallUpdate[0].success == true) {
           this.appService.showAlert("Message Processed Successfully");
-          let _parentObj = this.mailDataJson.filter((pObj: any) => pObj.filter == _inpObj.filter)[0];
+          let _parentObj = this.mailDataJson.filter((pObj: any) => pObj.filter == _inpObj.filter && pObj.accId == _inpObj.acc_id)[0];
           let _childObj = _parentObj.data.findIndex((cObj: any) => _updObj.last_msg_id.indexOf(cObj.google_msg_id) != -1);
           _parentObj.data.splice(_childObj, 1);
         } else {
@@ -141,7 +147,7 @@ export class AutoRecordTransComponent implements OnInit {
   }
 
   acceptMessage(item: any) {
-    let _accId = this.accFilterMappings.filter((accFilterMap: any) => accFilterMap.filter == item.google_filter)[0].acc_id;
+    let _accId = item.accId;
     let _inpObj = {
       amount: item.trans_amt.replace(",", ""),
       date: item.trans_date.split(" ")[0],

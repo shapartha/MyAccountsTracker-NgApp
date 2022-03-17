@@ -65,17 +65,28 @@ async function fetchAndProcessMails() {
     var apiResponse = [];
     const workAction = await new Promise(async (res, err) => {
         var cntr = 0;
+        let _processedFilters = [];
         for (var x = 0; x < gmail_filters.length; x++) {
             let filter = gmail_filters[x];
             var _currFilterMapObj = allFilterMappings.filter(val => val.filter == filter.filterValue)[0];
             var __function__ = _currFilterMapObj.filter_function;
             cntr++;
-            const response = await gapi.client.gmail.users.messages.list({
-                'userId': 'me',
-                'maxResults': 20,
-                'labelIds': 'INBOX',
-                'q': filter.filterValue + ' after:' + convertDate(datePlusMinus(filter_date_interval), "yyyy-MM-dd")
-            });
+            let _existFilter = _processedFilters.filter(_itm => _itm.filter == filter.filterValue);
+            let response = null;
+            if (_existFilter == null || _existFilter.length == 0) {
+                response = await gapi.client.gmail.users.messages.list({
+                    'userId': 'me',
+                    'maxResults': 20,
+                    'labelIds': 'INBOX',
+                    'q': filter.filterValue + ' after:' + convertDate(datePlusMinus(filter_date_interval), "yyyy-MM-dd")
+                });
+                _processedFilters.push({
+                    filter: filter.filterValue,
+                    resp: response
+                });
+            } else {
+                response = _existFilter[0].resp;
+            }
             var msgs = response.result.messages;
             var msgId = undefined;
             var apiInnerResponse = [];
