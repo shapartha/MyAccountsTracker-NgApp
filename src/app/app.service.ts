@@ -1112,6 +1112,20 @@ export class AppService {
     }
     //#endregion Cookie
 
+    //#region Session Storage
+    getSessionStorageData(key: string) {
+        return sessionStorage.getItem(key);
+    }
+    
+    setSessionStorageData(key: string, value: string) {
+        return sessionStorage.setItem(key, value);
+    }
+    
+    removeSessionStorageData(key: string) {
+        return sessionStorage.removeItem(key);
+    }
+    //#endregion
+
     formatDate(val: string): string {
         let _temp = val.split("-");
         if (_temp[2].length == 4) {

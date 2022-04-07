@@ -17,6 +17,9 @@ export class LogoutComponent implements OnInit {
     } else {
       this.appService.eraseCookie("app-user-id");
       this.appService.eraseCookie("app-token");
+      this.appService.eraseCookie("gapi_apikey");
+      this.appService.eraseCookie("gapi_clientid");
+      this.appService.removeSessionStorageData("gapi_gmail_data");
       setTimeout(() => {
         this.currentTab = "Login";
         this.handleTabChange({path: 'login'});

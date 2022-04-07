@@ -20,8 +20,8 @@ function handleClientLoad(filterMappings) {
         })
         gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
         var outputData = await updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-        if (getCookie('gapi_gmail_data') == "") {
-            setCookie('gapi_gmail_data', JSON.stringify(outputData), 30000);
+        if (getSessionStorageData('gapi_gmail_data') == null) {
+            setSessionStorageData('gapi_gmail_data', JSON.stringify(outputData));
         }
     });
 }
@@ -66,10 +66,12 @@ async function fetchAndProcessMails() {
     const workAction = await new Promise(async (res, err) => {
         var cntr = 0;
         let _processedFilters = [];
+        var _allProcessedMsgs = "";
         for (var x = 0; x < gmail_filters.length; x++) {
             let filter = gmail_filters[x];
-            var _currFilterMapObj = allFilterMappings.filter(val => val.filter == filter.filterValue)[0];
+            var _currFilterMapObj = allFilterMappings.filter(val => val.filter == filter.filterValue && val.acc_id == filter.accId)[0];
             var __function__ = _currFilterMapObj.filter_function;
+            _allProcessedMsgs += "," + _currFilterMapObj.last_msg_id;
             cntr++;
             let _existFilter = _processedFilters.filter(_itm => _itm.filter == filter.filterValue);
             let response = null;
@@ -93,7 +95,7 @@ async function fetchAndProcessMails() {
             if (msgs && msgs.length > 0) {
                 for (i = 0; i < msgs.length; i++) {
                     msgId = msgs[i].id;
-                    if (_currFilterMapObj.last_msg_id != null && _currFilterMapObj.last_msg_id.indexOf(msgId) != -1) {
+                    if (_currFilterMapObj.last_msg_id != null && _currFilterMapObj.last_msg_id.indexOf(msgId) != -1 && _allProcessedMsgs.indexOf(msgId) != -1) {
                         continue;
                     }
                     const dataResp = await gapi.client.gmail.users.messages.get({
@@ -118,6 +120,7 @@ async function fetchAndProcessMails() {
                     }
                     if (__processingResult__ != undefined && __processingResult__ != null) {
                         apiInnerResponse.push(__processingResult__);
+                        _allProcessedMsgs += "," + msgId;
                     }
                 }
                 var outerJsonObj = {
@@ -561,6 +564,14 @@ function setCookie(name, value, milliseconds) {
         expires = "; expires=" + date.toUTCString();
     }
     document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+function getSessionStorageData(key) {
+    return sessionStorage.getItem(key);
+}
+
+function setSessionStorageData(key, value) {
+    return sessionStorage.setItem(key, value);
 }
 
 function nthIndexOf(str, search_str, offset, n) {

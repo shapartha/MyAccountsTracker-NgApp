@@ -43,12 +43,25 @@ export class AutoRecordTransComponent implements OnInit {
   }
 
   async initLoadData() {
+    this.appService.removeSessionStorageData("gapi_gmail_data");
     await this.getAllAccounts();
     await this.getAllFilterAccMappings();
     handleClientLoad(this.accFilterMappings);
     setTimeout(() => {
-      var mailData = this.appService.getCookie('gapi_gmail_data');
-      if (mailData != undefined && mailData != null && mailData !== '') {
+      if (!this.isGoogleSignedIn()) {
+        this.appService.hideLoader();
+        return;
+      }
+      this.recursiveExtraction();
+    }, 3000);
+  }
+
+  recursiveExtraction() {
+    setTimeout(() => {
+      var mailData = this.appService.getSessionStorageData('gapi_gmail_data');
+      if (mailData == undefined || mailData == null || mailData == '' || mailData == 'undefined') {
+        this.recursiveExtraction();
+      } else {
         this.mailDataJson = JSON.parse(mailData);
         this.mailDataJson.forEach((mail_data: any) => {
           mail_data["acc_name"] = this.allAccounts.filter((_acc: any) => _acc.account_id == mail_data.accId)[0].account_name;
@@ -59,9 +72,9 @@ export class AutoRecordTransComponent implements OnInit {
           }
         });
         this.isSignedIn = true;
+        this.appService.hideLoader();
       }
-      this.appService.hideLoader();
-    }, 15000);
+    }, 3000);
   }
 
   ngOnInit(): void {
@@ -76,6 +89,7 @@ export class AutoRecordTransComponent implements OnInit {
   googleSignOut() {
     handleSignoutClick();
     this.appService.showLoader();
+    this.appService.removeSessionStorageData("gapi_gmail_data");
     setTimeout(() => {
       this.mailDataJson = [];
       this.isSignedIn = this.isGoogleSignedIn();
@@ -89,7 +103,7 @@ export class AutoRecordTransComponent implements OnInit {
     setTimeout(() => {
       this.isSignedIn = this.isGoogleSignedIn();
       this.initLoadData();
-    }, 15000);
+    }, 20000);
   }
 
   onContextMenu(event: MouseEvent, item: any) {
