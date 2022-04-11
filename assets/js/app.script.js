@@ -76,12 +76,17 @@ async function fetchAndProcessMails() {
             let _existFilter = _processedFilters.filter(_itm => _itm.filter == filter.filterValue);
             let response = null;
             if (_existFilter == null || _existFilter.length == 0) {
-                response = await gapi.client.gmail.users.messages.list({
-                    'userId': 'me',
-                    'maxResults': 20,
-                    'labelIds': 'INBOX',
-                    'q': filter.filterValue + ' after:' + convertDate(datePlusMinus(filter_date_interval), "yyyy-MM-dd")
-                });
+                try {
+                    response = await gapi.client.gmail.users.messages.list({
+                        'userId': 'me',
+                        'maxResults': 20,
+                        'labelIds': 'INBOX',
+                        'q': filter.filterValue + ' after:' + convertDate(datePlusMinus(filter_date_interval), "yyyy-MM-dd")
+                    });
+                } catch (e) {
+                    console.error(e);
+                    continue;
+                }
                 _processedFilters.push({
                     filter: filter.filterValue,
                     resp: response
@@ -525,6 +530,10 @@ function searchForIciciAmazonCC(messageText, msgId, filter) {
             conditionIdx += item.length;
             var amtSeparatorIdx = messageText.indexOf(" ", conditionIdx) - 1;
             var trans_amt = messageText.substr(conditionIdx, amtSeparatorIdx - conditionIdx + 1);
+            if (isNaN(parseFloat(trans_amt))) {
+                amtSeparatorIdx = messageText.indexOf('INR ') + 4;
+                trans_amt = messageText.substring(amtSeparatorIdx, messageText.indexOf(' ', amtSeparatorIdx));
+            }
             var trans_type = "CREDIT";
             var dateTimeIdx = messageText.indexOf(" on ") + 4;
             var trans_date = convertDate(messageText.substr(dateTimeIdx, nthIndexOf(messageText, " ", dateTimeIdx, 3) - dateTimeIdx).replace(".", ""));
