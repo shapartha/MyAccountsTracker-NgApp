@@ -25,6 +25,7 @@ export class AutoRecordTransComponent implements OnInit {
   accFilterMappings: any = [];
   allAccounts: any = [];
   isSignedIn = false;
+  recursiveExecCounter = 0;
 
   constructor(public appService: AppService, public dialog: MatDialog) { }
 
@@ -60,7 +61,11 @@ export class AutoRecordTransComponent implements OnInit {
     setTimeout(() => {
       var mailData = this.appService.getSessionStorageData('gapi_gmail_data');
       if (mailData == undefined || mailData == null || mailData == '' || mailData == 'undefined') {
-        this.recursiveExtraction();
+        if (this.recursiveExecCounter <= 10) {
+          this.recursiveExtraction();
+        } else {
+          this.appService.hideLoader();
+        }
       } else {
         this.mailDataJson = JSON.parse(mailData);
         this.mailDataJson.forEach((mail_data: any) => {
@@ -75,6 +80,7 @@ export class AutoRecordTransComponent implements OnInit {
         this.appService.hideLoader();
       }
     }, 3000);
+    this.recursiveExecCounter = this.recursiveExecCounter + 1;
   }
 
   ngOnInit(): void {
