@@ -45,3 +45,8 @@ testem.log
 Thumbs.db
 .editorconfig
 .browserslistrc
+.firebaserc
+firebase.json
+.firebase/hosting.ZGlzdFxteS1hY2NvdW50cy10cmFja2VyLW5nYXBw.cache
+.github/workflows/firebase-hosting-merge.yml
+.github/workflows/firebase-hosting-pull-request.yml
