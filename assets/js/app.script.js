@@ -122,6 +122,8 @@ async function fetchAndProcessMails() {
                         __processingResult__ = searchForKotakTrans(dataResp.result, msgId, filter.filterValue);
                     } else if (__function__ == 'searchForHdfcTrans') {
                         __processingResult__ = searchForHdfcTrans(dataResp.result, msgId, filter.filterValue);
+                    } else if (__function__ == 'searchForZeta') {
+                        __processingResult__ = searchForZeta(dataResp.result, msgId, filter.filterValue);
                     }
                     if (__processingResult__ != undefined && __processingResult__ != null) {
                         apiInnerResponse.push(__processingResult__);
@@ -552,6 +554,12 @@ function searchForIciciAmazonCC(messageText, msgId, filter) {
     if (!isEmpty(json_object)) {
         return json_object;
     }
+}
+
+function searchForZeta(messageText, msgId, filter) {
+    console.log(messageText);
+    console.log(msgId);
+    //TODO
 }
 
 function getCookie(name) {
