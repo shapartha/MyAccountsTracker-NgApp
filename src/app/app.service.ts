@@ -1189,7 +1189,8 @@ export class AppService {
         if (amt === undefined) {
             return 0;
         }
-        return parseFloat((amt.split(AppConstant.RUPEE_SYMBOL)[1]).replace(/,/g, ""));
+        let arr = amt.split(AppConstant.RUPEE_SYMBOL);
+        return parseFloat(arr[0] + (arr[1]).replace(/,/g, ""));
     }
 
     handleTabChange(uri: any, qParams?: any) {

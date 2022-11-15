@@ -1,6 +1,6 @@
 var __clientId = getCookie('gapi_clientid');
 var __apiKey = getCookie('gapi_apikey');
-var __restApiUrl = "https://shapartha-android-zone.000webhostapp.com/accounts-tracker/api/";
+var __restApiUrl = "https://redirection-root-4755utlstq-el.a.run.app/";
 
 var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"];
 var SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
