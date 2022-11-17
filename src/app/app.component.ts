@@ -16,7 +16,7 @@ export class AppComponent {
   constructor(private appService: AppService, private routineService: RoutineService) {
     this.menuItems = this.menu.menuItem!;
     this.initGoogleApi();
-    this.initRoutineProcess();
+    // this.initRoutineProcess();
   }
 
   async initGoogleApi() {
