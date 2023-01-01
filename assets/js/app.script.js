@@ -416,8 +416,14 @@ function searchForTorrentPower(messageObj, msgId, filter) {
     json_object = {};
 
     var debitConditions = __debitConditions;
+    var creditConditions = __creditConditions;
+
     var messageText = messageObj.payload.body;
     var messageBody = messageObj.payload;
+    var emailRcvdTime = messageBody.headers.filter(e => e.name === 'Received' && e.value.indexOf('IST') != -1)[0].value;
+    emailRcvdTime = emailRcvdTime.split(';')[1];
+    emailRcvdTime  = convertDate(emailRcvdTime);
+
     let c_counter = 0;
     while (messageText.size == 0 && c_counter < 10) {
         messageBody = messageBody.parts[0];
@@ -455,6 +461,23 @@ function searchForTorrentPower(messageObj, msgId, filter) {
                     "trans_date": trans_date,
                     "trans_type": trans_type,
                     "trans_desc": trans_desc.replace("\\", ""),
+                    "google_msg_id": msgId,
+                    "google_filter": filter,
+                    "menuLevel": "MAIN"
+                };
+            }
+        });
+
+        creditConditions.forEach(item => {
+            var conditionIdx = messageText.indexOf(item);
+            if (conditionIdx != -1) {
+                var amtValx = messageText.indexOf(" made online towards service number", conditionIdx + item.length + 4);
+                var trans_amt = messageText.substring(conditionIdx + item.length + 4, amtValx);
+                json_object = {
+                    "trans_amt": trans_amt,
+                    "trans_date": emailRcvdTime,
+                    "trans_type": "CREDIT",
+                    "trans_desc": "Electricity Bill Payment",
                     "google_msg_id": msgId,
                     "google_filter": filter,
                     "menuLevel": "MAIN"
