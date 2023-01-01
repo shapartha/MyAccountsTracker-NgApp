@@ -506,7 +506,7 @@ function searchForIciciAmazonCC(messageText, msgId, filter) {
             var trans_amt = messageText.substr(conditionIdx, amtSeparatorIdx - conditionIdx + 1);
             var trans_type = "DEBIT";
             var dateTimeIdx = amtSeparatorIdx + 5;
-            var trans_date = convertDate(messageText.substr(dateTimeIdx, messageText.indexOf(".", dateTimeIdx) - dateTimeIdx).replace(";", ""));
+            var trans_date = convertDate(messageText.substr(dateTimeIdx, messageText.indexOf(".", dateTimeIdx) - dateTimeIdx).replace(" at", ""));
             var descIdx = messageText.indexOf("Info: ") + 6;
             var trans_desc = messageText.substr(descIdx, messageText.indexOf(".", descIdx) - descIdx);
             json_object = {
