@@ -110,6 +110,11 @@ async function fetchAndProcessMails() {
                     });
                     var emailMsgText = dataResp.result.snippet;
                     let __processingResult__ = undefined;
+                    var messageBody = dataResp.result.payload;
+                    var emailRcvdTime = messageBody.headers.filter(e => e.name === 'Received')[0].value;
+                    emailRcvdTime = emailRcvdTime.split(';')[1];
+                    emailRcvdTime  = convertDate(emailRcvdTime);
+
                     __debitConditions = JSON.parse(filter.debitConditions);
                     __creditConditions = JSON.parse(filter.creditConditions);
                     if (__function__ == 'searchForIciciAmazonCC') {
@@ -123,7 +128,7 @@ async function fetchAndProcessMails() {
                     } else if (__function__ == 'searchForHdfcTrans') {
                         __processingResult__ = searchForHdfcTrans(dataResp.result, msgId, filter.filterValue);
                     } else if (__function__ == 'searchForZeta') {
-                        __processingResult__ = searchForZeta(dataResp.result, msgId, filter.filterValue);
+                        __processingResult__ = searchForZeta(emailMsgText, msgId, filter.filterValue, emailRcvdTime);
                     }
                     if (__processingResult__ != undefined && __processingResult__ != null) {
                         apiInnerResponse.push(__processingResult__);
@@ -420,7 +425,7 @@ function searchForTorrentPower(messageObj, msgId, filter) {
 
     var messageText = messageObj.payload.body;
     var messageBody = messageObj.payload;
-    var emailRcvdTime = messageBody.headers.filter(e => e.name === 'Received' && e.value.indexOf('IST') != -1)[0].value;
+    var emailRcvdTime = messageBody.headers.filter(e => e.name === 'Received')[0].value;
     emailRcvdTime = emailRcvdTime.split(';')[1];
     emailRcvdTime  = convertDate(emailRcvdTime);
 
@@ -579,10 +584,36 @@ function searchForIciciAmazonCC(messageText, msgId, filter) {
     }
 }
 
-function searchForZeta(messageText, msgId, filter) {
+function searchForZeta(messageText, msgId, filter, rcvdDteTm) {
+    messageText = messageText.replaceAll("&#39;","'");
     console.log(messageText);
     console.log(msgId);
-    //TODO
+    var debitConditions = __debitConditions;
+    debitConditions.forEach(item => {
+        var conditionIdx = messageText.indexOf(item);
+        if (conditionIdx != -1) {
+            conditionIdx += item.length;
+            var amtSeparatorIdx = messageText.indexOf(" ", conditionIdx) - 1;
+            var trans_amt = messageText.substr(conditionIdx + 1, amtSeparatorIdx - conditionIdx + 1);
+            var trans_type = "DEBIT";
+            var trans_date = rcvdDteTm;
+            var descIdx = messageText.indexOf(" at ", amtSeparatorIdx);
+            var trans_desc = messageText.substr(descIdx + 4, messageText.indexOf(".", descIdx) - descIdx - 4);
+            json_object = {
+                "trans_amt": trans_amt,
+                "trans_date": trans_date,
+                "trans_type": trans_type,
+                "trans_desc": trans_desc.replace("\\", ""),
+                "google_msg_id": msgId,
+                "google_filter": filter,
+                "menuLevel": "MAIN"
+            };
+        }
+    });
+    var creditConditions = __creditConditions;
+    if (!isEmpty(json_object)) {
+        return json_object;
+    }
 }
 
 function getCookie(name) {
