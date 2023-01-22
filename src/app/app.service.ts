@@ -7,7 +7,7 @@ import { NavigationExtras, Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AppService {
-    apiServerUrl: string = "https://redirection-root-4755utlstq-el.a.run.app/";
+    apiServerUrl: string = "https://shapartha-android-zone.000webhostapp.com/accounts-tracker/api/";
     apiFuncName: string = "";
     API_GET_TOKEN: string = "getToken";
     GAPI_GET_APIKEY: string = "getApiKey";
