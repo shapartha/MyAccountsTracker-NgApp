@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AppService } from '../app.service';
 
 @Component({
@@ -8,10 +9,19 @@ import { AppService } from '../app.service';
 })
 export class ErrorComponent implements OnInit {
 
-  constructor(private appService: AppService) { }
+  errData: any = {};
+  errParams: any = {};
+
+  constructor(private appService: AppService, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.appService.hideLoader();
+    this.activatedRoute.data.subscribe(data => {
+      this.errData = data;
+    });
+    this.activatedRoute.queryParams.subscribe(data => {
+      this.errParams = data;
+    });
   }
 
 }

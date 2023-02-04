@@ -1,1 +1,20 @@
-<p>error works!</p>
+<h2>
+    An Internal Error has occurred. Go back to Home page or logout from the current session and try logging in again !!!
+</h2>
+<div style="display: flex;">
+    <div class="w-50"><a href="/home">Home</a></div>
+    <div class="w-50 right-align-val"><a href="/logout">Logout</a></div>
+</div>
+<div class="w-75 margin-auto">
+    <div *ngIf="errData.val !== undefined">
+        <b>Error Data</b>: {{ errData }}
+        <br>
+        <br>
+        <br>
+    </div>
+    <div *ngIf="errParams.err !== undefined || errParams.fault !== undefined">
+        <b>Error Params</b>: <br>
+        <span *ngIf="errParams.err !== undefined">Err: {{ errParams.err }} </span><br>
+        <span *ngIf="errParams.fault !== undefined">Fault: {{ errParams.fault }} </span>
+    </div>
+</div>

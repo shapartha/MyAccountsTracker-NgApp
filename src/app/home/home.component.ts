@@ -82,17 +82,17 @@ export class HomeComponent implements OnInit {
             },
             err => {
               console.error(err);
-              this.handleTabChange({ path: 'error' });
+              this.handleTabChange({ path: 'error', params: { 'err' : err } });
               this.appService.hideLoader();
             }
           ).catch(fault => {
             console.error("Fault -> " + fault);
-            this.handleTabChange({ path: 'error' });
+            this.handleTabChange({ path: 'error', params: { 'fault' : fault } });
             this.appService.hideLoader();
           });
         }
       } else {
-        this.handleTabChange({ path: 'error' });
+        this.handleTabChange({ path: 'error', params: { 'err' : 'No categories found for user' } });
       }
     });
   }
@@ -139,7 +139,11 @@ export class HomeComponent implements OnInit {
   }
 
   handleTabChange(uri: any) {
-    this.router.navigate([uri.path]);
+    this.router.navigate([uri.path], {
+      state: {
+        data: JSON.stringify(uri.params)
+      }
+    });
     this.currentTab = uri.name;
   }
 
