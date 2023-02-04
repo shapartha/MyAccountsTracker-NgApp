@@ -348,7 +348,7 @@ function searchForHdfcTrans(messageObj, msgId, filter) {
                 let __dateSplit = __date.split("-");
                 let __yearPart = __dateSplit[2];
                 __yearPart = (__yearPart.length == 2) ? "20" + __yearPart : __yearPart;
-                var dte = convertDate([__yearPart, __dateSplit[1], __dateSplit[0]].join('-'), 'yyyy-MM-dd');
+                var dte = convertDate([__yearPart, __dateSplit[1], __dateSplit[0]].join('-'));
                 json_object = {
                     "trans_amt": amt.replaceAll(',', ''),
                     "trans_date": dte,
@@ -586,8 +586,6 @@ function searchForIciciAmazonCC(messageText, msgId, filter) {
 
 function searchForZeta(messageText, msgId, filter, rcvdDteTm) {
     messageText = messageText.replaceAll("&#39;","'");
-    console.log(messageText);
-    console.log(msgId);
     var debitConditions = __debitConditions;
     debitConditions.forEach(item => {
         var conditionIdx = messageText.indexOf(item);
