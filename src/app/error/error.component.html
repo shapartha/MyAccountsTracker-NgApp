@@ -6,8 +6,8 @@
     <div class="w-50 right-align-val"><a href="/logout">Logout</a></div>
 </div>
 <div class="w-75 margin-auto">
-    <div *ngIf="errData.val !== undefined">
-        <b>Error Data</b>: {{ errData }}
+    <div *ngIf="errData.err !== undefined">
+        <b>Error Data</b>: {{ errData.err }}
         <br>
         <br>
         <br>

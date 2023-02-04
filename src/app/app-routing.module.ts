@@ -18,6 +18,7 @@ import { ManageMfComponent } from './manage-mf/manage-mf.component';
 import { AutoRecordTransComponent } from './auto-record-trans/auto-record-trans.component';
 import { AddMailFilterMappingComponent } from './add-mail-filter-mapping/add-mail-filter-mapping.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
+import { AdminHomeComponent } from './admin-home/admin-home.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -36,9 +37,10 @@ const routes: Routes = [
   { path: 'manage-eq', component: ManageEqComponent, canActivate : [AuthService]  },
   { path: 'manage-mf', component: ManageMfComponent, canActivate : [AuthService]  },
   { path: 'auto-trans', component: AutoRecordTransComponent, canActivate : [AuthService]  },
+  { path: 'admin-home', component: AdminHomeComponent, canActivate : [AuthService]  },
   { path: 'logout', component: LogoutComponent, canActivate : [AuthService] },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: '**', component: ErrorComponent }
+  { path: '**', component: ErrorComponent, data: { err : "Page not found" } }
 ];
 
 @NgModule({

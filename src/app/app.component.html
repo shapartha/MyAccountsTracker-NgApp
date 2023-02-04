@@ -5,7 +5,10 @@
         </svg>
     </div>
     <div class="dropdown-content" id="dropdown-list">
-        <a *ngFor="let link of menuItems; let i = index;" href="{{link.path}}">{{link.name}}</a>
+        <ng-container *ngFor="let link of menuItems; let i = index;">
+            <a *ngIf="link.name !== 'divider'" href="{{link.path}}">{{link.name}}</a>
+            <hr *ngIf="link.name === 'divider'">
+        </ng-container>
     </div>
 </div>
 <router-outlet></router-outlet>

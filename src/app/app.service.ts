@@ -89,6 +89,18 @@ export class AppService {
         }
     }
 
+    invokeMonthlyRoutines() {
+        return this.http.get<any>("https://shapartha-android-zone.000webhostapp.com/accounts-tracker/routine-services/").toPromise();
+    }
+
+    invokeMfStockUpdater(stocksUpdate: boolean) {
+        if (stocksUpdate) {
+            return this.http.get<any>("https://shapartha-android-zone.000webhostapp.com/accounts-tracker/mf-stock-updater/?stocksUpdate=true").toPromise();
+        } else {
+            return this.http.get<any>("https://shapartha-android-zone.000webhostapp.com/accounts-tracker/mf-stock-updater").toPromise();
+        }
+    }
+
     getToken(apiFuncParams: any): Observable<any> {
         this.apiFuncName = this.API_GET_TOKEN;
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams));

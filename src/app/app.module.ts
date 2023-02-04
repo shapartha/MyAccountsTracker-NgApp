@@ -46,6 +46,7 @@ import { AutoRecordTransComponent, DialogGenericConfirmation } from './auto-reco
 import { AddMailFilterMappingComponent } from './add-mail-filter-mapping/add-mail-filter-mapping.component';
 import { NgxImageCompressService } from 'ngx-image-compress';
 import { SearchResultsComponent } from './search-results/search-results.component';
+import { AdminHomeComponent } from './admin-home/admin-home.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,7 @@ import { SearchResultsComponent } from './search-results/search-results.componen
     AddTransComponent, DialogGenericConfirmation,
     AddCategoryComponent, HomeRecurringSectionComponent, DeleteDialogStocks, DeleteDialogMutualFunds,
     AddAccountComponent, UpdateDialogRecurringTrans, DeleteDialogRecurringTrans,
-    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent, MapMfComponent, MapEqComponent, ManageEqComponent, ManageMfComponent, AutoRecordTransComponent, AddMailFilterMappingComponent, SearchResultsComponent
+    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent, MapMfComponent, MapEqComponent, ManageEqComponent, ManageMfComponent, AutoRecordTransComponent, AddMailFilterMappingComponent, SearchResultsComponent, AdminHomeComponent
   ],
   imports: [
     BrowserModule,    HttpClientModule,    FormsModule,    AppRoutingModule,    BrowserAnimationsModule,

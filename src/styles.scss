@@ -48,6 +48,9 @@ mat-dialog-container .mat-select-value {
 .width50 {
     width: 50%;
 }
+.left-align-val {
+    text-align: left;
+}
 .right-align-val {
     text-align: right;
 }
@@ -62,6 +65,9 @@ mat-dialog-container .mat-select-value {
 }
 .flex-div {
     display: flex;
+}
+.inline-div {
+    display: inline;
 }
 .margin-auto {
     margin: auto;
@@ -121,4 +127,9 @@ mat-dialog-container .mat-select-value {
 }
 .mat-input-element:disabled {
     color: gray;
+}
+.button-div {
+    border-radius: 10px;
+    box-shadow: 2px 2px;
+    cursor: pointer;
 }
