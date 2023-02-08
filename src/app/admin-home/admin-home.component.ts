@@ -15,15 +15,21 @@ export class AdminHomeComponent implements OnInit {
   }
 
   invokeMfUpdater() {
-    this.appService.invokeMfStockUpdater(false);
+    this.appService.invokeMfStockUpdater(false).catch(x => {
+      console.log(x);
+    });
   }
 
   invokeStocksUpdater() {
-    this.appService.invokeMfStockUpdater(true);
+    this.appService.invokeMfStockUpdater(true).catch(x => {
+      console.log(x);
+    });;
   }
 
   invokeRoutines() {
-    this.appService.invokeMonthlyRoutines();
+    this.appService.invokeMonthlyRoutines().catch(x => {
+      console.log(x);
+    });;
   }
 
 }
