@@ -68,6 +68,7 @@ export class AppService {
     API_DELETE_MAIL_FILTER_MAPPING: string = "deleteMailFilterMapping";
     API_SAVE_MAIL_FILTER_MAPPING: string = "storeMailFilterMapping";
     API_SEARCH_TRANSACTION: string = "searchTransactions";
+    API_UPDATE_BILL_DUE_DATE: string = "generateDueDateForBills";
     API_COOKIE_SAVE: string = "saveCookie";
     API_COOKIE_UPDATE: string = "updateCookie";
     API_COOKIE_DELETE: string = "deleteCookie";
@@ -561,6 +562,24 @@ export class AppService {
      */
     processScheduledTrans(apiFuncParams: any) {
         this.apiFuncName = this.API_PROCESS_SCHEDULED_TRANS;
+        const headers = {
+            'content-type': 'application/x-www-form-urlencoded',
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.post(this.apiServerUrl, "apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(JSON.stringify(apiFuncParams)) + this.appendMandatoryParams(),
+                { 'headers': headers }).toPromise()
+                .then(resp => {
+                    resolve(resp);
+                }, err => {
+                    reject(err)
+                });
+        });
+        return promise;
+    }
+
+    updateBillDueDate(apiFuncParams: any) {
+        this.apiFuncName = this.API_UPDATE_BILL_DUE_DATE;
         const headers = {
             'content-type': 'application/x-www-form-urlencoded',
             'accept': 'application/json'

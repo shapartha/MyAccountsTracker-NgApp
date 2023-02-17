@@ -8,6 +8,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 import { AppConstant } from '../constant/app-const';
+import { SaveTransaction } from '../model/transaction';
 
 @Component({
   selector: 'app-home',
@@ -162,6 +163,87 @@ export class HomeComponent implements OnInit {
     this.contextMenu.menuData = { 'item': item };
     this.contextMenu.menu.focusFirstItem('mouse');
     this.contextMenu.openMenu();
+  }
+  
+  generateBill(data: any) {
+    let _inpData : SaveTransaction = {};
+    _inpData.acc_id = data.id;
+    _inpData.amount = Math.abs(this.appService.formatStringValueToAmount(data.balance)).toFixed(2);
+    let _transDate = new Date();
+    _inpData.date = this.appService.convertDate(_transDate);
+    _inpData.desc = "Bill Generated for Credit Card - " + data.name;
+    _inpData.type = "CREDIT";
+    _inpData.user_id = this.appService.getAppUserId.toString();
+
+    /**
+     * Generate Scheduled Transaction for the bill amount below
+     */
+    
+    let _inpData_ : SaveTransaction = {};
+    _inpData_.acc_id = AppConstant.BILLPAY_ACCID;
+    _inpData_.amount = Math.abs(this.appService.formatStringValueToAmount(data.balance)).toFixed(2);
+    let _transDate_ = new Date();
+    _transDate_.setDate(_transDate_.getDate() + 1);
+    _inpData_.date = this.appService.convertDate(_transDate_);
+    _inpData_.desc = "Bill Payment for Credit Card - " + data.name;
+    _inpData_.type = "DEBIT";
+    _inpData_.user_id = this.appService.getAppUserId.toString();
+
+    this.invokeSaveTransactionProcessApi(_inpData, _inpData_);
+  }
+
+  invokeSaveTransactionProcessApi(_inpData: any, _inpData_: any) {
+    this.appService.showLoader();
+    this.appService.saveTransaction(JSON.stringify(_inpData)).then(resp => {
+      if (resp.success === true) {
+        let _updAcc = this.accounts.filter(_d => _d.id === _inpData.acc_id)[0];
+        _updAcc.balance = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_updAcc.balance) + parseFloat(_inpData.amount));
+        let _updCat = this.categories.filter(_d => _d.id === _updAcc.category_id)[0];
+        _updCat.amount = this.appService.formatAmountWithComma(this.appService.formatStringValueToAmount(_updCat.amount) + parseFloat(_inpData.amount));
+        this.appService.saveTransaction(JSON.stringify(_inpData_)).then(resp => {
+          if (resp.success === true) {
+            let _billDueDateUpdObj = {
+              trans_desc: "Bill Payment for Credit Card",
+              trans_date: this.appService.convertDate()
+            }
+            this.appService.updateBillDueDate(_billDueDateUpdObj).then((x: any) => {
+              if (x.success === true) {
+                this.clearCategory();
+                this.refreshPendSchTrans = true;
+                this.appService.showAlert("Bill Generated Successfully", "Close");
+                this.appService.hideLoader();
+              } else {
+                this.appService.showAlert("Some error occurred while generating bill. Please try again.", "Close");
+              }
+            });
+          } else {
+            this.appService.showAlert("Some error occurred while generating bill. Please try again.", "Close");
+          }
+        }, err => {
+          console.error("Error -> " + err);
+          this.appService.hideLoader();
+          this.appService.showAlert("Error Occurred while generating bill ! Please try again.", "Close");
+        }).catch(fault => {
+          console.error("Fault -> " + fault);
+          this.appService.hideLoader();
+          this.appService.showAlert("Fault Occurred while generating bill ! Please try again.", "Close");
+        });
+      } else {
+        this.appService.showAlert("Some error occurred while generating bill. Please try again.", "Close");
+      }
+    }, err => {
+      console.error("Error -> " + err);
+      this.appService.hideLoader();
+      this.appService.showAlert("Error Occurred while generating bill ! Please try again.", "Close");
+    }).catch(fault => {
+      console.error("Fault -> " + fault);
+      this.appService.hideLoader();
+      this.appService.showAlert("Fault Occurred while generating bill ! Please try again.", "Close");
+    });
+  }
+
+  updateGenerateBillDate() {
+
   }
 
   invokeSaveTransactionApi(_inpData: any) {
