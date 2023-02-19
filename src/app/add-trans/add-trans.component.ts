@@ -4,6 +4,7 @@ import { Router } from "@angular/router"
 import { SaveTransaction, Transaction } from '../model/transaction';
 import { Account } from '../model/account';
 import { NgxImageCompressService } from 'ngx-image-compress';
+import { RouterDataExchangeService } from '../router-data-exchange.service';
 
 @Component({
   selector: 'app-add-trans',
@@ -40,8 +41,10 @@ export class AddTransComponent implements OnInit {
   fileBitmap: any;
   fileType: any;
   isGoBack = false;
+  
+  itemData: any;
 
-  constructor(private appService: AppService, private router: Router, private imageCompress: NgxImageCompressService) {
+  constructor(private appService: AppService, private router: Router, private imageCompress: NgxImageCompressService, private routerDataExchangeService: RouterDataExchangeService) {
     this.appService.showLoader();
     if (this.router.getCurrentNavigation() != null) {
       let objQueryParams = this.router.getCurrentNavigation()!.extras.state;
@@ -112,6 +115,13 @@ export class AddTransComponent implements OnInit {
   //#endregion File Upload
 
   ngOnInit(): void {
+    this.routerDataExchangeService.data$.subscribe(res => {
+      this.itemData = res;
+      if (!!this.itemData && !! this.itemData.id) {
+        if (this.itemData.is_mf !== "1" && this.itemData.is_mf === false && this.itemData.is_equity !== "1" && this.itemData.is_equity === false)
+        this.fromAccDetails = this.itemData.id!;
+      }
+    });
     for (var i = 1; i <= 28; i++) {
       this.monthDays.push(i);
     }

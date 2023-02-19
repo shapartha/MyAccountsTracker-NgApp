@@ -6,7 +6,7 @@
     </div>
     <div class="dropdown-content" id="dropdown-list">
         <ng-container *ngFor="let link of menuItems; let i = index;">
-            <a *ngIf="link.name !== 'divider'" href="{{link.path}}">{{link.name}}</a>
+            <a *ngIf="link.name !== 'divider'" href="javascript:void()" (click)="openLink(link.path)">{{link.name}}</a>
             <hr *ngIf="link.name === 'divider'">
         </ng-container>
     </div>

@@ -1,20 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AppService } from './app.service';
 import { AppMenuItems } from './constant/app-const';
+import { RouterDataExchangeService } from './router-data-exchange.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'My Accounts Tracker';
   menu: AppMenuItems = new AppMenuItems();;
   menuItems: any[];
+  itemData: any;
 
-  constructor(private appService: AppService) {
+  constructor(private appService: AppService, private routerDataExchangeService: RouterDataExchangeService) {
     this.menuItems = this.menu.menuItem!;
+    this.itemData = {};
     this.initGoogleApi();
+  }
+
+  ngOnInit() {
+    this.routerDataExchangeService.data$.subscribe(res => this.itemData = res);
   }
 
   async initGoogleApi() {
@@ -39,5 +46,10 @@ export class AppComponent {
     } else {
       document.getElementById("dropdown-list")!.style.display = 'none';
     }
+  }
+
+  openLink(pathVal: string) {
+    this.routerDataExchangeService.passData(this.itemData);
+    this.appService.handleTabChange({ path: pathVal });
   }
 }

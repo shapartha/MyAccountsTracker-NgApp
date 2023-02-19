@@ -9,6 +9,7 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 import { AppConstant } from '../constant/app-const';
 import { SaveTransaction } from '../model/transaction';
+import { RouterDataExchangeService } from '../router-data-exchange.service';
 
 @Component({
   selector: 'app-home',
@@ -36,7 +37,10 @@ export class HomeComponent implements OnInit {
   fileBitmap: any;
   searchText: any;
   appVersionInfo: string = "";
-  constructor(private router: Router, private appService: AppService, public dialog: MatDialog, private domSanitizer: DomSanitizer) {
+
+  itemData: any;
+
+  constructor(private router: Router, private appService: AppService, public dialog: MatDialog, private domSanitizer: DomSanitizer, private routerDataExchangeService: RouterDataExchangeService) {
     this.currentTab = "Home";
     this.appVersionInfo = AppConstant.APP_VERSION;
     this.getAllCategories();
@@ -115,6 +119,7 @@ export class HomeComponent implements OnInit {
   showTransactions(data: Account) {
     this.selectedAccount = data.name!;
     this.selectedAccountObject = data;
+    this.routerDataExchangeService.passData(data);
   }
 
   clearAccount() {
