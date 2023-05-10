@@ -185,6 +185,11 @@ function searchForKotakTrans(messageObj, msgId, filter) {
                     var dateVal = dateIdx.substring(0, dateIdx.indexOf(' '));
                     var transDateArr = dateVal.split("-");
                     var trans_date = [transDateArr[0], transDateArr[1], "20" + transDateArr[2]].join("-");
+                    if (transDateArr[2].length == 4) {
+                        trans_date = [transDateArr[0], transDateArr[1], transDateArr[2]].join("-");
+                    }
+                    trans_date = new Date(trans_date);
+                    trans_date = convertDate(trans_date);
                     var trans_amt = amtVal;
                     var trans_type = "DEBIT";
                     var descIdx = messageText.substring(messageText.indexOf('Remarks:</b>') + 'Remarks:</b>'.length);
@@ -209,7 +214,11 @@ function searchForKotakTrans(messageObj, msgId, filter) {
                     var dateIdx = s_messageText.substring(amtIdx + item.length);
                     var dateVal = dateIdx.substring(0, dateIdx.indexOf(' '));
                     var transDateArr = dateVal.split("-");
-                    var trans_date = new Date([transDateArr[0], transDateArr[1], "20" + transDateArr[2]].join("-"));
+                    var trans_date = [transDateArr[0], transDateArr[1], "20" + transDateArr[2]].join("-");
+                    if (transDateArr[2].length == 4) {
+                        trans_date = [transDateArr[0], transDateArr[1], transDateArr[2]].join("-");
+                    }
+                    trans_date = new Date(trans_date);
                     trans_date = convertDate(trans_date);
                     var trans_amt = amtVal.replace(',', '');
                     var trans_type = "DEBIT";
