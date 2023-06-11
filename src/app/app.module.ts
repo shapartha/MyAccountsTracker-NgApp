@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -24,6 +24,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatFileUploadModule } from 'angular-material-fileupload';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AddCategoryComponent } from './add-category/add-category.component';
 import { AppInterceptor } from './app.interceptor';
@@ -62,10 +63,10 @@ import { AdminHomeComponent } from './admin-home/admin-home.component';
     ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent, MapMfComponent, MapEqComponent, ManageEqComponent, ManageMfComponent, AutoRecordTransComponent, AddMailFilterMappingComponent, SearchResultsComponent, AdminHomeComponent
   ],
   imports: [
-    BrowserModule,    HttpClientModule,    FormsModule,    AppRoutingModule,    BrowserAnimationsModule,
+    BrowserModule,    HttpClientModule,    FormsModule,  ReactiveFormsModule,  AppRoutingModule,    BrowserAnimationsModule,
     MatDatepickerModule,    MatFormFieldModule,    MatNativeDateModule,    MatInputModule,    MatSlideToggleModule,
     MatRadioModule,    MatSelectModule,    MatButtonModule,    MatSnackBarModule,    MatFileUploadModule,    MatToolbarModule,
-    NoopAnimationsModule,    MatMenuModule,    MatDialogModule, MatTooltipModule, MatExpansionModule
+    NoopAnimationsModule,    MatMenuModule,    MatDialogModule, MatTooltipModule, MatExpansionModule, MatAutocompleteModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AppInterceptor, multi: true },

@@ -3,6 +3,9 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { AppService } from '../app.service';
 import { HeaderTabs } from '../constant/header-tabs';
+import { Observable } from 'rxjs';
+import { startWith, map } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-manage-mf',
@@ -15,6 +18,9 @@ export class ManageMfComponent implements OnInit {
   headerTabs: HeaderTabs = new HeaderTabs();
   mutualFunds: any = [];
   newMf: any = {};
+  myControl = new FormControl();
+  mfList: string[] = ["ABC", "AXYZ"];
+  filteredMfList!: Observable<string[]>;
   menuTopLeftPosition =  {x: '0', y: '0'} ;
   @ViewChild(MatMenuTrigger)
   contextMenu!: MatMenuTrigger;
@@ -22,7 +28,16 @@ export class ManageMfComponent implements OnInit {
   constructor(public appService: AppService, public dialog: MatDialog) { }
 
   ngOnInit(): void {
+    this.filteredMfList = this.myControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value))
+    );
     this.getInitData();
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.mfList.filter(option => option.toLowerCase().includes(filterValue));
   }
 
   async getInitData() {
@@ -86,7 +101,7 @@ export class ManageMfComponent implements OnInit {
       this.appService.showAlert("Scheme code is required");
       return;
     }
-    if (this.newMf.scheme_name === null || this.newMf.scheme_name === undefined || this.newMf.scheme_name.trim() === '') {
+    if (this.myControl.value === null || this.myControl.value === undefined || this.myControl.value.trim() === '') {
       this.appService.showAlert("Scheme Name is required");
       return;
     }
