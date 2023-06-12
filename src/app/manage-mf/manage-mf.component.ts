@@ -6,6 +6,7 @@ import { HeaderTabs } from '../constant/header-tabs';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-manage-mf',
@@ -19,8 +20,8 @@ export class ManageMfComponent implements OnInit {
   mutualFunds: any = [];
   newMf: any = {};
   myControl = new FormControl();
-  mfList: string[] = ["ABC", "AXYZ"];
-  filteredMfList!: Observable<string[]>;
+  mfList: any[] = [];
+  filteredMfList!: Observable<any[]>;
   menuTopLeftPosition =  {x: '0', y: '0'} ;
   @ViewChild(MatMenuTrigger)
   contextMenu!: MatMenuTrigger;
@@ -37,7 +38,7 @@ export class ManageMfComponent implements OnInit {
 
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.mfList.filter(option => option.toLowerCase().includes(filterValue));
+    return this.mfList.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
   async getInitData() {
@@ -130,6 +131,23 @@ export class ManageMfComponent implements OnInit {
     this.appService.hideLoader();
   }
 
+  async getSchemeCode() {
+    this.appService.showLoader();
+    const fetchMfCode: any = await this.appService.fetchMfCode(this.myControl.value);
+    for (var i = 0; i < fetchMfCode.length; i++) {
+      this.mfList[i] = {
+        code: fetchMfCode[i].schemeCode,
+        name: fetchMfCode[i].schemeName
+      };
+    }
+    this.appService.hideLoader();
+    this.myControl.setValue(this.myControl.value + " ");
+  }
+
+  selectedMfName(e: MatAutocompleteSelectedEvent) {
+    let selectedMf = this.mfList.filter(_val => _val.name === e.option.value)[0].code;
+    this.newMf.scheme_code = selectedMf;
+  }
 }
 
 

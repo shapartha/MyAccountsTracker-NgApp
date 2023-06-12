@@ -25,10 +25,10 @@
                     </mat-form-field>
                     <mat-form-field appearance="fill">
                         <mat-label>Scheme Name</mat-label>
-                        <input type="text" matInput [formControl]="myControl" placeholder="Enter Scheme Name" aria-label="Enter Scheme Name" name="schemeName" required [matAutocomplete]="auto">
-                        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-                            <mat-option *ngFor="let option of filteredMfList | async" [value]="option">
-                              {{option}}
+                        <input type="text" matInput [formControl]="myControl" placeholder="Enter Scheme Name" aria-label="Enter Scheme Name" (keydown.enter)="getSchemeCode()" name="schemeName" required [matAutocomplete]="auto">
+                        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="selectedMfName($event)">
+                            <mat-option *ngFor="let option of filteredMfList | async" [value]="option.name">
+                              {{option.name}}
                             </mat-option>
                         </mat-autocomplete>
                         <mat-error>

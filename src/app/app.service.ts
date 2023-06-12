@@ -77,6 +77,7 @@ export class AppService {
     appToken: string = "";
     appUserId: number = 0;
     API_FETCH_MF_NAV: string = "https://api.mfapi.in/mf/";
+    API_FETCH_MF_CODE: string = this.API_FETCH_MF_NAV + "search?q=";
     API_FETCH_STOCK_CMP: string = "https://priceapi.moneycontrol.com/pricefeed/bse/equitycash/";
     API_FETCH_STOCK_LIVE_DATA: string = "https://priceapi.moneycontrol.com/pricefeed/notapplicable/inidicesindia/";
     static STOCK_INDICES = {
@@ -684,6 +685,21 @@ export class AppService {
         };
         let promise = new Promise((resolve, reject) => {
             this.http.get(this.API_FETCH_MF_NAV + schemeCode, { 'headers': headers }).toPromise()
+                .then(resp => {
+                    resolve(resp);
+                }, err => {
+                    reject(err)
+                });
+        });
+        return promise;
+    }
+
+    fetchMfCode(schemeName: any) {
+        const headers = {
+            'accept': 'application/json'
+        };
+        let promise = new Promise((resolve, reject) => {
+            this.http.get(this.API_FETCH_MF_CODE + schemeName, { 'headers': headers }).toPromise()
                 .then(resp => {
                     resolve(resp);
                 }, err => {
