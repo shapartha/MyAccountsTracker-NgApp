@@ -106,6 +106,7 @@ export class ManageMfComponent implements OnInit {
       this.appService.showAlert("Scheme Name is required");
       return;
     }
+    this.newMf["scheme_name"] = this.myControl.value;
     this.appService.showLoader();
     const saveMfResp = await this.appService.saveMutualFund([ this.newMf ]);
     if (saveMfResp[0].success === true) {
@@ -125,6 +126,7 @@ export class ManageMfComponent implements OnInit {
     const fetchLatestMfNavResp: any = await this.appService.fetchMfNav(this.newMf.scheme_code);
     if (fetchLatestMfNavResp.status === 'SUCCESS') {
       this.newMf["scheme_name"] = fetchLatestMfNavResp.meta.scheme_name;
+      this.myControl.setValue(fetchLatestMfNavResp.meta.scheme_name);
     } else {
       this.appService.showAlert(fetchLatestMfNavResp);
     }
@@ -146,7 +148,7 @@ export class ManageMfComponent implements OnInit {
 
   selectedMfName(e: MatAutocompleteSelectedEvent) {
     let selectedMf = this.mfList.filter(_val => _val.name === e.option.value)[0].code;
-    this.newMf.scheme_code = selectedMf;
+    this.newMf.scheme_code = selectedMf + "";
   }
 }
 

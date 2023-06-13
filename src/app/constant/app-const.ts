@@ -1,6 +1,6 @@
 export class AppConstant {
     static RUPEE_SYMBOL: string = "₹";
-    static APP_VERSION: string = "8.10.120623";
+    static APP_VERSION: string = "8.10.130623";
     static BILLPAY_ACCID: string = "768213039";
     static MONTH: any = {
         1: "Jan",
