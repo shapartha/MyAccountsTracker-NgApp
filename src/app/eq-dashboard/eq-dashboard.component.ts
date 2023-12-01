@@ -112,6 +112,7 @@ export class EqDashboardComponent implements OnInit, OnChanges, OnDestroy {
         _item.ann_return = (((_item.no_of_shares * element.current_market_price) - element.inv_amt) * 100 ) / (element.inv_amt * (_daydiff_/365));
         this.eqMappings.push(_item);
       });
+      this.refreshEqData();
     } else {
       this.appService.showAlert(JSON.stringify(getStockMapResp));
     }
