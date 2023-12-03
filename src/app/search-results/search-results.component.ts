@@ -70,19 +70,15 @@ export class SearchResultsComponent implements OnInit {
   }
 
   deleteItem(item: any) {
-    if (item.is_mf == true || item.is_equity == true) {
-      this.appService.showAlert("Mutual Funds/Stocks " + (item.menuType == 'Account' ? "account" : "transaction") + " can't be deleted. Please Redeem/Sell units to perform transactions", "Close");
-      return;
-    }
     this.openDeleteDialog(item);
   }
 
   copyItem(item: any) {
-    if (item.is_mf == true || item.is_equity == true) {
-      this.appService.showAlert("Mutual Funds/Stocks " + (item.menuType == 'Account' ? "account" : "transaction") + " can't be copied as a new transaction.", "Close");
-      return;
-    }
     this.appService.handleTabChange({ path: 'add-trans' }, item);
+  }
+
+  markDeliveryOrder(item: any) {
+    
   }
   
   openUpdateDialog(item: any) {

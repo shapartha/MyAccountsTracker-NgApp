@@ -57,7 +57,7 @@
     <div *ngIf="item.menuType !== 'MF Dashboard' && item.menuType !== 'EQ Dashboard' && item.menuType !== 'Today Scheduled Transaction' 
     && item.menuType !== 'Today Recurring Transaction'">
       <button mat-menu-item (click)="updateItem(item)">Update</button>
-      <button mat-menu-item (click)="deleteItem(item)">Delete</button>
+      <button mat-menu-item *ngIf="(item.is_mf == undefined || item.is_mf == false) && (item.is_equity == undefined || item.is_equity == false)" (click)="deleteItem(item)">Delete</button>
       <button mat-menu-item *ngIf="item.category_name === 'Credit Card'" (click)="generateBill(item)">Generate Bill</button>
     </div>
     <div *ngIf="item.menuType === 'MF Dashboard' || item.menuType === 'EQ Dashboard'">
@@ -65,7 +65,9 @@
       <button mat-menu-item (click)="redeemPartial(item)">Redeem Partial</button>
     </div>
     <div *ngIf="item.menuType === 'Transaction'">
-      <button mat-menu-item (click)="copyItem(item)">Copy to New Transaction</button>
+      <button mat-menu-item *ngIf="(item.is_mf == undefined || item.is_mf == false) && (item.is_equity == undefined || item.is_equity == false) && (item.is_delivery_order == undefined || item.is_delivery_order == false)" (click)="markDeliveryOrder(item)">Mark as Delivery Order</button>
+      <button mat-menu-item *ngIf="(item.is_mf == undefined || item.is_mf == false) && (item.is_equity == undefined || item.is_equity == false) && (item.is_delivery_order == true)" (click)="markDeliveryOrder(item)">Unmark as Delivery Order</button>
+      <button mat-menu-item *ngIf="(item.is_mf == undefined || item.is_mf == false) && (item.is_equity == undefined || item.is_equity == false)" (click)="copyItem(item)">Copy to New Transaction</button>
     </div>
     <div *ngIf="item.menuType === 'Today Scheduled Transaction'">
       <button mat-menu-item (click)="processSchTransNow(item)">Process Now</button>

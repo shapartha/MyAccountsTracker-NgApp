@@ -30,7 +30,8 @@
 <mat-menu #contextMenu="matMenu">
     <ng-template matMenuContent let-item="item">
         <button mat-menu-item (click)="updateItem(item)">Update</button>
-        <button mat-menu-item (click)="deleteItem(item)">Delete</button>
-        <button mat-menu-item (click)="copyItem(item)">Copy to New Transaction</button>
+        <button mat-menu-item *ngIf="(item.is_mf == undefined || item.is_mf == false) && (item.is_equity == undefined || item.is_equity == false)" (click)="deleteItem(item)">Delete</button>
+        <button mat-menu-item *ngIf="(item.is_mf == undefined || item.is_mf == false) && (item.is_equity == undefined || item.is_equity == false)" (click)="markDeliveryOrder(item)">Mark as Delivery Order</button>
+        <button mat-menu-item *ngIf="(item.is_mf == undefined || item.is_mf == false) && (item.is_equity == undefined || item.is_equity == false)" (click)="copyItem(item)">Copy to New Transaction</button>
     </ng-template>
 </mat-menu>

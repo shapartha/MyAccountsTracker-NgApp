@@ -247,10 +247,6 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  updateGenerateBillDate() {
-
-  }
-
   invokeSaveTransactionApi(_inpData: any) {
     this.appService.showLoader();
     this.appService.saveTransactionOnly([_inpData]).then(resp => {
@@ -408,19 +404,35 @@ export class HomeComponent implements OnInit {
   }
 
   deleteItem(item: any) {
-    if (item.is_mf == true || item.is_equity == true) {
-      this.appService.showAlert("Mutual Funds/Stocks " + (item.menuType == 'Account' ? "account" : "transaction") + " can't be deleted. Please Redeem/Sell units to perform transactions", "Close");
-      return;
-    }
     this.openDeleteDialog(item);
   }
 
   copyItem(item: any) {
-    if (item.is_mf == true || item.is_equity == true) {
-      this.appService.showAlert("Mutual Funds/Stocks " + (item.menuType == 'Account' ? "account" : "transaction") + " can't be copied as a new transaction.", "Close");
-      return;
-    }
     this.appService.handleTabChange({ path: 'add-trans' }, item);
+  }
+
+  markDeliveryOrder(item: any) {
+    this.appService.showLoader();
+    let _updTrans = {
+      is_delivery_order: ((item.is_delivery_order == undefined || item.is_delivery_order == 0) ? true : false),
+      trans_id: item.id
+    };
+    this.updateTrans(_updTrans);
+  }
+
+  updateTrans(_obj_: any) {
+    this.appService.updateTransaction([_obj_]).then(resp => {
+      if (resp[0].success === true) {
+        this.appService.showAlert("Transaction Updated Successfully.", "Close");
+        this.refreshTransactions = true;
+      } else {
+        this.appService.showAlert("Transaction Update Failed. Failure: " + JSON.stringify(resp[0]), "Close");
+      }
+      this.appService.hideLoader();
+    }, err => {
+      this.appService.showAlert("Transaction Update Failed. Error: " + JSON.stringify(err), "Close");
+      this.appService.hideLoader();
+    });
   }
 
   async openRedeemDialog(item: any) {
