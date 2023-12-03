@@ -65,8 +65,9 @@
       <button mat-menu-item (click)="redeemPartial(item)">Redeem Partial</button>
     </div>
     <div *ngIf="item.menuType === 'Transaction'">
-      <button mat-menu-item *ngIf="(item.is_mf == undefined || item.is_mf == false) && (item.is_equity == undefined || item.is_equity == false) && (item.is_delivery_order == undefined || item.is_delivery_order == false)" (click)="markDeliveryOrder(item)">Mark as Delivery Order</button>
-      <button mat-menu-item *ngIf="(item.is_mf == undefined || item.is_mf == false) && (item.is_equity == undefined || item.is_equity == false) && (item.is_delivery_order == true)" (click)="markDeliveryOrder(item)">Unmark as Delivery Order</button>
+      <button mat-menu-item *ngIf="(item.is_mf == undefined || item.is_mf == false) && (item.is_equity == undefined || item.is_equity == false) && (item.is_delivery_order == undefined || item.is_delivery_order == false) && (item.is_delivered == undefined || item.is_delivered == false)" (click)="markDeliveryOrder(item)">Mark as Delivery Order</button>
+      <button mat-menu-item *ngIf="(item.is_mf == undefined || item.is_mf == false) && (item.is_equity == undefined || item.is_equity == false) && (item.is_delivery_order == true) && (item.is_delivered == undefined || item.is_delivered == false)" (click)="markDeliveryOrder(item)">Unmark as Delivery Order</button>
+      <button mat-menu-item *ngIf="(item.is_mf == undefined || item.is_mf == false) && (item.is_equity == undefined || item.is_equity == false) && (item.is_delivery_order == true) && (item.is_delivered == undefined || item.is_delivered == false)" (click)="setOrderDelivered(item)">Set Order Delivered</button>
       <button mat-menu-item *ngIf="(item.is_mf == undefined || item.is_mf == false) && (item.is_equity == undefined || item.is_equity == false)" (click)="copyItem(item)">Copy to New Transaction</button>
     </div>
     <div *ngIf="item.menuType === 'Today Scheduled Transaction'">

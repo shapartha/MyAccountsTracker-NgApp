@@ -49,6 +49,7 @@ export class TransactionsComponent implements OnInit, OnChanges {
           _trans.is_mf = item.is_mf;
           _trans.is_equity = item.is_equity;
           _trans.is_delivery_order = item.is_delivery_order;
+          _trans.is_delivered = item.is_delivered;
           _trans.acc_id = item.account_id;
           _trans.acc_name = item.account_name;
           _trans.cat_id = item.category_id;
@@ -91,6 +92,7 @@ export class TransactionsComponent implements OnInit, OnChanges {
           _trans.is_mf = item.is_mf;
           _trans.is_equity = item.is_equity;
           _trans.is_delivery_order = item.is_delivery_order;
+          _trans.is_delivered = item.is_delivered;
           _trans.acc_id = item.account_id;
           _trans.acc_name = item.account_name;
           _trans.cat_id = item.category_id;
@@ -131,6 +133,7 @@ export class TransactionsComponent implements OnInit, OnChanges {
           _trans.is_mf = item.is_mf;
           _trans.is_equity = item.is_equity;
           _trans.is_delivery_order = item.is_delivery_order;
+          _trans.is_delivered = item.is_delivered;
           _trans.acc_id = item.account_id;
           _trans.acc_name = item.account_name;
           _trans.cat_id = item.category_id;

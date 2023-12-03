@@ -5,6 +5,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { AppService } from '../app.service';
 import { DialogDeleteContent, DialogUpdateContent } from '../home/home.component';
+import { DialogGenericConfirmation } from '../auto-record-trans/auto-record-trans.component';
 
 @Component({
   selector: 'app-search-results',
@@ -84,6 +85,10 @@ export class SearchResultsComponent implements OnInit {
       trans_id: item.id
     };
     this.updateTrans(_updTrans);
+  }
+
+  setOrderDelivered(item: any) {
+    this.openConfirmationDialog(item);
   }
 
   updateTrans(_obj_: any) {
@@ -175,6 +180,26 @@ export class SearchResultsComponent implements OnInit {
             }
           });
         }
+      }
+    });
+  }
+
+  openConfirmationDialog(item: any) {
+    item["dialogTitle"] = "Set this order as Delivered ?";
+    item["dialogBody"] = "Are you sure you want to set this order as DELIVERED ?";
+    item["dialogBtnText"] = "Set";
+    const dialogRef = this.dialog.open(DialogGenericConfirmation, {
+      data: item
+    });
+    dialogRef.disableClose = true;
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== true) {
+        this.appService.showLoader();
+        let _updTrans = {
+          is_delivered: true,
+          trans_id: item.id
+        };
+        this.updateTrans(_updTrans);
       }
     });
   }

@@ -17,6 +17,7 @@ export class Transaction {
     public is_equity?: string;
     public is_mf?: string;
     public is_delivery_order?: string;
+    public is_delivered?: string;
     constructor() {
 
     }

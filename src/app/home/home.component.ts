@@ -10,6 +10,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { AppConstant } from '../constant/app-const';
 import { SaveTransaction } from '../model/transaction';
 import { RouterDataExchangeService } from '../router-data-exchange.service';
+import { DialogGenericConfirmation } from '../auto-record-trans/auto-record-trans.component';
 
 @Component({
   selector: 'app-home',
@@ -420,6 +421,10 @@ export class HomeComponent implements OnInit {
     this.updateTrans(_updTrans);
   }
 
+  setOrderDelivered(item: any) {
+    this.openConfirmationDialog(item);
+  }
+
   updateTrans(_obj_: any) {
     this.appService.updateTransaction([_obj_]).then(resp => {
       if (resp[0].success === true) {
@@ -647,6 +652,26 @@ export class HomeComponent implements OnInit {
             }
           });
         }
+      }
+    });
+  }
+
+  openConfirmationDialog(item: any) {
+    item["dialogTitle"] = "Set this order as Delivered ?";
+    item["dialogBody"] = "Are you sure you want to set this order as DELIVERED ?";
+    item["dialogBtnText"] = "Set";
+    const dialogRef = this.dialog.open(DialogGenericConfirmation, {
+      data: item
+    });
+    dialogRef.disableClose = true;
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== true) {
+        this.appService.showLoader();
+        let _updTrans = {
+          is_delivered: true,
+          trans_id: item.id
+        };
+        this.updateTrans(_updTrans);
       }
     });
   }
