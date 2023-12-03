@@ -57,7 +57,6 @@ export class TransactionsComponent implements OnInit, OnChanges {
           _trans.receiptImgId = item.trans_receipt_image_id;
           this.transactions.push(_trans);
         });
-        console.log(this.transactions);
         this.currentTransRecordCount = 30;
         this.filterDisplayTrans();
         this.appService.hideLoader();
@@ -91,6 +90,7 @@ export class TransactionsComponent implements OnInit, OnChanges {
           _trans.acc_name = item.account_name;
           _trans.is_mf = item.is_mf;
           _trans.is_equity = item.is_equity;
+          _trans.is_delivery_order = item.is_delivery_order;
           _trans.acc_id = item.account_id;
           _trans.acc_name = item.account_name;
           _trans.cat_id = item.category_id;
@@ -130,6 +130,7 @@ export class TransactionsComponent implements OnInit, OnChanges {
           _trans.acc_name = item.account_name;
           _trans.is_mf = item.is_mf;
           _trans.is_equity = item.is_equity;
+          _trans.is_delivery_order = item.is_delivery_order;
           _trans.acc_id = item.account_id;
           _trans.acc_name = item.account_name;
           _trans.cat_id = item.category_id;

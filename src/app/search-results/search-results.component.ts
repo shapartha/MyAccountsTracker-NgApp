@@ -78,7 +78,27 @@ export class SearchResultsComponent implements OnInit {
   }
 
   markDeliveryOrder(item: any) {
-    
+    this.appService.showLoader();
+    let _updTrans = {
+      is_delivery_order: ((item.is_delivery_order == undefined || item.is_delivery_order == 0) ? true : false),
+      trans_id: item.id
+    };
+    this.updateTrans(_updTrans);
+  }
+
+  updateTrans(_obj_: any) {
+    this.appService.updateTransaction([_obj_]).then(resp => {
+      if (resp[0].success === true) {
+        this.appService.showAlert("Transaction Updated Successfully.", "Close");
+        this.refreshTransactions = true;
+      } else {
+        this.appService.showAlert("Transaction Update Failed. Failure: " + JSON.stringify(resp[0]), "Close");
+      }
+      this.appService.hideLoader();
+    }, err => {
+      this.appService.showAlert("Transaction Update Failed. Error: " + JSON.stringify(err), "Close");
+      this.appService.hideLoader();
+    });
   }
   
   openUpdateDialog(item: any) {
