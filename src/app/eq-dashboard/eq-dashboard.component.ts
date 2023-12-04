@@ -112,7 +112,7 @@ export class EqDashboardComponent implements OnInit, OnChanges, OnDestroy {
         _item.ann_return = (((_item.no_of_shares * element.current_market_price) - element.inv_amt) * 100 ) / (element.inv_amt * (_daydiff_/365));
         this.eqMappings.push(_item);
       });
-      this.refreshEqData();
+      this.refreshEqData('CMP_ONLY');
     } else {
       this.appService.showAlert(JSON.stringify(getStockMapResp));
     }
@@ -124,7 +124,7 @@ export class EqDashboardComponent implements OnInit, OnChanges, OnDestroy {
     this.currentTab = uri.name;
   }
 
-  refreshEqData() {
+  refreshEqData(mode: any = null) {
     if (this.eqMappings.length <= 0) {
       this.appService.showAlert("No Stocks are mapped with this account");
       return;
@@ -135,7 +135,7 @@ export class EqDashboardComponent implements OnInit, OnChanges, OnDestroy {
     this.eqMappings.forEach(element => {
       this.appService.fetchStockCMP(element.stock_symbol).then((resp: any) => {
         var _mappedEq_ = this.eqMappings.filter(eqMap => eqMap.stock_symbol === element.stock_symbol)[0];
-        _mappedEq_.current_market_price = this.appService.roundUpAmount(resp.data.pricecurrent);
+        _mappedEq_.current_market_price = this.appService.formatAmountWithComma(this.appService.roundUpAmount(resp.data.pricecurrent));
         _mappedEq_.curr_amt = this.appService.formatAmountWithComma((_mappedEq_.no_of_shares * resp.data.pricecurrent).toString());
         _mappedEq_.abs_return = this.appService.roundUpAmt((((_mappedEq_.no_of_shares * resp.data.pricecurrent) / this.appService.formatStringValueToAmount(_mappedEq_.inv_amt)) - 1) * 100);
         let _daydiff_ = this.appService.calculateDateDiff(_mappedEq_.purchase_date);
@@ -143,7 +143,9 @@ export class EqDashboardComponent implements OnInit, OnChanges, OnDestroy {
         investmentValuation += this.appService.formatStringValueToAmount(_mappedEq_.curr_amt);
         counter++;
         if (counter === this.eqMappings.length) {
-          this.updateEqMapping(investmentValuation, resp.data.lastupd);
+          if (mode != 'CMP_ONLY') {
+            this.updateEqMapping(investmentValuation, resp.data.lastupd);
+          }
           this.appService.hideLoader();
         }
       }, err => {
@@ -158,7 +160,7 @@ export class EqDashboardComponent implements OnInit, OnChanges, OnDestroy {
     let _updObj_: any[] = [];
     this.eqMappings.forEach(element => {
       let _indObj_ = {
-        current_market_price: element.current_market_price,
+        current_market_price: this.appService.formatStringValueToAmount(element.current_market_price),
         last_market_date: lastUpdate.split(" ")[0],
         stock_symbol: element.stock_symbol
       }
