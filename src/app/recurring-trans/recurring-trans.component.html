@@ -10,7 +10,7 @@
       <div *ngIf="r_trans === undefined || r_trans === null || r_trans.length === 0" class="no-r-trans-header">
         No recurring transactions available !!
       </div>
-      <div [ngClass]="dynaClass(item.rec_trans_executed)" *ngFor="let item of r_trans; let i = index;" (click)="onContextMenu($event, item)">
+      <div [ngClass]="dynaClass(item)" *ngFor="let item of r_trans; let i = index;" (click)="onContextMenu($event, item)">
           <span id="r_trans_desc_{{i}}">{{item.rec_trans_desc}}</span>
           <div class="flex-div">
               <div id="r_trans_acc_{{i}}" matTooltip="{{ (item.is_mf !== '1') ? item.account_name : item.account_name + ' | ' + item.rec_mf_scheme_name }}"
@@ -32,5 +32,7 @@
 	<ng-template matMenuContent let-item="item">
 		<button mat-menu-item (click)="updateItem(item)">Update</button>
 		<button mat-menu-item (click)="deleteItem(item)">Delete</button>
+		<button mat-menu-item *ngIf="item.is_paused == '0'" (click)="pauseItem(item)">Pause</button>
+		<button mat-menu-item *ngIf="item.is_paused == '1'" (click)="pauseItem(item)">Resume</button>
 	</ng-template>
 </mat-menu>

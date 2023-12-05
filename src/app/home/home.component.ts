@@ -421,6 +421,19 @@ export class HomeComponent implements OnInit {
     this.updateTrans(_updTrans);
   }
 
+  async pauseRecTrans(data: any) {
+    let _updTrans = {
+      rec_trans_id: data.rec_trans_id,
+      is_paused: "true"
+    };
+    const updRecTransResp = await this.appService.updateRecTrans([_updTrans]);
+    if (updRecTransResp[0].success === true) {
+      this.refreshPendRecTrans = true;
+      this.appService.showAlert("Recurring Transaction Paused.");
+    }
+    this.appService.hideLoader();
+  }
+
   setOrderDelivered(item: any) {
     this.openConfirmationDialog(item);
   }

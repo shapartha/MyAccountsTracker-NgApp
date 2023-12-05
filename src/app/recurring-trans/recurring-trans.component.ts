@@ -40,6 +40,7 @@ export class RecurringTransComponent implements OnInit {
           rec_trans_desc: obj.rec_trans_desc,
           rec_trans_date: obj.rec_trans_date,
           rec_trans_amount: this.appService.formatAmountWithComma(obj.rec_trans_amount),
+          is_paused: obj.is_paused,
           account_id: obj.account_id,
           account_name: obj.account_name,
           balance: obj.balance,
@@ -64,12 +65,14 @@ export class RecurringTransComponent implements OnInit {
     this.appService.hideLoader();
   }
 
-  dynaClass(val: string) {
-    if (val == "1") {
-      return "r-transaction-item r-transaction-executed-item";
-    } else {
-      return "r-transaction-item";
+  dynaClass(val: any) {
+    var outputClass = "r-transaction-item";
+    if (val.rec_trans_executed == "1") {
+      outputClass += " r-transaction-executed-item";
+    } else if (val.is_paused == "1") {
+      outputClass += " r-transaction-paused-item";
     }
+    return outputClass;
   }
 
   handleTabChange(uri: any) {
@@ -97,6 +100,20 @@ export class RecurringTransComponent implements OnInit {
 
   deleteItem(data: any) {
     this.openDeleteDialog(data);
+  }
+
+  async pauseItem(data: any) {
+    let _updTrans = {
+      rec_trans_id: data.rec_trans_id,
+      is_paused: (data.is_paused === '1') ? "false" : "true"
+    };
+    const updRecTransResp = await this.appService.updateRecTrans([_updTrans]);
+    if (updRecTransResp[0].success === true) {
+      let _updItm = this.r_trans.filter((item: any) => item.rec_trans_id === data.rec_trans_id)[0];
+      _updItm.is_paused = (data.is_paused === '1') ? "0" : "1";
+      this.appService.showAlert("Recurring Transaction " + (_updItm.is_paused == "0" ? "resumed" : "paused") + " successfully.");
+    }
+    this.appService.hideLoader();
   }
 
   async openUpdateDialog(item: any) {

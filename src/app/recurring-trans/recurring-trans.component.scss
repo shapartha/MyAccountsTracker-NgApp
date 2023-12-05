@@ -71,6 +71,9 @@ span[id^="r_trans_desc_"] {
 .r-transaction-executed-item {
     background-color: #9fe09b;
 }
+.r-transaction-paused-item {
+    background-color: #bababa;
+}
 
 @media (max-width: 480px) {
     .flex-div {

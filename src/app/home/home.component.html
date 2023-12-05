@@ -79,6 +79,7 @@
       <button mat-menu-item (click)="skipRecTrans(item)">Skip Current Occurrence</button>
       <button mat-menu-item (click)="updateItem(item)">Update</button>
       <button mat-menu-item (click)="processRecTransNow(item)">Process Now</button>
+      <button mat-menu-item *ngIf="item.is_paused == '0'" (click)="pauseRecTrans(item)">Pause</button>
     </div>
 	</ng-template>
 </mat-menu>
