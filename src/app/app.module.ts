@@ -48,6 +48,7 @@ import { AddMailFilterMappingComponent } from './add-mail-filter-mapping/add-mai
 import { NgxImageCompressService } from 'ngx-image-compress';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { AdminHomeComponent } from './admin-home/admin-home.component';
+import { PendingDeliveryComponent } from './pending-delivery/pending-delivery.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,7 @@ import { AdminHomeComponent } from './admin-home/admin-home.component';
     AddTransComponent, DialogGenericConfirmation,
     AddCategoryComponent, HomeRecurringSectionComponent, DeleteDialogStocks, DeleteDialogMutualFunds,
     AddAccountComponent, UpdateDialogRecurringTrans, DeleteDialogRecurringTrans,
-    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent, MapMfComponent, MapEqComponent, ManageEqComponent, ManageMfComponent, AutoRecordTransComponent, AddMailFilterMappingComponent, SearchResultsComponent, AdminHomeComponent
+    ScheduledTransComponent, DeleteDialogScheduleTrans, UpdateDialogScheduleTrans, MfDashboardComponent, RecurringTransComponent, HomeScheduledSectionComponent, HomeRecurringSectionComponent, EqDashboardComponent, MapMfComponent, MapEqComponent, ManageEqComponent, ManageMfComponent, AutoRecordTransComponent, AddMailFilterMappingComponent, SearchResultsComponent, AdminHomeComponent, PendingDeliveryComponent
   ],
   imports: [
     BrowserModule,    HttpClientModule,    FormsModule,  ReactiveFormsModule,  AppRoutingModule,    BrowserAnimationsModule,
