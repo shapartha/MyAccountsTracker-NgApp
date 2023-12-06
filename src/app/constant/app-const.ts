@@ -1,6 +1,6 @@
 export class AppConstant {
     static RUPEE_SYMBOL: string = "₹";
-    static APP_VERSION: string = "9.2.051223";
+    static APP_VERSION: string = "9.3.061223";
     static BILLPAY_ACCID: string = "768213039";
     static MONTH: any = {
         1: "Jan",
@@ -27,6 +27,7 @@ export class AppMenuItems {
             { name : "Add Category", path: "add-category" },
             { name : "divider"},
             { name : "Admin Activities", path: "admin-home" },
+            { name : "Pending Deliveries", path: "pending-delivery" },
             { name : "Add Mail Filter Mapping", path: "add-mail-filter-mapping" },
             { name : "divider"},
             { name : "Map Mutual Fund", path: "map-mf" },

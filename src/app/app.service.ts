@@ -17,6 +17,7 @@ export class AppService {
     API_GET_ACCOUNTS_BY_NAME: string = "getAccountByName";
     API_GET_ALL_TRANS: string = "getTransByUser";
     API_GET_TRANS_BY_ACCOUNT: string = "getTransByAccount";
+    API_GET_DELIVERY_TRANS: string = "getDeliveryTrans";
     API_USER_LOGIN: string = "getUserDataEmailPassword";
     API_GET_ALL_ACCOUNTS: string = "getAccountsByUser";
     API_GET_MF_SCHEMES_BY_ACCOUNT: string = "getMfMappingByAccount";
@@ -96,11 +97,7 @@ export class AppService {
     }
 
     invokeMfStockUpdater(stocksUpdate: boolean) {
-        if (stocksUpdate) {
-            return this.http.get<any>("https://shapartha-android-zone.000webhostapp.com/accounts-tracker/mf-stock-updater/?stocksUpdate=true").toPromise();
-        } else {
-            return this.http.get<any>("https://shapartha-android-zone.000webhostapp.com/accounts-tracker/mf-stock-updater").toPromise();
-        }
+        return this.http.get<any>("https://shapartha-android-zone.000webhostapp.com/accounts-tracker/mf-stock-updater/?stocksUpdate=" + stocksUpdate).toPromise();
     }
 
     getToken(apiFuncParams: any): Observable<any> {
@@ -195,6 +192,11 @@ export class AppService {
 
     getTransByAccount(apiFuncParams: any) {
         this.apiFuncName = this.API_GET_TRANS_BY_ACCOUNT;
+        return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams) + this.appendMandatoryParams()).toPromise();
+    }
+
+    getDeliveryTrans(apiFuncParams: any) {
+        this.apiFuncName = this.API_GET_DELIVERY_TRANS;
         return this.http.get<any>(this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=" + encodeURIComponent(apiFuncParams) + this.appendMandatoryParams()).toPromise();
     }
 
