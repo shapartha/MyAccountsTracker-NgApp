@@ -14,21 +14,39 @@ export class AdminHomeComponent implements OnInit {
     this.appService.hideLoader();
   }
 
-  invokeMfUpdater() {
-    this.appService.invokeMfStockUpdater(false).catch(x => {
+  async invokeMfUpdater() {
+    this.appService.showLoader();
+    await this.appService.invokeMfStockUpdater(false).then(d => {
+      this.appService.hideLoader();
+      this.appService.showAlert('MF Updater refresh completed');
+    }).catch(x => {
       console.log(x);
+      this.appService.hideLoader();
+      this.appService.showAlert('MF Updater refresh completed');
     });
   }
 
-  invokeStocksUpdater() {
-    this.appService.invokeMfStockUpdater(true).catch(x => {
+  async invokeStocksUpdater() {
+    this.appService.showLoader();
+    await this.appService.invokeMfStockUpdater(true).then(d => {
+      this.appService.hideLoader();
+      this.appService.showAlert('EQ Updater refresh completed');
+    }).catch(x => {
       console.log(x);
+      this.appService.hideLoader();
+      this.appService.showAlert('EQ Updater refresh completed');
     });;
   }
 
-  invokeRoutines() {
-    this.appService.invokeMonthlyRoutines().catch(x => {
+  async invokeRoutines() {
+    this.appService.showLoader();
+    await this.appService.invokeMonthlyRoutines().then(d => {
+      this.appService.hideLoader();
+      this.appService.showAlert('Monthly routines refresh completed');
+    }).catch(x => {
       console.log(x);
+      this.appService.hideLoader();
+      this.appService.showAlert('Monthly routines refresh completed');
     });;
   }
 
