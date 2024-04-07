@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AppService } from '../app.service';
+import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogGenericConfirmation } from '../auto-record-trans/auto-record-trans.component';
 
 @Component({
   selector: 'app-admin-home',
@@ -8,9 +11,14 @@ import { AppService } from '../app.service';
 })
 export class AdminHomeComponent implements OnInit {
 
-  constructor(private appService: AppService) { }
+  constructor(private appService: AppService, private route: ActivatedRoute, public dialog: MatDialog) { }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if (params.message != null) {
+        this.openGoogleDriveUploadSuccessDialog([], params.message);
+      }
+    });
     this.appService.hideLoader();
   }
 
@@ -50,4 +58,23 @@ export class AdminHomeComponent implements OnInit {
     });;
   }
 
+  async invokeBackup() {
+    this.appService.showLoader();
+    window.location.href = this.appService.redirectExternalUri();
+  }
+
+  openGoogleDriveUploadSuccessDialog(item: any, fileUploadId: any) {
+    item["dialogTitle"] = "Google Drive File Upload";
+    item["dialogBody"] = "DB/ Schema Backup has been taken successfully and uploaded to your selected Google Drive account. Do you want to open the file now ?";
+    item["dialogBtnText"] = "Open";
+    const dialogRef = this.dialog.open(DialogGenericConfirmation, {
+      data: item
+    });
+    dialogRef.disableClose = true;
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== true) {
+        window.open('https://drive.google.com/open?id=' + fileUploadId, '_blank');
+      }
+    });
+  }
 }

@@ -62,6 +62,7 @@ export class AppService {
     API_SAVE_STOCK: string = "storeStock";
     API_SAVE_MF: string = "storeMf";
     API_DELETE_MF: string = "deleteMf";
+    API_SCHEMA_BACKUP: string = "getSchemaBackup";
     API_GET_ALL_MAIL_FILTER_MAPPING: string = "getAllMailFilterMappings";
     API_GET_MAIL_FILTER_MAPPING_BY_FILTER: string = "getMailFilterMappingByFilter";
     API_GET_MAIL_FILTER_MAPPING_BY_ACC: string = "getMailFilterMappingByAccId";
@@ -1174,6 +1175,11 @@ export class AppService {
         return sessionStorage.removeItem(key);
     }
     //#endregion
+
+    redirectExternalUri(): string {
+        this.apiFuncName = this.API_SCHEMA_BACKUP;
+        return this.apiServerUrl + "?apiFunctionName=" + encodeURIComponent(this.apiFuncName) + "&apiFunctionParams=[]" + this.appendMandatoryParams();
+    }
 
     formatDate(val: string): string {
         let _temp = val.split("-");
