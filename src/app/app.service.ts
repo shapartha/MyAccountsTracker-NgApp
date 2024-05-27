@@ -7,7 +7,8 @@ import { NavigationExtras, Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AppService {
-    apiServerUrl: string = "https://shapartha.000webhostapp.com/accounts-tracker/api/";
+    private apiUrl: string = "https://shapartha.000webhostapp.com/accounts-tracker/";
+    apiServerUrl: string = this.apiUrl + "api/";
     apiFuncName: string = "";
     API_GET_TOKEN: string = "getToken";
     GAPI_GET_APIKEY: string = "getApiKey";
@@ -94,11 +95,11 @@ export class AppService {
     }
 
     invokeMonthlyRoutines() {
-        return this.http.get<any>("https://shapartha.online/accounts-tracker/routine-services/").toPromise();
+        return this.http.get<any>(this.apiUrl + "routine-services/").toPromise();
     }
 
     invokeMfStockUpdater(stocksUpdate: boolean) {
-        return this.http.get<any>("https://shapartha.online/accounts-tracker/mf-stock-updater/?stocksUpdate=" + stocksUpdate).toPromise();
+        return this.http.get<any>(this.apiUrl + "mf-stock-updater/?stocksUpdate=" + stocksUpdate).toPromise();
     }
 
     getToken(apiFuncParams: any): Observable<any> {
